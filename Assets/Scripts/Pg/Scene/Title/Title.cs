@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Pg.Scene.Title
 {
-    public class Start
+    public class Title
         : MonoBehaviour
     {
         public void MoveToGameScene()
