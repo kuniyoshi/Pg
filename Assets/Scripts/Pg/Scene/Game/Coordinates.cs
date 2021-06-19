@@ -1,10 +1,8 @@
 #nullable enable
-using System;
 using Pg.App.Util;
 using Pg.Etc.Puzzle;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.UI;
 
 namespace Pg.Scene.Game
 {
@@ -12,15 +10,12 @@ namespace Pg.Scene.Game
         : MonoBehaviour
     {
         [SerializeField]
-        float OffsetSize;
-
-        [SerializeField]
-        GameObject? HexiagonPrefab;
+        GameObject? HexagonPrefab;
 
         [SerializeField]
         RectTransform? Canvas;
 
-        GameObject[]? _hexiagons;
+        Tile[,]? _tiles;
         const int Size = 30;
         static Vector2Int DeltaTopLeft { get; } = new Vector2Int(-3, -2);
 
@@ -31,13 +26,13 @@ namespace Pg.Scene.Game
 
         void Awake()
         {
-            Assert.IsNotNull(HexiagonPrefab, "HexiagonPrefab != null");
+            Assert.IsNotNull(HexagonPrefab, "HexagonPrefab != null");
             Assert.IsNotNull(Canvas, "Canvas != null");
         }
 
         void Start()
         {
-            var positions =new Vector2[TileSize.RowSize*TileSize.ColSize];
+            var positions = new Vector2[TileSize.ColSize, TileSize.RowSize];
             var offsetY = Mathf.Sqrt(3f) * Size * 0.5f;
             var intervalX = 2 * Size * 3f / 4f;
             var intervalY = Mathf.Sqrt(3f) * Size;
@@ -48,25 +43,23 @@ namespace Pg.Scene.Game
                 {
                     var offset = colIndex % 2 == 0 ? 0f : offsetY;
                     var position = new Vector2(colIndex * intervalX, -intervalY * rowIndex + offset);
-                    positions[rowIndex * TileSize.ColSize + colIndex] = TopLeftOffset + position;
+                    positions[colIndex, rowIndex] = TopLeftOffset + position;
                 }
             }
 
-            _hexiagons = new GameObject[TileSize.RowSize * TileSize.ColSize];
+            _tiles = new Tile[TileSize.ColSize, TileSize.RowSize];
 
-            for (var rowIndex = 0; rowIndex < TileSize.RowSize; ++rowIndex)
+            for (var colIndex = 0; colIndex < TileSize.ColSize; ++colIndex)
             {
-                for (var colIndex = 0; colIndex < TileSize.ColSize; ++colIndex)
+                for (var rowIndex = 0; rowIndex < TileSize.RowSize; ++rowIndex)
                 {
-                    var position = positions[rowIndex * TileSize.ColSize + colIndex];
-                    var hexiagon = Instantiate(HexiagonPrefab!, Canvas);
-                    hexiagon.name = $"{HexiagonPrefab!.name}({colIndex}, {rowIndex})";
-                    var text = hexiagon.GetComponentInChildrenStrictly<Text>();
-                    text.text = $"({colIndex}, {rowIndex})";
-                    var rectTransform = hexiagon.GetComponentStrictly<RectTransform>();
-                    rectTransform.localPosition = position;
+                    var position = positions[colIndex, rowIndex];
+                    var hexagon = Instantiate(HexagonPrefab!, Canvas);
+                    hexagon.name = $"{HexagonPrefab!.name}({colIndex}, {rowIndex})";
+                    var tile = hexagon.GetComponentStrictly<Tile>();
+                    tile.Initialize(colIndex, rowIndex, position);
 
-                    _hexiagons[rowIndex * TileSize.ColSize + colIndex] = hexiagon;
+                    _tiles[colIndex, rowIndex] = tile;
                 }
             }
         }
@@ -74,7 +67,16 @@ namespace Pg.Scene.Game
 
         public void ApplyTiles(TileStatus[,] tiles)
         {
-            throw new NotImplementedException();
+            Assert.AreEqual(_tiles!.GetLength(0), tiles.GetLength(0));
+            Assert.AreEqual(_tiles!.GetLength(1), tiles.GetLength(1));
+
+            for (var rowIndex = 0; rowIndex < _tiles.GetLength(1); ++rowIndex)
+            {
+                for (var colIndex = 0; colIndex < _tiles.GetLength(0); ++colIndex)
+                {
+                    _tiles[colIndex, rowIndex].UpdateStatus(tiles[colIndex, rowIndex]);
+                }
+            }
         }
     }
 }

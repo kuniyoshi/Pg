@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using Pg.Etc.Puzzle;
+using Pg.Puzzle.Internal;
 using UnityEngine;
 
 namespace Pg.Puzzle
@@ -17,9 +18,9 @@ namespace Pg.Puzzle
 
         static Simulator? _simulator;
 
-        public static void StartGame()
+        public static void StartGame(IGameData gameData)
         {
-            _simulator = new Simulator();
+            _simulator = new Simulator(gameData);
         }
 
         public static TileStatus[,] Tiles => _simulator!.Tiles;

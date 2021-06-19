@@ -227,8 +227,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 722310241cef4bf19f07d832b148df3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OffsetSize: 20
-  HexiagonPrefab: {fileID: 8873521160865775134, guid: b4fb05ac6b0f941d9bea9085c1fe828d, type: 3}
+  HexagonPrefab: {fileID: 8873521160865775134, guid: b4fb05ac6b0f941d9bea9085c1fe828d, type: 3}
   Canvas: {fileID: 68929801}
 --- !u!4 &1035081215
 Transform:
@@ -356,8 +355,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67eaefabebc34775924098b04241db1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Duration: 2.5
-  Coordinates: {fileID: 0}
+  Coordinates: {fileID: 1035081214}
+  GameData: {fileID: 11400000, guid: bf559c6c130d84558a48a6366b7fb819, type: 2}
 --- !u!4 &1092687827
 Transform:
   m_ObjectHideFlags: 0

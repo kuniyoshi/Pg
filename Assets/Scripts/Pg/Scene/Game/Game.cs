@@ -1,6 +1,4 @@
 #nullable enable
-using System;
-using Pg.App;
 using Pg.Puzzle;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -8,35 +6,28 @@ using UnityEngine.Assertions;
 namespace Pg.Scene.Game
 {
     public class Game
-    : MonoBehaviour
+        : MonoBehaviour
     {
-        float _startedAt;
-
-        [SerializeField]
-        float Duration;
-
         [SerializeField]
         Coordinates? Coordinates;
+
+        [SerializeField]
+        GameData? GameData;
 
         void Awake()
         {
             Assert.IsNotNull(Coordinates, "Coordinates != null");
+            Assert.IsNotNull(GameData, "GameData != null");
         }
-
 
         void Start()
         {
-            _startedAt = Time.time;
-            GameController.StartGame();
+            GameController.StartGame(GameData!);
         }
 
         void Update()
         {
-            Coordinates.ApplyTiles(GameController.Tiles);
-            if (Time.time > _startedAt + Duration)
-            {
-                SceneManager.MoveToResultScene();
-            }
+            Coordinates!.ApplyTiles(GameController.Tiles);
         }
     }
 }
