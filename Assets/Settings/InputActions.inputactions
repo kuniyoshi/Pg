@@ -1,10 +1,76 @@
 {
     "name": "InputActions",
-    "maps": [],
+    "maps": [
+        {
+            "name": "Player",
+            "id": "dd22c92f-cbc3-45a1-a72b-35b4d51e9a0c",
+            "actions": [
+                {
+                    "name": "SelectTile",
+                    "type": "Button",
+                    "id": "6e318b99-3105-4273-93e3-b81c3c8756d8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press(behavior=2)"
+                },
+                {
+                    "name": "SwapTile",
+                    "type": "Button",
+                    "id": "6999200d-6882-4c9e-a66a-f8216d707508",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press"
+                },
+                {
+                    "name": "CompleteTile",
+                    "type": "Button",
+                    "id": "ac1da77c-c443-438b-82f6-530d996a7c8f",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press(behavior=2)"
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "65f298db-9998-4ad8-a6c5-8ac4b367dd37",
+                    "path": "<Pointer>/press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Main",
+                    "action": "SelectTile",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "76ef7ec9-ed99-403b-b286-ae10f19a0286",
+                    "path": "<Pointer>/press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Main",
+                    "action": "SwapTile",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "00a2d1c8-f766-4825-931f-2c50b49bc22f",
+                    "path": "<Pointer>/press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Main",
+                    "action": "CompleteTile",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
     "controlSchemes": [
         {
-            "name": "Touch",
-            "bindingGroup": "Touch",
+            "name": "Main",
+            "bindingGroup": "Main",
             "devices": [
                 {
                     "devicePath": "<Touchscreen>",

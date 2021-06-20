@@ -381,6 +381,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1145174081}
   - component: {fileID: 1145174080}
+  - component: {fileID: 1145174082}
   m_Layer: 0
   m_Name: InputController
   m_TagString: Untagged
@@ -412,10 +413,58 @@ MonoBehaviour:
   m_ControlsChangedEvent:
     m_PersistentCalls:
       m_Calls: []
-  m_ActionEvents: []
+  m_ActionEvents:
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1145174082}
+        m_TargetAssemblyTypeName: Pg.Scene.Game.UserPlayer, Scene.Game
+        m_MethodName: OnA
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 6e318b99-3105-4273-93e3-b81c3c8756d8
+    m_ActionName: Player/Touch
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1145174082}
+        m_TargetAssemblyTypeName: Pg.Scene.Game.UserPlayer, Scene.Game
+        m_MethodName: OnB
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: ac1da77c-c443-438b-82f6-530d996a7c8f
+    m_ActionName: Player/Tets[/Keyboard/t]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1145174082}
+        m_TargetAssemblyTypeName: Pg.Scene.Game.UserPlayer, Scene.Game
+        m_MethodName: OnC
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 6999200d-6882-4c9e-a66a-f8216d707508
+    m_ActionName: Player/SwapTiule
   m_NeverAutoSwitchControlSchemes: 0
-  m_DefaultControlScheme: 
-  m_DefaultActionMap: 
+  m_DefaultControlScheme: Main
+  m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!4 &1145174081
@@ -432,6 +481,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1145174082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1145174079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f32fa5684f614d399ecda89563470388, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1298325633
 GameObject:
   m_ObjectHideFlags: 0
