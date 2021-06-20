@@ -1,6 +1,7 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Pg.App.Util;
 using Pg.Etc.Puzzle;
 using UnityEngine;
@@ -113,6 +114,16 @@ namespace Pg.Scene.Game
             }
 
             return null;
+        }
+
+        public Task SetTileEvents(UserPlayer userPlayer)
+        {
+            foreach (var tile in _tiles!)
+            {
+                tile.SetEvents(userPlayer);
+            }
+
+            return Task.CompletedTask;
         }
     }
 }

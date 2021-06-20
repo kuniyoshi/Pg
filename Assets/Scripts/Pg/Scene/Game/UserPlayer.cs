@@ -1,130 +1,88 @@
 #nullable enable
 using System;
-using Pg.App.Util;
+using System.Collections.Generic;
+using Pg.Etc.Puzzle;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.InputSystem;
 
 namespace Pg.Scene.Game
 {
     public class UserPlayer
         : MonoBehaviour
     {
-
-        InputAction? _selectTile;
-        InputAction? _swapTile;
-        InputAction? _completeTile;
-
-        void Awake()
-        {
-            // DebugBindLogOnActionChange();
-            var myInputActions = new MyInputActions();
-            myInputActions.Enable();
-            var player = myInputActions.Player;
-            player.Enable();
-             _selectTile = player.SelectTile;
-             _swapTile = player.SwapTile;
-             _completeTile = player.CompleteTile;
-
-             _selectTile.performed += OnSelectTile;
-             Assert.IsNotNull(Coordinates, "Coordinates != null");
-        }
-
-        void OnSelectTile(InputAction.CallbackContext obj)
-        {
-            var p = Mouse.current.position;
-            // var screenPoint = obj.ReadValue<Vector2>();
-            var tile = Coordinates!.InterSectWith(p.ReadValue());
-            tile.NullPropagation()?.Select();
-        }
-
-        static void DebugBindLogOnActionChange()
-        {
-            InputSystem.onActionChange +=
-                (obj, change) =>
-                {
-                    var inputAction = obj as InputAction;
-
-                    if (inputAction == null)
-                    {
-                        return;
-                    }
-
-                    if (inputAction.name == "Point" && change == InputActionChange.ActionPerformed)
-                    {
-                        return;
-                    }
-
-                    if (inputAction.name == "ScrollWheel" && change == InputActionChange.ActionPerformed)
-                    {
-                        return;
-                    }
-
-                    Debug.Log($"{((InputAction) obj).name} {change}");
-                    switch (change)
-                    {
-                        case InputActionChange.ActionStarted:
-                        case InputActionChange.ActionPerformed:
-                        case InputActionChange.ActionCanceled:
-                            break;
-
-                        case InputActionChange.ActionEnabled:
-                            break;
-
-                        case InputActionChange.ActionDisabled:
-                            break;
-
-                        case InputActionChange.ActionMapEnabled:
-                            break;
-
-                        case InputActionChange.ActionMapDisabled:
-                            break;
-
-                        case InputActionChange.BoundControlsAboutToChange:
-                            break;
-
-                        case InputActionChange.BoundControlsChanged:
-                            break;
-
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(change), change, null);
-                    }
-                };
-        }
-
         [SerializeField]
         Coordinates? Coordinates;
 
+        Sequence? _sequence;
 
-        void Update()
+        void Awake()
         {
-            if (_selectTile!.triggered)
+            Assert.IsNotNull(Coordinates, "Coordinates != null");
+        }
+
+        public bool StartTransactionIfNotAlready(Tile tile)
+        {
+            if (_sequence != null)
             {
-                Debug.Log($"[{Time.frameCount}] --- select tile triggered");
+                return false;
             }
 
-            if (_swapTile!.triggered)
+            _sequence = new Sequence(tile);
+
+            return true;
+        }
+
+        class Sequence
+        {
+            class Operation
             {
-                Debug.Log($"[{Time.frameCount}] --- swap tile triggered");
+                public Operation(Tile tileA, Tile tileB)
+                {
+                    TileA = tileA;
+                    TileB = tileB;
+                }
+
+                Tile TileA { get; }
+                Tile TileB { get; }
+
+                public void DoSwap()
+                {
+                    var (currentA, currentB) = (TileA.TileStatus, TileB.TileStatus);
+                    var (nextA, nextB) = (currentB, currentA);
+                    TileA.UpdateStatus(nextA);
+                    TileB.UpdateStatus(nextB);
+                }
             }
-            if (_completeTile!.triggered)
+
+            Tile? _lastSelection;
+
+            public Sequence(Tile tile)
             {
-                Debug.Log($"[{Time.frameCount}] --- complete tile triggered");
+                _lastSelection = tile;
+                Histories = new Queue<Operation>();
+            }
+
+            Queue<Operation> Histories { get; }
+
+            public void Swap(Tile tile)
+            {
+                Assert.IsNotNull(_lastSelection, "MESSAGE");
+                var operation = new Operation(_lastSelection!, tile);
+                operation.DoSwap();
+                Histories.Enqueue(operation);
+                _lastSelection = tile;
             }
         }
 
-        public void OnA()
+        public void CompleteTransaction()
         {
-            Debug.Log("### event A");
-        }
-        public void OnB()
-        {
-            Debug.Log("### event B");
+            Assert.IsNotNull(_sequence, "_sequence != null");
+            _sequence = null;
         }
 
-        public void OnC()
+        public void TryAddTransaction(Tile tile)
         {
-            Debug.Log("### event C");
+            _sequence?.Swap(tile);
         }
     }
 }
