@@ -7,11 +7,11 @@
             "actions": [
                 {
                     "name": "SelectTile",
-                    "type": "Button",
+                    "type": "Value",
                     "id": "6e318b99-3105-4273-93e3-b81c3c8756d8",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "Touch",
                     "processors": "",
-                    "interactions": "Press(behavior=2)"
+                    "interactions": "Press"
                 },
                 {
                     "name": "SwapTile",

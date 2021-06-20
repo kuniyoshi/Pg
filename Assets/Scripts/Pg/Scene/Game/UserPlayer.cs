@@ -25,6 +25,17 @@ namespace Pg.Scene.Game
              _selectTile = player.SelectTile;
              _swapTile = player.SwapTile;
              _completeTile = player.CompleteTile;
+
+             _selectTile.performed += OnSelectTile;
+             Assert.IsNotNull(Coordinates, "Coordinates != null");
+        }
+
+        void OnSelectTile(InputAction.CallbackContext obj)
+        {
+            var p = Mouse.current.position;
+            // var screenPoint = obj.ReadValue<Vector2>();
+            var tile = Coordinates!.InterSectWith(p.ReadValue());
+            tile.NullPropagation()?.Select();
         }
 
         static void DebugBindLogOnActionChange()
@@ -81,19 +92,24 @@ namespace Pg.Scene.Game
                 };
         }
 
+        [SerializeField]
+        Coordinates? Coordinates;
+
+
         void Update()
         {
             if (_selectTile!.triggered)
             {
-                Debug.Log($"--- select tile triggered");
+                Debug.Log($"[{Time.frameCount}] --- select tile triggered");
             }
+
             if (_swapTile!.triggered)
             {
-                Debug.Log($"--- swap tile triggered");
+                Debug.Log($"[{Time.frameCount}] --- swap tile triggered");
             }
             if (_completeTile!.triggered)
             {
-                Debug.Log($"--- complete tile triggered");
+                Debug.Log($"[{Time.frameCount}] --- complete tile triggered");
             }
         }
 

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using DG.Tweening;
 using Pg.App.Util;
 using Pg.Etc.Puzzle;
 using UnityEngine;
@@ -81,6 +82,11 @@ namespace Pg.Scene.Game
             text.text = $"({colIndex}, {rowIndex})";
             var rectTransform = this.GetComponentStrictly<RectTransform>();
             rectTransform.localPosition = localPosition;
+        }
+
+        public void Select()
+        {
+            this.GetComponentStrictly<RectTransform>().DOScale(1.5f * Vector3.one, 0.5f).SetRelative().SetLoops(1, LoopType.Yoyo);
         }
     }
 }

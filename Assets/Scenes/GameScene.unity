@@ -229,6 +229,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HexagonPrefab: {fileID: 8873521160865775134, guid: b4fb05ac6b0f941d9bea9085c1fe828d, type: 3}
   Canvas: {fileID: 68929801}
+  GraphicRaycaster: {fileID: 1532064282}
 --- !u!4 &1035081215
 Transform:
   m_ObjectHideFlags: 0
@@ -493,6 +494,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f32fa5684f614d399ecda89563470388, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Coordinates: {fileID: 1035081214}
 --- !u!1 &1298325633
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,8 +1,12 @@
 #nullable enable
+using System.Collections.Generic;
+using System.Linq;
 using Pg.App.Util;
 using Pg.Etc.Puzzle;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Pg.Scene.Game
 {
@@ -28,6 +32,7 @@ namespace Pg.Scene.Game
         {
             Assert.IsNotNull(HexagonPrefab, "HexagonPrefab != null");
             Assert.IsNotNull(Canvas, "Canvas != null");
+            Assert.IsNotNull(GraphicRaycaster, "GraphicRaycaster != null");
         }
 
         void Start()
@@ -64,7 +69,6 @@ namespace Pg.Scene.Game
             }
         }
 
-
         public void ApplyTiles(TileStatus[,] tiles)
         {
             Assert.AreEqual(_tiles!.GetLength(0), tiles.GetLength(0));
@@ -77,6 +81,38 @@ namespace Pg.Scene.Game
                     _tiles[colIndex, rowIndex].UpdateStatus(tiles[colIndex, rowIndex]);
                 }
             }
+        }
+
+        [SerializeField]
+        GraphicRaycaster? GraphicRaycaster;
+
+
+        public Tile? InterSectWith(Vector2 screenPoint)
+        {
+            var raycastResults = new List<RaycastResult>();
+            var pointerEventData = new PointerEventData(EventSystem.current)
+            {
+                delta = screenPoint,
+            };
+            GraphicRaycaster!.Raycast(pointerEventData, raycastResults);
+
+            if (!raycastResults.Any())
+            {
+                return null;
+            }
+
+            var raycastResult = raycastResults.First();
+            Assert.IsTrue(raycastResult.isValid, "raycastResult.isValid");
+
+            foreach (var tile in _tiles!)
+            {
+                if (raycastResult.gameObject == tile.gameObject)
+                {
+                    return tile;
+                }
+            }
+
+            return null;
         }
     }
 }
