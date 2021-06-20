@@ -1,5 +1,4 @@
 #nullable enable
-using System;
 using Pg.Etc.Puzzle;
 using Pg.Puzzle.Internal;
 using UnityEngine;
@@ -8,15 +7,13 @@ namespace Pg.Puzzle
 {
     public static class GameController
     {
+        static Simulator? _simulator;
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         public static void InitializeOnReloadDomain()
         {
             _simulator = null;
         }
-
-
-
-        static Simulator? _simulator;
 
         public static void StartGame(IGameData gameData)
         {

@@ -35,6 +35,70 @@ namespace Pg.Scene.Game
             AssertMapValue();
         }
 
+        public void Initialize(int colIndex, int rowIndex, Vector2 localPosition)
+        {
+            RowIndex = rowIndex;
+            ColIndex = colIndex;
+            var text = this.GetComponentInChildrenStrictly<Text>();
+            text.text = $"({colIndex}, {rowIndex})";
+            var rectTransform = this.GetComponentStrictly<RectTransform>();
+            rectTransform.localPosition = localPosition;
+        }
+
+        public void SetEvents(UserPlayer userPlayer)
+        {
+            Image!.OnPointerDownAsObservable()
+                .Subscribe(data =>
+                {
+                    var didStart = userPlayer.StartTransactionIfNotAlready(this);
+
+                    if (didStart)
+                    {
+                        Select();
+                    }
+                })
+                .AddTo(gameObject);
+            Image!.OnPointerEnterAsObservable()
+                .Subscribe(data => { userPlayer.TryAddTransaction(this); })
+                .AddTo(gameObject);
+            Image!.OnPointerUpAsObservable()
+                .Subscribe(data => { userPlayer.CompleteTransaction(); })
+                .AddTo(gameObject);
+        }
+
+        public void UpdateStatus(TileStatus newStatus)
+        {
+            TileStatus = newStatus;
+            var statusVsSprite = Map!.FirstOrDefault(pair => pair.First == newStatus);
+
+            if (statusVsSprite != null)
+            {
+                Image!.sprite = statusVsSprite.Second;
+            }
+            else
+            {
+                Assert.AreEqual(TileStatus.Closed, newStatus);
+                gameObject.SetActive(value: false);
+            }
+        }
+
+        void Select()
+        {
+            this.GetComponentStrictly<RectTransform>()
+                .DOScale(1.1f * Vector3.one, duration: 0.5f)
+                .SetLoops(loops: 2, LoopType.Yoyo);
+        }
+
+        [Serializable]
+        public class TileStatusVsSprite
+            : Pair<TileStatus, Sprite>
+        {
+            public TileStatusVsSprite(TileStatus first, Sprite second)
+                : base(first, second)
+            {
+            }
+        }
+
         #region debug
 
         [Conditional("DEBUG")]
@@ -57,70 +121,5 @@ namespace Pg.Scene.Game
         }
 
         #endregion
-
-        public void UpdateStatus(TileStatus newStatus)
-        {
-            TileStatus = newStatus;
-            var statusVsSprite = Map!.FirstOrDefault(pair => pair.First == newStatus);
-
-            if (statusVsSprite != null)
-            {
-                Image!.sprite = statusVsSprite.Second;
-            }
-            else
-            {
-                Assert.AreEqual(TileStatus.Closed, newStatus);
-                gameObject.SetActive(false);
-            }
-        }
-
-        [Serializable]
-        public class TileStatusVsSprite
-            : Pair<TileStatus, Sprite>
-        {
-            public TileStatusVsSprite(TileStatus first, Sprite second)
-                : base(first, second)
-            {
-            }
-        }
-
-        public void Initialize(int colIndex, int rowIndex, Vector2 localPosition)
-        {
-            RowIndex = rowIndex;
-            ColIndex = colIndex;
-            var text = this.GetComponentInChildrenStrictly<Text>();
-            text.text = $"({colIndex}, {rowIndex})";
-            var rectTransform = this.GetComponentStrictly<RectTransform>();
-            rectTransform.localPosition = localPosition;
-        }
-
-        void Select()
-        {
-            this.GetComponentStrictly<RectTransform>().DOScale(1.1f * Vector3.one, 0.5f).SetLoops(2, LoopType.Yoyo);
-        }
-
-        public void SetEvents(UserPlayer userPlayer)
-        {
-            Image!.OnPointerDownAsObservable()
-                .Subscribe(data =>
-                {
-                    var didStart = userPlayer.StartTransactionIfNotAlready(this);
-
-                    if (didStart)
-                    {
-                        Select();
-                    }
-                })
-                .AddTo(gameObject);
-            Image!.OnPointerEnterAsObservable()
-            .Subscribe(data =>
-            {
-                userPlayer.TryAddTransaction(this);
-            })
-            .AddTo(gameObject);
-            Image!.OnPointerUpAsObservable()
-                .Subscribe(data => { userPlayer.CompleteTransaction(); })
-                .AddTo(gameObject);
-        }
     }
 }

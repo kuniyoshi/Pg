@@ -1,5 +1,4 @@
 #nullable enable
-using System.Threading.Tasks;
 using Pg.Puzzle;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -20,8 +19,6 @@ namespace Pg.Scene.Game
 
         [SerializeField]
         UserPlayer? UserPlayer;
-
-
 
         void Awake()
         {

@@ -8,10 +8,17 @@ using UnityEngine.InputSystem.Utilities;
 
 namespace Pg.Scene.Game
 {
-    public class @MyInputActions : IInputActionCollection, IDisposable
+    public class MyInputActions : IInputActionCollection, IDisposable
     {
-        public InputActionAsset asset { get; }
-        public @MyInputActions()
+        // Player
+        readonly InputActionMap m_Player;
+        readonly InputAction m_Player_CompleteTile;
+        readonly InputAction m_Player_SelectTile;
+        readonly InputAction m_Player_SwapTile;
+        int m_MainSchemeIndex = -1;
+        IPlayerActions m_PlayerActionsCallbackInterface;
+
+        public MyInputActions()
         {
             asset = InputActionAsset.FromJson(@"{
     ""name"": ""InputActions"",
@@ -103,6 +110,22 @@ namespace Pg.Scene.Game
             m_Player_CompleteTile = m_Player.FindAction("CompleteTile", throwIfNotFound: true);
         }
 
+        public InputActionAsset asset { get; }
+        public PlayerActions Player => new PlayerActions(this);
+
+        public InputControlScheme MainScheme
+        {
+            get
+            {
+                if (m_MainSchemeIndex == -1)
+                {
+                    m_MainSchemeIndex = asset.FindControlSchemeIndex("Main");
+                }
+
+                return asset.controlSchemes[m_MainSchemeIndex];
+            }
+        }
+
         public void Dispose()
         {
             UnityEngine.Object.Destroy(asset);
@@ -147,68 +170,78 @@ namespace Pg.Scene.Game
             asset.Disable();
         }
 
-        // Player
-        private readonly InputActionMap m_Player;
-        private IPlayerActions m_PlayerActionsCallbackInterface;
-        private readonly InputAction m_Player_SelectTile;
-        private readonly InputAction m_Player_SwapTile;
-        private readonly InputAction m_Player_CompleteTile;
         public struct PlayerActions
         {
-            private @MyInputActions m_Wrapper;
-            public PlayerActions(@MyInputActions wrapper) { m_Wrapper = wrapper; }
-            public InputAction @SelectTile => m_Wrapper.m_Player_SelectTile;
-            public InputAction @SwapTile => m_Wrapper.m_Player_SwapTile;
-            public InputAction @CompleteTile => m_Wrapper.m_Player_CompleteTile;
-            public InputActionMap Get() { return m_Wrapper.m_Player; }
-            public void Enable() { Get().Enable(); }
-            public void Disable() { Get().Disable(); }
+            readonly MyInputActions m_Wrapper;
+
+            public PlayerActions(MyInputActions wrapper)
+            {
+                m_Wrapper = wrapper;
+            }
+
+            public InputAction SelectTile => m_Wrapper.m_Player_SelectTile;
+            public InputAction SwapTile => m_Wrapper.m_Player_SwapTile;
+            public InputAction CompleteTile => m_Wrapper.m_Player_CompleteTile;
+
+            public InputActionMap Get()
+            {
+                return m_Wrapper.m_Player;
+            }
+
+            public void Enable()
+            {
+                Get().Enable();
+            }
+
+            public void Disable()
+            {
+                Get().Disable();
+            }
+
             public bool enabled => Get().enabled;
-            public static implicit operator InputActionMap(PlayerActions set) { return set.Get(); }
+
+            public static implicit operator InputActionMap(PlayerActions set)
+            {
+                return set.Get();
+            }
+
             public void SetCallbacks(IPlayerActions instance)
             {
                 if (m_Wrapper.m_PlayerActionsCallbackInterface != null)
                 {
-                    @SelectTile.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSelectTile;
-                    @SelectTile.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSelectTile;
-                    @SelectTile.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSelectTile;
-                    @SwapTile.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwapTile;
-                    @SwapTile.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwapTile;
-                    @SwapTile.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwapTile;
-                    @CompleteTile.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCompleteTile;
-                    @CompleteTile.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCompleteTile;
-                    @CompleteTile.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCompleteTile;
+                    SelectTile.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSelectTile;
+                    SelectTile.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSelectTile;
+                    SelectTile.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSelectTile;
+                    SwapTile.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwapTile;
+                    SwapTile.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwapTile;
+                    SwapTile.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnSwapTile;
+                    CompleteTile.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCompleteTile;
+                    CompleteTile.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCompleteTile;
+                    CompleteTile.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnCompleteTile;
                 }
+
                 m_Wrapper.m_PlayerActionsCallbackInterface = instance;
+
                 if (instance != null)
                 {
-                    @SelectTile.started += instance.OnSelectTile;
-                    @SelectTile.performed += instance.OnSelectTile;
-                    @SelectTile.canceled += instance.OnSelectTile;
-                    @SwapTile.started += instance.OnSwapTile;
-                    @SwapTile.performed += instance.OnSwapTile;
-                    @SwapTile.canceled += instance.OnSwapTile;
-                    @CompleteTile.started += instance.OnCompleteTile;
-                    @CompleteTile.performed += instance.OnCompleteTile;
-                    @CompleteTile.canceled += instance.OnCompleteTile;
+                    SelectTile.started += instance.OnSelectTile;
+                    SelectTile.performed += instance.OnSelectTile;
+                    SelectTile.canceled += instance.OnSelectTile;
+                    SwapTile.started += instance.OnSwapTile;
+                    SwapTile.performed += instance.OnSwapTile;
+                    SwapTile.canceled += instance.OnSwapTile;
+                    CompleteTile.started += instance.OnCompleteTile;
+                    CompleteTile.performed += instance.OnCompleteTile;
+                    CompleteTile.canceled += instance.OnCompleteTile;
                 }
             }
         }
-        public PlayerActions @Player => new PlayerActions(this);
-        private int m_MainSchemeIndex = -1;
-        public InputControlScheme MainScheme
-        {
-            get
-            {
-                if (m_MainSchemeIndex == -1) m_MainSchemeIndex = asset.FindControlSchemeIndex("Main");
-                return asset.controlSchemes[m_MainSchemeIndex];
-            }
-        }
+
         public interface IPlayerActions
         {
+            void OnCompleteTile(InputAction.CallbackContext context);
             void OnSelectTile(InputAction.CallbackContext context);
             void OnSwapTile(InputAction.CallbackContext context);
-            void OnCompleteTile(InputAction.CallbackContext context);
         }
     }
 }

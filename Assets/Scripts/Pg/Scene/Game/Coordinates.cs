@@ -14,19 +14,23 @@ namespace Pg.Scene.Game
     public class Coordinates
         : MonoBehaviour
     {
+        const int Size = 30;
+
         [SerializeField]
         GameObject? HexagonPrefab;
 
         [SerializeField]
         RectTransform? Canvas;
 
+        [SerializeField]
+        GraphicRaycaster? GraphicRaycaster;
+
         Tile[,]? _tiles;
-        const int Size = 30;
-        static Vector2Int DeltaTopLeft { get; } = new Vector2Int(-3, -2);
+        static Vector2Int DeltaTopLeft { get; } = new Vector2Int(x: -3, y: -2);
 
         static Vector2 TopLeftOffset { get; } = new Vector2(
             2 * Size * DeltaTopLeft.x * 3f / 4f,
-            -Mathf.Sqrt(3f) * Size * DeltaTopLeft.y
+            -Mathf.Sqrt(f: 3f) * Size * DeltaTopLeft.y
         );
 
         void Awake()
@@ -39,9 +43,9 @@ namespace Pg.Scene.Game
         void Start()
         {
             var positions = new Vector2[TileSize.ColSize, TileSize.RowSize];
-            var offsetY = Mathf.Sqrt(3f) * Size * 0.5f;
+            var offsetY = Mathf.Sqrt(f: 3f) * Size * 0.5f;
             var intervalX = 2 * Size * 3f / 4f;
-            var intervalY = Mathf.Sqrt(3f) * Size;
+            var intervalY = Mathf.Sqrt(f: 3f) * Size;
 
             for (var rowIndex = 0; rowIndex < TileSize.RowSize; ++rowIndex)
             {
@@ -72,21 +76,17 @@ namespace Pg.Scene.Game
 
         public void ApplyTiles(TileStatus[,] tiles)
         {
-            Assert.AreEqual(_tiles!.GetLength(0), tiles.GetLength(0));
-            Assert.AreEqual(_tiles!.GetLength(1), tiles.GetLength(1));
+            Assert.AreEqual(_tiles!.GetLength(dimension: 0), tiles.GetLength(dimension: 0));
+            Assert.AreEqual(_tiles!.GetLength(dimension: 1), tiles.GetLength(dimension: 1));
 
-            for (var rowIndex = 0; rowIndex < _tiles.GetLength(1); ++rowIndex)
+            for (var rowIndex = 0; rowIndex < _tiles.GetLength(dimension: 1); ++rowIndex)
             {
-                for (var colIndex = 0; colIndex < _tiles.GetLength(0); ++colIndex)
+                for (var colIndex = 0; colIndex < _tiles.GetLength(dimension: 0); ++colIndex)
                 {
                     _tiles[colIndex, rowIndex].UpdateStatus(tiles[colIndex, rowIndex]);
                 }
             }
         }
-
-        [SerializeField]
-        GraphicRaycaster? GraphicRaycaster;
-
 
         public Tile? InterSectWith(Vector2 screenPoint)
         {

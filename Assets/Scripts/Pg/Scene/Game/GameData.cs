@@ -10,6 +10,24 @@ namespace Pg.Scene.Game
     public class GameData
         : ScriptableObject, IGameData
     {
+        [SerializeField]
+        TileStatus[]? TileStatusesRow0;
+
+        [SerializeField]
+        TileStatus[]? TileStatusesRow1;
+
+        [SerializeField]
+        TileStatus[]? TileStatusesRow2;
+
+        [SerializeField]
+        TileStatus[]? TileStatusesRow3;
+
+        [SerializeField]
+        TileStatus[]? TileStatusesRow4;
+
+        [SerializeField]
+        TileStatus[]? TileStatusesRow5;
+
         public TileStatus[,] TileStatuses => CreateTileStatuses();
 
         TileStatus[,] CreateTileStatuses()
@@ -38,23 +56,5 @@ namespace Pg.Scene.Game
 
             return result;
         }
-
-        [SerializeField]
-        TileStatus[]? TileStatusesRow0;
-
-        [SerializeField]
-        TileStatus[]? TileStatusesRow1;
-
-        [SerializeField]
-        TileStatus[]? TileStatusesRow2;
-
-        [SerializeField]
-        TileStatus[]? TileStatusesRow3;
-
-        [SerializeField]
-        TileStatus[]? TileStatusesRow4;
-
-        [SerializeField]
-        TileStatus[]? TileStatusesRow5;
     }
 }

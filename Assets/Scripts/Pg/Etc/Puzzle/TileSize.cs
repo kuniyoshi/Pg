@@ -1,6 +1,4 @@
 #nullable enable
-using System;
-
 namespace Pg.Etc.Puzzle
 {
     public static class TileSize

@@ -1,5 +1,4 @@
 #nullable enable
-using System;
 using Pg.App.Util;
 using UniRx;
 using UniRx.Triggers;
@@ -15,13 +14,13 @@ namespace Pg.Scene.Game
         {
             var image = this.GetComponentStrictly<Image>();
             image.OnPointerDownAsObservable()
-                .Subscribe(data => { Debug.Log($"down"); })
+                .Subscribe(data => { Debug.Log("down"); })
                 .AddTo(gameObject);
             image.OnPointerEnterAsObservable()
-                .Subscribe(data => { Debug.Log($"enter"); })
+                .Subscribe(data => { Debug.Log("enter"); })
                 .AddTo(gameObject);
             image.OnPointerClickAsObservable()
-                .Subscribe(data => { Debug.Log($"click"); })
+                .Subscribe(data => { Debug.Log("click"); })
                 .AddTo(gameObject);
         }
     }

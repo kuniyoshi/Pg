@@ -5,14 +5,14 @@ namespace Pg.App
 {
     public static class SceneManager
     {
+        public static void MoveBackToTitleScene()
+        {
+            LoadScene(SceneType.TitleScene);
+        }
+
         public static void MoveToGameScene()
         {
             LoadScene(SceneType.GameScene);
-        }
-
-        static void LoadScene(SceneType sceneType)
-        {
-            UnityEngine.SceneManagement.SceneManager.LoadScene(sceneType.ToString());
         }
 
         public static void MoveToResultScene()
@@ -20,9 +20,9 @@ namespace Pg.App
             LoadScene(SceneType.ResultScene);
         }
 
-        public static void MoveBackToTitleScene()
+        static void LoadScene(SceneType sceneType)
         {
-            LoadScene(SceneType.TitleScene);
+            UnityEngine.SceneManagement.SceneManager.LoadScene(sceneType.ToString());
         }
     }
 }

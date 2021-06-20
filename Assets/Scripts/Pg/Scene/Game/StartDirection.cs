@@ -21,7 +21,7 @@ namespace Pg.Scene.Game
         public async Task Play()
         {
             Cover!.raycastTarget = true;
-            await Cover.DOFade(0f, 1f).AsyncWaitForStart();
+            await Cover.DOFade(endValue: 0f, duration: 1f).AsyncWaitForStart();
             Cover!.raycastTarget = false;
         }
     }
