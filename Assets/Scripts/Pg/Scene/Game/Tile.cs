@@ -35,7 +35,7 @@ namespace Pg.Scene.Game
         {
             Assert.IsNotNull(Image, "Image != null");
             Assert.IsNotNull(Map, "Map != null");
-            AssertMapValue();
+            ZzDebugAssertMapValue();
         }
 
         public void Initialize(int colIndex, int rowIndex, Vector2 localPosition)
@@ -113,31 +113,6 @@ namespace Pg.Scene.Game
             gameObject.SetActive(value: false);
         }
 
-        #region debug
-
-        [Conditional("DEBUG")]
-        void AssertMapValue()
-        {
-            foreach (var value in Enum.GetValues(typeof(TileStatus)))
-            {
-                var tileStatus = (TileStatus) value;
-
-                Assert.IsTrue(
-                    tileStatus == TileStatus.Closed
-                    || tileStatus == TileStatus.Empty
-                    || Map!.Any(item => item.First == tileStatus),
-                    "Invalid Status Found"
-                );
-            }
-
-            Assert.IsTrue(
-                Map!.All(pair => pair.Second != null),
-                "Map.All(pair => pair.Second != null)"
-            );
-        }
-
-        #endregion
-
         void MakeWorking()
         {
             if (_sequence != null)
@@ -163,6 +138,27 @@ namespace Pg.Scene.Game
             Image!.GetComponentStrictly<RectTransform>()
                 .DOScale(1.1f * Vector3.one, duration: 0.5f)
                 .SetLoops(loops: 2, LoopType.Yoyo);
+        }
+
+        [Conditional("DEBUG")]
+        void ZzDebugAssertMapValue()
+        {
+            foreach (var value in Enum.GetValues(typeof(TileStatus)))
+            {
+                var tileStatus = (TileStatus) value;
+
+                Assert.IsTrue(
+                    tileStatus == TileStatus.Closed
+                    || tileStatus == TileStatus.Empty
+                    || Map!.Any(item => item.First == tileStatus),
+                    "Invalid Status Found"
+                );
+            }
+
+            Assert.IsTrue(
+                Map!.All(pair => pair.Second != null),
+                "Map.All(pair => pair.Second != null)"
+            );
         }
 
         [Serializable]
