@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using DG.Tweening;
-using DG.Tweening.Core;
-using DG.Tweening.Plugins.Options;
 using Pg.App.Util;
 using Pg.Puzzle;
 using UniRx;
@@ -91,26 +89,6 @@ namespace Pg.Scene.Game
                 .AddTo(gameObject);
         }
 
-        void QuitWorking()
-        {
-            _sequence?.Kill(complete: true);
-        }
-
-        void MakeWorking()
-        {
-            if (_sequence != null)
-            {
-                return;
-            }
-
-            var rectTransform = Image!.GetComponentStrictly<RectTransform>();
-            _sequence = DOTween.Sequence()
-                .Append(rectTransform.DOMoveX(10f, 0.1f).SetRelative())
-                .Append(rectTransform.DOMoveX(-20f, 0.2f).SetRelative())
-                .SetLoops(-1);
-            _sequence.Play();
-        }
-
         public void UpdateStatus(TileStatus newStatus)
         {
             TileData = new TileData(Coordinate, newStatus);
@@ -133,23 +111,6 @@ namespace Pg.Scene.Game
 
             Assert.AreEqual(TileStatus.Closed, newStatus);
             gameObject.SetActive(value: false);
-        }
-
-        void SelectFirstTime()
-        {
-            Image!.GetComponentStrictly<RectTransform>()
-                .DOScale(1.1f * Vector3.one, duration: 0.5f)
-                .SetLoops(loops: 2, LoopType.Yoyo);
-        }
-
-        [Serializable]
-        public class TileStatusVsSprite
-            : Pair<TileStatus, Sprite>
-        {
-            public TileStatusVsSprite(TileStatus first, Sprite second)
-                : base(first, second)
-            {
-            }
         }
 
         #region debug
@@ -176,5 +137,42 @@ namespace Pg.Scene.Game
         }
 
         #endregion
+
+        void MakeWorking()
+        {
+            if (_sequence != null)
+            {
+                return;
+            }
+
+            var rectTransform = Image!.GetComponentStrictly<RectTransform>();
+            _sequence = DOTween.Sequence()
+                .Append(rectTransform.DOMoveX(endValue: 10f, duration: 0.1f).SetRelative())
+                .Append(rectTransform.DOMoveX(endValue: -20f, duration: 0.2f).SetRelative())
+                .SetLoops(loops: -1);
+            _sequence.Play();
+        }
+
+        void QuitWorking()
+        {
+            _sequence?.Kill(complete: true);
+        }
+
+        void SelectFirstTime()
+        {
+            Image!.GetComponentStrictly<RectTransform>()
+                .DOScale(1.1f * Vector3.one, duration: 0.5f)
+                .SetLoops(loops: 2, LoopType.Yoyo);
+        }
+
+        [Serializable]
+        public class TileStatusVsSprite
+            : Pair<TileStatus, Sprite>
+        {
+            public TileStatusVsSprite(TileStatus first, Sprite second)
+                : base(first, second)
+            {
+            }
+        }
     }
 }

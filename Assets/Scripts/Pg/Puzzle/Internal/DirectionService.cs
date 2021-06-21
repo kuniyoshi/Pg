@@ -4,33 +4,14 @@ using UnityEngine.Assertions;
 namespace Pg.Puzzle.Internal
 {
     /// <summary>
-    /// even q directions
+    ///     even q directions
     /// </summary>
     internal static class DirectionService
     {
-        static Coordinate[,] NeighborDirections { get; } = {
-            {
-                new Coordinate(1, 1),
-                new Coordinate(1, 0),
-                new Coordinate(0, -1),
-                new Coordinate(-1, 0),
-                new Coordinate(-1, 1),
-                new Coordinate(0, 1),
-            },
-            {
-                new Coordinate(1, 0),
-                new Coordinate(1, -1),
-                new Coordinate(0, -1),
-                new Coordinate(-1, -1),
-                new Coordinate(-1, 0),
-                new Coordinate(0, 1),
-            },
-        };
-
         public static Coordinate GetNeighborOf(Coordinate coordinate, int neighborIndex)
         {
             Assert.IsTrue(
-                neighborIndex >= 0 && neighborIndex < NeighborDirections.GetLength(1),
+                neighborIndex >= 0 && neighborIndex < NeighborDirections.GetLength(dimension: 1),
                 "neighborIndex >= 0 && neighborIndex < NeighborDirections.GetLength(1)"
             );
             var party = coordinate.Column & 1;
@@ -44,7 +25,7 @@ namespace Pg.Puzzle.Internal
 
         public static bool IsNeighborEachOther(Coordinate a, Coordinate b)
         {
-            var directionSize = NeighborDirections.GetLength(1);
+            var directionSize = NeighborDirections.GetLength(dimension: 1);
 
             for (var i = 0; i < directionSize; ++i)
             {
@@ -56,5 +37,25 @@ namespace Pg.Puzzle.Internal
 
             return false;
         }
+
+        static Coordinate[,] NeighborDirections { get; } =
+        {
+            {
+                new Coordinate(column: 1, row: 1),
+                new Coordinate(column: 1, row: 0),
+                new Coordinate(column: 0, row: -1),
+                new Coordinate(column: -1, row: 0),
+                new Coordinate(column: -1, row: 1),
+                new Coordinate(column: 0, row: 1),
+            },
+            {
+                new Coordinate(column: 1, row: 0),
+                new Coordinate(column: 1, row: -1),
+                new Coordinate(column: 0, row: -1),
+                new Coordinate(column: -1, row: -1),
+                new Coordinate(column: -1, row: 0),
+                new Coordinate(column: 0, row: 1),
+            },
+        };
     }
 }

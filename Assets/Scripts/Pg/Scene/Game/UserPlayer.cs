@@ -25,6 +25,11 @@ namespace Pg.Scene.Game
             _sequence = null;
         }
 
+        public bool IsSelected(Tile tile)
+        {
+            return _sequence?.IsSelected(tile.Coordinate) ?? false;
+        }
+
         public bool StartTransactionIfNotAlready(Tile tile)
         {
             if (_sequence != null)
@@ -64,6 +69,22 @@ namespace Pg.Scene.Game
 
             Queue<Operation> Histories { get; }
 
+            public bool CanSwap(Tile tile)
+            {
+                if (_lastSelection == null)
+                {
+                    return false;
+                }
+
+                return GameController.CanSwap(tile.TileData, _lastSelection!.TileData);
+            }
+
+            public bool IsSelected(Coordinate coordinate)
+            {
+                return _lastSelection != null
+                       && coordinate.Equals(_lastSelection.Coordinate);
+            }
+
             public bool Swap(Tile tile)
             {
                 Assert.IsNotNull(_lastSelection, "_lastSelection != null");
@@ -73,16 +94,6 @@ namespace Pg.Scene.Game
                 _lastSelection = tile;
 
                 return true;
-            }
-
-            public bool CanSwap(Tile tile)
-            {
-                if (_lastSelection == null)
-                {
-                    return false;
-                }
-
-                return GameController.CanSwap(tile.TileData, _lastSelection!.TileData);
             }
 
             class Operation
@@ -104,17 +115,6 @@ namespace Pg.Scene.Game
                     TileB.UpdateStatus(nextB);
                 }
             }
-
-            public bool IsSelected(Coordinate coordinate)
-            {
-                return _lastSelection != null
-                       && coordinate.Equals(_lastSelection.Coordinate);
-            }
-        }
-
-        public bool IsSelected(Tile tile)
-        {
-            return _sequence?.IsSelected(tile.Coordinate) ?? false;
         }
     }
 }
