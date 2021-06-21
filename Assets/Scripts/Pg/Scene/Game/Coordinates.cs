@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Pg.App.Util;
 using Pg.Etc.Puzzle;
+using Pg.Puzzle;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.EventSystems;

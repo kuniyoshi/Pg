@@ -20,6 +20,12 @@ namespace Pg.Puzzle
             _simulator = new Simulator(gameData);
         }
 
+        public static bool CanSwap(TileData a, TileData b)
+        {
+            return TileStatusService.CanBothBeSwappable(a.TileStatus, b.TileStatus)
+                   && DirectionService.IsNeighborEachOther(a.Coordinate, b.Coordinate);
+        }
+
         public static TileStatus[,] Tiles => _simulator!.Tiles;
     }
 }

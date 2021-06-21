@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using DG.Tweening;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
 using Pg.App.Util;
-using Pg.Etc.Puzzle;
+using Pg.Puzzle;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
@@ -23,10 +25,13 @@ namespace Pg.Scene.Game
         [SerializeField]
         Image? Image;
 
-        public TileStatus TileStatus { get; private set; }
+        Sequence? _sequence;
 
-        public int ColIndex { get; private set; }
-        public int RowIndex { get; private set; }
+        public TileStatus TileStatus => TileData.TileStatus;
+
+        public Coordinate Coordinate { get; private set; }
+
+        public TileData TileData { get; private set; }
 
         void Awake()
         {
@@ -37,10 +42,10 @@ namespace Pg.Scene.Game
 
         public void Initialize(int colIndex, int rowIndex, Vector2 localPosition)
         {
-            RowIndex = rowIndex;
-            ColIndex = colIndex;
+            Coordinate = new Coordinate(colIndex, rowIndex);
+            TileData = new TileData(Coordinate, TileStatus.Empty);
             var text = this.GetComponentInChildrenStrictly<Text>();
-            text.text = $"({colIndex}, {rowIndex})";
+            text.text = Coordinate.ToString();
             var rectTransform = this.GetComponentStrictly<RectTransform>();
             rectTransform.localPosition = localPosition;
         }
@@ -54,37 +59,85 @@ namespace Pg.Scene.Game
 
                     if (didStart)
                     {
-                        Select();
+                        SelectFirstTime();
+                        MakeWorking();
+                    }
+                })
+                .AddTo(gameObject);
+            Image!.OnPointerExitAsObservable()
+                .Subscribe(data =>
+                {
+                    var isSelected = userPlayer.IsSelected(this);
+
+                    if (!isSelected)
+                    {
+                        QuitWorking();
                     }
                 })
                 .AddTo(gameObject);
             Image!.OnPointerEnterAsObservable()
-                .Subscribe(data => { userPlayer.TryAddTransaction(this); })
+                .Subscribe(data =>
+                {
+                    var didAdd = userPlayer.TryAddTransaction(this);
+
+                    if (didAdd)
+                    {
+                        MakeWorking();
+                    }
+                })
                 .AddTo(gameObject);
             Image!.OnPointerUpAsObservable()
                 .Subscribe(data => { userPlayer.CompleteTransaction(); })
                 .AddTo(gameObject);
         }
 
+        void QuitWorking()
+        {
+            _sequence?.Kill(complete: true);
+        }
+
+        void MakeWorking()
+        {
+            if (_sequence != null)
+            {
+                return;
+            }
+
+            var rectTransform = Image!.GetComponentStrictly<RectTransform>();
+            _sequence = DOTween.Sequence()
+                .Append(rectTransform.DOMoveX(10f, 0.1f).SetRelative())
+                .Append(rectTransform.DOMoveX(-20f, 0.2f).SetRelative())
+                .SetLoops(-1);
+            _sequence.Play();
+        }
+
         public void UpdateStatus(TileStatus newStatus)
         {
-            TileStatus = newStatus;
+            TileData = new TileData(Coordinate, newStatus);
             var statusVsSprite = Map!.FirstOrDefault(pair => pair.First == newStatus);
 
             if (statusVsSprite != null)
             {
                 Image!.sprite = statusVsSprite.Second;
+                Image!.enabled = true;
+
+                return;
             }
-            else
+
+            if (newStatus == TileStatus.Empty)
             {
-                Assert.AreEqual(TileStatus.Closed, newStatus);
-                gameObject.SetActive(value: false);
+                Image!.enabled = false;
+
+                return;
             }
+
+            Assert.AreEqual(TileStatus.Closed, newStatus);
+            gameObject.SetActive(value: false);
         }
 
-        void Select()
+        void SelectFirstTime()
         {
-            this.GetComponentStrictly<RectTransform>()
+            Image!.GetComponentStrictly<RectTransform>()
                 .DOScale(1.1f * Vector3.one, duration: 0.5f)
                 .SetLoops(loops: 2, LoopType.Yoyo);
         }
@@ -109,8 +162,10 @@ namespace Pg.Scene.Game
                 var tileStatus = (TileStatus) value;
 
                 Assert.IsTrue(
-                    tileStatus == TileStatus.Closed || Map!.Any(item => item.First == tileStatus),
-                    "tileStatus == TileStatus.Closed || Map!.Any(item => item.First == tileStatus)"
+                    tileStatus == TileStatus.Closed
+                    || tileStatus == TileStatus.Empty
+                    || Map!.Any(item => item.First == tileStatus),
+                    "Invalid Status Found"
                 );
             }
 

@@ -1,8 +1,9 @@
-namespace Pg.Etc.Puzzle
+namespace Pg.Puzzle
 {
     public enum TileStatus
     {
         Closed,
+        Empty,
         Green,
         Red,
         Purple,

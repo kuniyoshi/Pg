@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using Pg.Puzzle;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -36,9 +37,19 @@ namespace Pg.Scene.Game
             return true;
         }
 
-        public void TryAddTransaction(Tile tile)
+        public bool TryAddTransaction(Tile tile)
         {
-            _sequence?.Swap(tile);
+            if (_sequence?.IsSelected(tile.Coordinate) ?? false)
+            {
+                return false;
+            }
+
+            if (!_sequence?.CanSwap(tile) ?? false)
+            {
+                return false;
+            }
+
+            return _sequence?.Swap(tile) ?? false;
         }
 
         class Sequence
@@ -53,13 +64,25 @@ namespace Pg.Scene.Game
 
             Queue<Operation> Histories { get; }
 
-            public void Swap(Tile tile)
+            public bool Swap(Tile tile)
             {
-                Assert.IsNotNull(_lastSelection, "MESSAGE");
+                Assert.IsNotNull(_lastSelection, "_lastSelection != null");
                 var operation = new Operation(_lastSelection!, tile);
                 operation.DoSwap();
                 Histories.Enqueue(operation);
                 _lastSelection = tile;
+
+                return true;
+            }
+
+            public bool CanSwap(Tile tile)
+            {
+                if (_lastSelection == null)
+                {
+                    return false;
+                }
+
+                return GameController.CanSwap(tile.TileData, _lastSelection!.TileData);
             }
 
             class Operation
@@ -81,6 +104,17 @@ namespace Pg.Scene.Game
                     TileB.UpdateStatus(nextB);
                 }
             }
+
+            public bool IsSelected(Coordinate coordinate)
+            {
+                return _lastSelection != null
+                       && coordinate.Equals(_lastSelection.Coordinate);
+            }
+        }
+
+        public bool IsSelected(Tile tile)
+        {
+            return _sequence?.IsSelected(tile.Coordinate) ?? false;
         }
     }
 }
