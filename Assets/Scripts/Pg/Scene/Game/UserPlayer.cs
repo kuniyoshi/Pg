@@ -17,7 +17,7 @@ namespace Pg.Scene.Game
 
         Sequence? _sequence;
 
-        Subject<TileOperation[]> TransactionSubject { get; }= new Subject<TileOperation[]>();
+        Subject<TileOperation[]> TransactionSubject { get; } = new Subject<TileOperation[]>();
 
         public IObservable<TileOperation[]> OnTransaction => TransactionSubject;
 
@@ -90,6 +90,12 @@ namespace Pg.Scene.Game
                 return GameController.CanSwap(tile.TileData, _lastSelection!.TileData);
             }
 
+            public TileOperation[] DumpOperations()
+            {
+                return Histories.Select(operation => operation.CreateTileOperation())
+                    .ToArray();
+            }
+
             public bool IsSelected(Coordinate coordinate)
             {
                 return _lastSelection != null
@@ -118,6 +124,11 @@ namespace Pg.Scene.Game
                 Tile TileA { get; }
                 Tile TileB { get; }
 
+                public TileOperation CreateTileOperation()
+                {
+                    return new TileOperation(TileA.Coordinate, TileB.Coordinate);
+                }
+
                 public void DoSwap()
                 {
                     var (currentA, currentB) = (TileA.TileStatus, TileB.TileStatus);
@@ -125,17 +136,6 @@ namespace Pg.Scene.Game
                     TileA.UpdateStatus(nextA);
                     TileB.UpdateStatus(nextB);
                 }
-
-                public TileOperation CreateTileOperation()
-                {
-                    return new TileOperation(TileA.Coordinate, TileB.Coordinate);
-                }
-            }
-
-            public TileOperation[] DumpOperations()
-            {
-                return Histories.Select(operation => operation.CreateTileOperation())
-                    .ToArray();
             }
         }
     }

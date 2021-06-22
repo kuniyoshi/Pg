@@ -89,6 +89,14 @@ namespace Pg.Scene.Game
             }
         }
 
+        public void ClearSelections()
+        {
+            foreach (var tile in _tiles!)
+            {
+                tile.ClearSelection();
+            }
+        }
+
         public Tile? InterSectWith(Vector2 screenPoint)
         {
             var raycastResults = new List<RaycastResult>();
@@ -125,14 +133,6 @@ namespace Pg.Scene.Game
             }
 
             return Task.CompletedTask;
-        }
-
-        public void ClearSelections()
-        {
-            foreach (var tile in _tiles!)
-            {
-                tile.ClearSelection();
-            }
         }
     }
 }

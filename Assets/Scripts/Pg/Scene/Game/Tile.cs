@@ -38,6 +38,11 @@ namespace Pg.Scene.Game
             ZzDebugAssertMapValue();
         }
 
+        public void ClearSelection()
+        {
+            QuitWorking();
+        }
+
         public void Initialize(int colIndex, int rowIndex, Vector2 localPosition)
         {
             Coordinate = new Coordinate(colIndex, rowIndex);
@@ -127,15 +132,11 @@ namespace Pg.Scene.Game
                 // .Append(rectTransform.DOMoveX(endValue: 10f + currentX, duration: 0.1f))
                 // .Append(rectTransform.DOMoveX(endValue: -10f + currentX, duration: 0.2f))
                 // .Append(rectTransform.DOMoveX(endValue: currentX, duration: 0.1f))
-                .Append(rectTransform.DOShakePosition(0.5f, 10f * Vector3.left, 100, 0, false).SetRelative())
+                .Append(rectTransform.DOShakePosition(duration: 0.5f, 10f * Vector3.left, vibrato: 100, randomness: 0)
+                    .SetRelative())
                 .SetLoops(loops: -1);
-                // .OnComplete(() => rectTransform.DOMoveX(currentX, 0f));
+            // .OnComplete(() => rectTransform.DOMoveX(currentX, 0f));
             _sequence.Play();
-        }
-
-        public void ClearSelection()
-        {
-            QuitWorking();
         }
 
         void QuitWorking()
