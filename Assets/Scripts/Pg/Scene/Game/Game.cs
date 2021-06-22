@@ -1,5 +1,6 @@
 #nullable enable
 using Pg.Puzzle;
+using UniRx;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -34,6 +35,14 @@ namespace Pg.Scene.Game
             GameController.StartGame(GameData!);
             await Coordinates!.SetTileEvents(UserPlayer!);
             Coordinates!.ApplyTiles(GameController.Tiles);
+
+            UserPlayer!.OnTransaction
+                .Subscribe(tileOperation =>
+                {
+                    GameController.WorkTransaction(tileOperation);
+                    Coordinates!.ApplyTiles(GameController.Tiles);
+                })
+                .AddTo(gameObject);
         }
     }
 }

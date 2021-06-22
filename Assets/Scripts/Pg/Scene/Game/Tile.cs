@@ -85,7 +85,7 @@ namespace Pg.Scene.Game
                 })
                 .AddTo(gameObject);
             Image!.OnPointerUpAsObservable()
-                .Subscribe(data => { userPlayer.CompleteTransaction(); })
+                .Subscribe(data => userPlayer.CompleteTransaction())
                 .AddTo(gameObject);
         }
 
@@ -121,11 +121,21 @@ namespace Pg.Scene.Game
             }
 
             var rectTransform = Image!.GetComponentStrictly<RectTransform>();
+            // rectTransform.DOShakePosition(0.2f, Vector3.left, 10, 0, false);
+            var currentX = rectTransform.position.x;
             _sequence = DOTween.Sequence()
-                .Append(rectTransform.DOMoveX(endValue: 10f, duration: 0.1f).SetRelative())
-                .Append(rectTransform.DOMoveX(endValue: -20f, duration: 0.2f).SetRelative())
+                // .Append(rectTransform.DOMoveX(endValue: 10f + currentX, duration: 0.1f))
+                // .Append(rectTransform.DOMoveX(endValue: -10f + currentX, duration: 0.2f))
+                // .Append(rectTransform.DOMoveX(endValue: currentX, duration: 0.1f))
+                .Append(rectTransform.DOShakePosition(0.5f, 10f * Vector3.left, 100, 0, false).SetRelative())
                 .SetLoops(loops: -1);
+                // .OnComplete(() => rectTransform.DOMoveX(currentX, 0f));
             _sequence.Play();
+        }
+
+        public void ClearSelection()
+        {
+            QuitWorking();
         }
 
         void QuitWorking()

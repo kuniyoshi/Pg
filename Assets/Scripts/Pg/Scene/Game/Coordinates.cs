@@ -126,5 +126,13 @@ namespace Pg.Scene.Game
 
             return Task.CompletedTask;
         }
+
+        public void ClearSelections()
+        {
+            foreach (var tile in _tiles!)
+            {
+                tile.ClearSelection();
+            }
+        }
     }
 }

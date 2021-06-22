@@ -1,6 +1,9 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Pg.Puzzle;
+using UniRx;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -14,6 +17,10 @@ namespace Pg.Scene.Game
 
         Sequence? _sequence;
 
+        Subject<TileOperation[]> TransactionSubject { get; }= new Subject<TileOperation[]>();
+
+        public IObservable<TileOperation[]> OnTransaction => TransactionSubject;
+
         void Awake()
         {
             Assert.IsNotNull(Coordinates, "Coordinates != null");
@@ -22,7 +29,11 @@ namespace Pg.Scene.Game
         public void CompleteTransaction()
         {
             Assert.IsNotNull(_sequence, "_sequence != null");
+            Coordinates!.ClearSelections();
+            var operations = _sequence!.DumpOperations();
             _sequence = null;
+
+            TransactionSubject.OnNext(operations);
         }
 
         public bool IsSelected(Tile tile)
@@ -114,6 +125,17 @@ namespace Pg.Scene.Game
                     TileA.UpdateStatus(nextA);
                     TileB.UpdateStatus(nextB);
                 }
+
+                public TileOperation CreateTileOperation()
+                {
+                    return new TileOperation(TileA.Coordinate, TileB.Coordinate);
+                }
+            }
+
+            public TileOperation[] DumpOperations()
+            {
+                return Histories.Select(operation => operation.CreateTileOperation())
+                    .ToArray();
             }
         }
     }

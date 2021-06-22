@@ -1,4 +1,5 @@
 #nullable enable
+using System.Collections.Generic;
 using Pg.Etc.Puzzle;
 using UnityEngine.Assertions;
 
@@ -24,5 +25,15 @@ namespace Pg.Puzzle.Internal
         }
 
         internal TileStatus[,] Tiles { get; }
+
+        public void WorkTransaction(IEnumerable<TileOperation> operations)
+        {
+            foreach (var tileOperation in operations)
+            {
+                var (a, b) = (tileOperation.A, tileOperation.B);
+
+                (Tiles[a.Column, a.Row], Tiles[b.Column, b.Row]) = (Tiles[b.Column, b.Row], Tiles[a.Column, a.Row]);
+            }
+        }
     }
 }

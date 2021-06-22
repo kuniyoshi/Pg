@@ -1,4 +1,5 @@
 #nullable enable
+using System.Collections.Generic;
 using Pg.Puzzle.Internal;
 using UnityEngine;
 
@@ -23,6 +24,11 @@ namespace Pg.Puzzle
         public static void StartGame(IGameData gameData)
         {
             _simulator = new Simulator(gameData);
+        }
+
+        public static void WorkTransaction(IEnumerable<TileOperation> operations)
+        {
+            _simulator!.WorkTransaction(operations);
         }
 
         public static TileStatus[,] Tiles => _simulator!.Tiles;
