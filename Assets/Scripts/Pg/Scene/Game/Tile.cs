@@ -125,23 +125,21 @@ namespace Pg.Scene.Game
                 return;
             }
 
-            var rectTransform = Image!.GetComponentStrictly<RectTransform>();
-            // rectTransform.DOShakePosition(0.2f, Vector3.left, 10, 0, false);
-            var currentX = rectTransform.position.x;
             _sequence = DOTween.Sequence()
-                // .Append(rectTransform.DOMoveX(endValue: 10f + currentX, duration: 0.1f))
-                // .Append(rectTransform.DOMoveX(endValue: -10f + currentX, duration: 0.2f))
-                // .Append(rectTransform.DOMoveX(endValue: currentX, duration: 0.1f))
-                .Append(rectTransform.DOShakePosition(duration: 0.5f, 10f * Vector3.left, vibrato: 100, randomness: 0)
-                    .SetRelative())
+                .Append(
+                    Image!
+                        .GetComponentStrictly<RectTransform>()
+                        .DOShakePosition(duration: 0.5f, 10f * Vector3.left, vibrato: 100, randomness: 0)
+                        .SetRelative()
+                )
                 .SetLoops(loops: -1);
-            // .OnComplete(() => rectTransform.DOMoveX(currentX, 0f));
             _sequence.Play();
         }
 
         void QuitWorking()
         {
-            _sequence?.Kill(complete: true);
+            _sequence?.Kill(complete: false);
+            Image!.GetComponentStrictly<RectTransform>().localPosition = Vector3.zero;
         }
 
         void SelectFirstTime()
