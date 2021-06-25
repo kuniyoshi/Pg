@@ -32,5 +32,10 @@ namespace Pg.Puzzle
         }
 
         public static TileStatus[,] Tiles => _simulator!.Tiles;
+
+        public static Clusters ProcessTurn()
+        {
+            return _simulator!.ProcessTurn();
+        }
     }
 }
