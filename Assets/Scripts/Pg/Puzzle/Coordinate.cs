@@ -35,6 +35,7 @@ namespace Pg.Puzzle
         {
             return a.Column == b.Column && a.Row == b.Row;
         }
+
         public static bool operator !=(Coordinate a, Coordinate b)
         {
             return a.Column != b.Column || a.Row != b.Row;

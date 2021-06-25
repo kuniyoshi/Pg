@@ -3,6 +3,14 @@ namespace Pg.Puzzle.Internal
 {
     internal static class TileStatusService
     {
+        public static bool CanBothBeSwappable(TileStatus a, TileStatus b)
+        {
+            var canBothBeSwappable = IsTileStatusSwappable(a)
+                                     && IsTileStatusSwappable(b);
+
+            return canBothBeSwappable;
+        }
+
         public static TileStatus[] GetColorStatusesExceptSpecial()
         {
             return new[]
@@ -14,13 +22,6 @@ namespace Pg.Puzzle.Internal
                 TileStatus.Yellow,
                 TileStatus.Orange,
             };
-        }
-        public static bool CanBothBeSwappable(TileStatus a, TileStatus b)
-        {
-            var canBothBeSwappable = IsTileStatusSwappable(a)
-                                     && IsTileStatusSwappable(b);
-
-            return canBothBeSwappable;
         }
 
         static bool IsTileStatusSwappable(TileStatus tileStatus)

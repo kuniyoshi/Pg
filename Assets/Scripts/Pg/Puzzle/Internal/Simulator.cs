@@ -1,6 +1,5 @@
 #nullable enable
 using System.Collections.Generic;
-using System.Linq;
 using Pg.Etc.Puzzle;
 using UnityEngine.Assertions;
 
@@ -26,16 +25,6 @@ namespace Pg.Puzzle.Internal
         }
 
         internal TileStatus[,] Tiles { get; }
-
-        public void WorkTransaction(IEnumerable<TileOperation> operations)
-        {
-            foreach (var tileOperation in operations)
-            {
-                var (a, b) = (tileOperation.A, tileOperation.B);
-
-                (Tiles[a.Column, a.Row], Tiles[b.Column, b.Row]) = (Tiles[b.Column, b.Row], Tiles[a.Column, a.Row]);
-            }
-        }
 
         public Clusters ProcessTurn()
         {
@@ -85,9 +74,14 @@ namespace Pg.Puzzle.Internal
             return new Clusters(clusters);
         }
 
-        TileStatus TilesAt(Coordinate coordinate)
+        public void WorkTransaction(IEnumerable<TileOperation> operations)
         {
-            return Tiles[coordinate.Column, coordinate.Row];
+            foreach (var tileOperation in operations)
+            {
+                var (a, b) = (tileOperation.A, tileOperation.B);
+
+                (Tiles[a.Column, a.Row], Tiles[b.Column, b.Row]) = (Tiles[b.Column, b.Row], Tiles[a.Column, a.Row]);
+            }
         }
 
         void GetClusterOfBy(List<Coordinate> outNeighbors,
@@ -134,9 +128,14 @@ namespace Pg.Puzzle.Internal
         bool IsCoordinateInRange(Coordinate coordinate)
         {
             return coordinate.Column >= 0
-                   && coordinate.Column < Tiles.GetLength(0)
+                   && coordinate.Column < Tiles.GetLength(dimension: 0)
                    && coordinate.Row >= 0
-                   && coordinate.Row < Tiles.GetLength(1);
+                   && coordinate.Row < Tiles.GetLength(dimension: 1);
+        }
+
+        TileStatus TilesAt(Coordinate coordinate)
+        {
+            return Tiles[coordinate.Column, coordinate.Row];
         }
     }
 }

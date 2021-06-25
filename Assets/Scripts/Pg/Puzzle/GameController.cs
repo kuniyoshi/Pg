@@ -21,6 +21,11 @@ namespace Pg.Puzzle
             _simulator = null;
         }
 
+        public static Clusters ProcessTurn()
+        {
+            return _simulator!.ProcessTurn();
+        }
+
         public static void StartGame(IGameData gameData)
         {
             _simulator = new Simulator(gameData);
@@ -32,10 +37,5 @@ namespace Pg.Puzzle
         }
 
         public static TileStatus[,] Tiles => _simulator!.Tiles;
-
-        public static Clusters ProcessTurn()
-        {
-            return _simulator!.ProcessTurn();
-        }
     }
 }
