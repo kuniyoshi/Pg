@@ -5,9 +5,9 @@ using System.Text;
 
 namespace Pg.Puzzle.Response
 {
-    public class Clusters
+    public class VanishingClusters
     {
-        public Clusters(Dictionary<TileStatus, List<List<Coordinate>>> data)
+        public VanishingClusters(Dictionary<TileStatus, List<List<Coordinate>>> data)
         {
             Data = data;
         }
@@ -33,7 +33,7 @@ namespace Pg.Puzzle.Response
                 list.Add(builder.ToString());
             }
 
-            return $"{nameof(Clusters)}{{"
+            return $"{nameof(VanishingClusters)}{{"
                    + $"{string.Join(", ", list)}"
                    + "}";
         }

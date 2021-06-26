@@ -75,7 +75,7 @@ namespace Pg.Puzzle.Internal
 
             return new SimulationStepData
             {
-                Clusters = new Clusters(clusters),
+                VanishingClusters = new VanishingClusters(clusters),
             };
         }
 
