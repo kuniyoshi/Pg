@@ -1,6 +1,8 @@
 #nullable enable
 using System.Collections.Generic;
 using Pg.Puzzle.Internal;
+using Pg.Puzzle.Request;
+using Pg.Puzzle.Response;
 using UnityEngine;
 
 namespace Pg.Puzzle
@@ -21,7 +23,7 @@ namespace Pg.Puzzle
             _simulator = null;
         }
 
-        public static Clusters ProcessTurn()
+        public static SimulationStepData ProcessTurn()
         {
             return _simulator!.ProcessTurn();
         }

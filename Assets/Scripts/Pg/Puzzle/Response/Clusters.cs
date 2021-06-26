@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Pg.Puzzle
+namespace Pg.Puzzle.Response
 {
     public class Clusters
     {

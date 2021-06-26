@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Pg.Puzzle;
+using Pg.Puzzle.Request;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Assertions;

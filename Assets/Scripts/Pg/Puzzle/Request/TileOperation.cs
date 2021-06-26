@@ -1,5 +1,5 @@
 #nullable enable
-namespace Pg.Puzzle
+namespace Pg.Puzzle.Request
 {
     public readonly struct TileOperation
     {

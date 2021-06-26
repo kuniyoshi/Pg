@@ -1,6 +1,8 @@
 #nullable enable
 using System.Collections.Generic;
 using Pg.Etc.Puzzle;
+using Pg.Puzzle.Request;
+using Pg.Puzzle.Response;
 using UnityEngine.Assertions;
 
 namespace Pg.Puzzle.Internal
@@ -26,7 +28,7 @@ namespace Pg.Puzzle.Internal
 
         internal TileStatus[,] Tiles { get; }
 
-        public Clusters ProcessTurn()
+        public SimulationStepData ProcessTurn()
         {
             var colorStatuses = TileStatusService.GetColorStatusesExceptSpecial();
             var test = new Dictionary<Coordinate, bool>();
@@ -71,7 +73,10 @@ namespace Pg.Puzzle.Internal
                 }
             }
 
-            return new Clusters(clusters);
+            return new SimulationStepData
+            {
+                Clusters = new Clusters(clusters),
+            };
         }
 
         public void WorkTransaction(IEnumerable<TileOperation> operations)
