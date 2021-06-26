@@ -3,6 +3,11 @@ namespace Pg.Puzzle.Response
 {
     public class SimulationStepData
     {
-        public VanishingClusters VanishingClusters { get; internal set; }
+        public SimulationStepData(VanishingClusters vanishingClusters)
+        {
+            VanishingClusters = vanishingClusters;
+        }
+
+        public VanishingClusters VanishingClusters { get; }
     }
 }

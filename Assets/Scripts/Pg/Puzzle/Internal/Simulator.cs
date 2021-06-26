@@ -7,140 +7,27 @@ using UnityEngine.Assertions;
 
 namespace Pg.Puzzle.Internal
 {
-    public class Simulator
+    internal class Simulator
     {
-        public Simulator(IGameData gameData)
+        internal Simulator(IGameData gameData)
         {
-            var tileStatuses = gameData.TileStatuses;
+            var tileStatuses = gameData.TileStatusesA;
             Assert.AreEqual(TileSize.ColSize, tileStatuses.GetLength(dimension: 0));
             Assert.AreEqual(TileSize.RowSize, tileStatuses.GetLength(dimension: 1));
 
-            Tiles = new TileStatusType[TileSize.ColSize, TileSize.RowSize];
-
-            for (var colIndex = 0; colIndex < TileSize.ColSize; ++colIndex)
-            {
-                for (var rowIndex = 0; rowIndex < TileSize.RowSize; ++rowIndex)
-                {
-                    Tiles[colIndex, rowIndex] = tileStatuses[colIndex, rowIndex];
-                }
-            }
+            Map = new TileMap(tileStatuses);
         }
 
-        internal TileStatusType[,] Tiles { get; }
+        internal TileMap Map { get; }
 
-        public SimulationStepData ProcessTurn()
+        internal SimulationStepData ProcessTurn()
         {
-            var colorStatuses = TileStatusService.GetColorStatusesExceptSpecial();
-            var test = new Dictionary<Coordinate, bool>();
-            var clusters = new Dictionary<TileStatusType, List<List<Coordinate>>>();
-            var specialTest = new Dictionary<Coordinate, bool>();
-
-            foreach (var colorStatus in colorStatuses)
-            {
-                test.Clear();
-                clusters[colorStatus] = new List<List<Coordinate>>();
-
-                for (var colIndex = 0; colIndex < TileSize.ColSize; ++colIndex)
-                {
-                    for (var rowIndex = 0; rowIndex < TileSize.RowSize; ++rowIndex)
-                    {
-                        var coordinate = new Coordinate(colIndex, rowIndex);
-
-                        if (test.ContainsKey(coordinate))
-                        {
-                            continue;
-                        }
-
-                        test[coordinate] = true;
-
-                        if (TilesAt(coordinate) != colorStatus)
-                        {
-                            continue;
-                        }
-
-                        var cluster = new List<Coordinate>();
-                        GetClusterOfBy(cluster, coordinate, test, specialTest, colorStatus);
-
-                        cluster.Add(coordinate);
-
-                        if (cluster.Count < Setting.MinClusterSize)
-                        {
-                            continue;
-                        }
-
-                        clusters[colorStatus].Add(cluster);
-                    }
-                }
-            }
-
-            return new SimulationStepData
-            {
-                VanishingClusters = new VanishingClusters(clusters),
-            };
+            return Map.ProcessTurn();
         }
 
-        public void WorkTransaction(IEnumerable<TileOperation> operations)
+        internal void WorkTransaction(IEnumerable<TileOperation> operations)
         {
-            foreach (var tileOperation in operations)
-            {
-                var (a, b) = (tileOperation.A, tileOperation.B);
-
-                (Tiles[a.Column, a.Row], Tiles[b.Column, b.Row]) = (Tiles[b.Column, b.Row], Tiles[a.Column, a.Row]);
-            }
-        }
-
-        void GetClusterOfBy(List<Coordinate> outNeighbors,
-                            Coordinate coordinate,
-                            Dictionary<Coordinate, bool> test,
-                            Dictionary<Coordinate, bool> specialTest,
-                            TileStatusType colorStatusType)
-        {
-            for (var i = 0; i < DirectionService.NeighborSize; ++i)
-            {
-                var neighbor = DirectionService.GetNeighborOf(coordinate, i);
-
-                if (!IsCoordinateInRange(neighbor))
-                {
-                    continue;
-                }
-
-                if (test.ContainsKey(neighbor))
-                {
-                    continue;
-                }
-
-                test[neighbor] = true;
-
-                if (TilesAt(neighbor) == TileStatusType.Special && !specialTest.ContainsKey(neighbor))
-                {
-                    specialTest[neighbor] = true;
-                    outNeighbors.Add(neighbor);
-                    GetClusterOfBy(outNeighbors, neighbor, test, specialTest, colorStatusType);
-
-                    continue;
-                }
-
-                if (TilesAt(neighbor) != colorStatusType)
-                {
-                    continue;
-                }
-
-                outNeighbors.Add(neighbor);
-                GetClusterOfBy(outNeighbors, neighbor, test, specialTest, colorStatusType);
-            }
-        }
-
-        bool IsCoordinateInRange(Coordinate coordinate)
-        {
-            return coordinate.Column >= 0
-                   && coordinate.Column < Tiles.GetLength(dimension: 0)
-                   && coordinate.Row >= 0
-                   && coordinate.Row < Tiles.GetLength(dimension: 1);
-        }
-
-        TileStatusType TilesAt(Coordinate coordinate)
-        {
-            return Tiles[coordinate.Column, coordinate.Row];
+            Map.WorkTransaction(operations);
         }
     }
 }

@@ -1,7 +1,7 @@
 #nullable enable
+using System;
 using Pg.Etc.Puzzle;
 using Pg.Puzzle;
-using Pg.Puzzle.Internal;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -12,26 +12,60 @@ namespace Pg.Scene.Game
         : ScriptableObject, IGameData
     {
         [SerializeField]
-        TileStatusType[]? TileStatusesRow0;
+        TileGemType[]? TileStatusesRow0;
 
         [SerializeField]
-        TileStatusType[]? TileStatusesRow1;
+        TileGemType[]? TileStatusesRow1;
 
         [SerializeField]
-        TileStatusType[]? TileStatusesRow2;
+        TileGemType[]? TileStatusesRow2;
 
         [SerializeField]
-        TileStatusType[]? TileStatusesRow3;
+        TileGemType[]? TileStatusesRow3;
 
         [SerializeField]
-        TileStatusType[]? TileStatusesRow4;
+        TileGemType[]? TileStatusesRow4;
 
         [SerializeField]
-        TileStatusType[]? TileStatusesRow5;
+        TileGemType[]? TileStatusesRow5;
 
-        public TileStatusType[,] TileStatuses => CreateTileStatuses();
+        public TileStatusType[,] TileStatusesA => CreateTileStatusesA();
 
-        TileStatusType[,] CreateTileStatuses()
+        public TileStatus[,] TileStatuses => CreateTileStatuses();
+
+        TileStatus[,] CreateTileStatuses()
+        {
+            var tileStatusTypes = CreateTileStatusesA();
+            var result = new TileStatus[tileStatusTypes.GetLength(dimension: 0),
+                tileStatusTypes.GetLength(dimension: 1)];
+
+            for (var colIndex = 0; colIndex < tileStatusTypes.GetLength(dimension: 0); ++colIndex)
+            {
+                for (var rowIndex = 0; rowIndex < tileStatusTypes.GetLength(dimension: 1); ++rowIndex)
+                {
+                    result[colIndex, rowIndex] = new TileStatus(
+                        tileStatusTypes[colIndex, rowIndex],
+                        tileStatusTypes[colIndex, rowIndex] switch
+                        {
+                            TileStatusType.Closed => null,
+                            TileStatusType.Empty => null,
+                            TileStatusType.Green => GemColorType.Green,
+                            TileStatusType.Red => GemColorType.Red,
+                            TileStatusType.Purple => GemColorType.Purple,
+                            TileStatusType.Blue => GemColorType.Blue,
+                            TileStatusType.Yellow => GemColorType.Yellow,
+                            TileStatusType.Orange => GemColorType.Orange,
+                            TileStatusType.Special => GemColorType.Rainbow,
+                            _ => throw new ArgumentOutOfRangeException(),
+                        }
+                    );
+                }
+            }
+
+            return result;
+        }
+
+        TileStatusType[,] CreateTileStatusesA()
         {
             var result = new TileStatusType[TileSize.ColSize, TileSize.RowSize];
 
@@ -51,7 +85,7 @@ namespace Pg.Scene.Game
             {
                 for (var rowIndex = 0; rowIndex < rows.Length; ++rowIndex)
                 {
-                    result[colIndex, rowIndex] = rows[rowIndex][colIndex];
+                    result[colIndex, rowIndex] = (TileStatusType) rows[rowIndex][colIndex]; // NOTE: the cast
                 }
             }
 
