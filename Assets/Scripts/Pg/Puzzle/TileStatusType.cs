@@ -11,5 +11,6 @@ namespace Pg.Puzzle
         Yellow,
         Orange,
         Special,
+        Contain,
     }
 }

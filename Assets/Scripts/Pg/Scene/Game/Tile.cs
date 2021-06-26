@@ -18,14 +18,14 @@ namespace Pg.Scene.Game
         : MonoBehaviour
     {
         [SerializeField]
-        List<TileStatusVsSprite>? Map;
+        List<GemColorTypeVsSprite>? Map;
 
         [SerializeField]
         Image? Image;
 
         Sequence? _sequence;
 
-        public TileStatusType TileStatusType => TileData.TileStatusType;
+        public TileStatus TileStatus => TileData.TileStatus;
 
         public Coordinate Coordinate { get; private set; }
 
@@ -46,7 +46,7 @@ namespace Pg.Scene.Game
         public void Initialize(int colIndex, int rowIndex, Vector2 localPosition)
         {
             Coordinate = new Coordinate(colIndex, rowIndex);
-            TileData = new TileData(Coordinate, TileStatusType.Empty);
+            TileData = new TileData(Coordinate, TileStatus.Empty);
             var text = this.GetComponentInChildrenStrictly<Text>();
             text.text = Coordinate.ToString();
             var rectTransform = this.GetComponentStrictly<RectTransform>();
@@ -94,28 +94,35 @@ namespace Pg.Scene.Game
                 .AddTo(gameObject);
         }
 
-        public void UpdateStatus(TileStatusType newStatusType)
+        public void UpdateStatus(TileStatus newTileStatus)
         {
-            TileData = new TileData(Coordinate, newStatusType);
-            var statusVsSprite = Map!.FirstOrDefault(pair => pair.First == newStatusType);
+            TileData = new TileData(Coordinate, newTileStatus);
 
-            if (statusVsSprite != null)
+            switch (newTileStatus.TileStatusType)
             {
-                Image!.sprite = statusVsSprite.Second;
-                Image!.enabled = true;
+                case TileStatusType.Contain:
+                {
+                    Assert.IsTrue(newTileStatus.GemColorType.HasValue, "newTileStatus.GemColorType.HasValue");
+                    var statusVsSprite = Map!.First(pair => pair.First == newTileStatus.GemColorType);
+                    Image!.sprite = statusVsSprite.Second;
+                    Image!.enabled = true;
 
-                return;
+                    return;
+                }
+
+                case TileStatusType.Empty:
+                    Image!.enabled = false;
+
+                    return;
+
+                case TileStatusType.Closed:
+                    gameObject.SetActive(value: false);
+
+                    return;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-
-            if (newStatusType == TileStatusType.Empty)
-            {
-                Image!.enabled = false;
-
-                return;
-            }
-
-            Assert.AreEqual(TileStatusType.Closed, newStatusType);
-            gameObject.SetActive(value: false);
         }
 
         void MakeWorking()
@@ -152,15 +159,13 @@ namespace Pg.Scene.Game
         [Conditional("DEBUG")]
         void ZzDebugAssertMapValue()
         {
-            foreach (var value in Enum.GetValues(typeof(TileStatusType)))
+            foreach (var value in Enum.GetValues(typeof(GemColorType)))
             {
-                var tileStatus = (TileStatusType) value;
+                var gemColorType = (GemColorType) value;
 
                 Assert.IsTrue(
-                    tileStatus == TileStatusType.Closed
-                    || tileStatus == TileStatusType.Empty
-                    || Map!.Any(item => item.First == tileStatus),
-                    "Invalid Status Found"
+                    Map!.Any(item => item.First == gemColorType),
+                    "Map!.Any(item => item.First == gemColorType)"
                 );
             }
 
@@ -171,10 +176,10 @@ namespace Pg.Scene.Game
         }
 
         [Serializable]
-        public class TileStatusVsSprite
-            : Pair<TileStatusType, Sprite>
+        public class GemColorTypeVsSprite
+            : Pair<GemColorType, Sprite>
         {
-            public TileStatusVsSprite(TileStatusType first, Sprite second)
+            public GemColorTypeVsSprite(GemColorType first, Sprite second)
                 : base(first, second)
             {
             }

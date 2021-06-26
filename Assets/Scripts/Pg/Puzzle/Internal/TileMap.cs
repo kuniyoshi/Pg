@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Pg.Etc.Puzzle;
 using Pg.Puzzle.Request;
@@ -7,36 +8,56 @@ namespace Pg.Puzzle.Internal
 {
     internal class TileMap
     {
-        static bool IsCoordinateInRange(TileStatusType[,] tileStatusTypes, Coordinate coordinate)
+        internal TileMap(TileStatusType[,] tileStatusTypes, TileStatus[,] x)
         {
-            return coordinate.Column >= 0
-                   && coordinate.Column < tileStatusTypes.GetLength(dimension: 0)
-                   && coordinate.Row >= 0
-                   && coordinate.Row < tileStatusTypes.GetLength(dimension: 1);
-        }
-
-        static TileStatusType TilesAt(Coordinate coordinate, TileStatusType[,] tileStatusTypes)
-        {
-            return tileStatusTypes[coordinate.Column, coordinate.Row];
-        }
-
-        internal TileMap(TileStatusType[,] tileStatusTypes)
-        {
-            var map = new TileStatusType[tileStatusTypes.GetLength(dimension: 0),
-                tileStatusTypes.GetLength(dimension: 1)];
+            var colSize = tileStatusTypes.GetLength(dimension: 0);
+            var rowSize = tileStatusTypes.GetLength(dimension: 1);
+            var colSize2 = x.GetLength(dimension: 0);
+            var rowSize2 = x.GetLength(dimension: 1);
+            var map = new TileStatusType[colSize, rowSize];
+            var map2 = new TileStatus[colSize2, rowSize2];
 
             for (var colIndex = 0; colIndex < TileSize.ColSize; ++colIndex)
             {
                 for (var rowIndex = 0; rowIndex < TileSize.RowSize; ++rowIndex)
                 {
                     map[colIndex, rowIndex] = tileStatusTypes[colIndex, rowIndex];
+                    map2[colIndex, rowIndex] = new TileStatus(
+                        x[colIndex, rowIndex].TileStatusType switch
+                        {
+                            TileStatusType.Closed => TileStatusType.Closed,
+                            TileStatusType.Empty => TileStatusType.Empty,
+                            TileStatusType.Green => TileStatusType.Contain,
+                            TileStatusType.Red => TileStatusType.Contain,
+                            TileStatusType.Purple => TileStatusType.Contain,
+                            TileStatusType.Blue => TileStatusType.Contain,
+                            TileStatusType.Yellow => TileStatusType.Contain,
+                            TileStatusType.Orange => TileStatusType.Contain,
+                            TileStatusType.Special => TileStatusType.Contain,
+                            _ => throw new ArgumentOutOfRangeException(),
+                        },
+                        x[colIndex, rowIndex].TileStatusType switch
+                        {
+                            TileStatusType.Closed => null,
+                            TileStatusType.Empty => null,
+                            TileStatusType.Green => GemColorType.Green,
+                            TileStatusType.Red => GemColorType.Red,
+                            TileStatusType.Purple => GemColorType.Purple,
+                            TileStatusType.Blue => GemColorType.Blue,
+                            TileStatusType.Yellow => GemColorType.Yellow,
+                            TileStatusType.Orange => GemColorType.Orange,
+                            TileStatusType.Special => GemColorType.Rainbow,
+                            TileStatusType.Contain => null,
+                            _ => throw new ArgumentOutOfRangeException(),
+                        }
+                    );
                 }
             }
 
-            Tiles = map;
+            Tiles = map2;
         }
 
-        internal TileStatusType[,] Tiles { get; }
+        internal TileStatus[,] Tiles { get; }
 
         internal SimulationStepData ProcessTurn()
         {
@@ -63,7 +84,7 @@ namespace Pg.Puzzle.Internal
 
                         test[coordinate] = true;
 
-                        if (TilesAt(coordinate, Tiles) != colorStatus)
+                        if (IsTileStatusAt(coordinate, colorStatus))
                         {
                             continue;
                         }
@@ -106,7 +127,7 @@ namespace Pg.Puzzle.Internal
             {
                 var neighbor = DirectionService.GetNeighborOf(coordinate, neighborIndex);
 
-                if (!IsCoordinateInRange(Tiles, neighbor))
+                if (!IsCoordinateInRange(neighbor))
                 {
                     continue;
                 }
@@ -118,7 +139,7 @@ namespace Pg.Puzzle.Internal
 
                 test[neighbor] = true;
 
-                if (TilesAt(neighbor, Tiles) == TileStatusType.Special && !specialTest.ContainsKey(neighbor))
+                if (IsTileStatusAt(neighbor, TileStatusType.Special) && !specialTest.ContainsKey(neighbor))
                 {
                     specialTest[neighbor] = true;
                     outNeighbors.Add(neighbor);
@@ -127,7 +148,7 @@ namespace Pg.Puzzle.Internal
                     continue;
                 }
 
-                if (TilesAt(neighbor, Tiles) != colorStatusType)
+                if (!IsTileStatusAt(neighbor, colorStatusType))
                 {
                     continue;
                 }
@@ -135,6 +156,19 @@ namespace Pg.Puzzle.Internal
                 outNeighbors.Add(neighbor);
                 GetClusterOfBy(outNeighbors, neighbor, colorStatusType, test, specialTest);
             }
+        }
+
+        bool IsCoordinateInRange(Coordinate coordinate)
+        {
+            return coordinate.Column >= 0
+                   && coordinate.Column < Tiles.GetLength(dimension: 0)
+                   && coordinate.Row >= 0
+                   && coordinate.Row < Tiles.GetLength(dimension: 1);
+        }
+
+        bool IsTileStatusAt(Coordinate coordinate, TileStatusType colorStatus)
+        {
+            return Tiles[coordinate.Column, coordinate.Row].TileStatusType != colorStatus;
         }
     }
 }

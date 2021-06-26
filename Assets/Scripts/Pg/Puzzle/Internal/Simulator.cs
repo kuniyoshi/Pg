@@ -11,11 +11,12 @@ namespace Pg.Puzzle.Internal
     {
         internal Simulator(IGameData gameData)
         {
-            var tileStatuses = gameData.TileStatusesA;
+            var a = gameData.TileStatusesA;
+            var tileStatuses = gameData.TileStatuses;
             Assert.AreEqual(TileSize.ColSize, tileStatuses.GetLength(dimension: 0));
             Assert.AreEqual(TileSize.RowSize, tileStatuses.GetLength(dimension: 1));
 
-            Map = new TileMap(tileStatuses);
+            Map = new TileMap(a, tileStatuses);
         }
 
         internal TileMap Map { get; }

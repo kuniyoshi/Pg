@@ -1,9 +1,11 @@
 #nullable enable
+using UnityEngine.Assertions;
+
 namespace Pg.Puzzle.Internal
 {
     internal static class TileStatusService
     {
-        internal static bool CanBothBeSwappable(TileStatusType a, TileStatusType b)
+        internal static bool CanBothBeSwappable(TileStatus a, TileStatus b)
         {
             var canBothBeSwappable = IsTileStatusSwappable(a)
                                      && IsTileStatusSwappable(b);
@@ -24,9 +26,13 @@ namespace Pg.Puzzle.Internal
             };
         }
 
-        static bool IsTileStatusSwappable(TileStatusType tileStatusType)
+        static bool IsTileStatusSwappable(TileStatus tileStatus)
         {
-            return tileStatusType != TileStatusType.Closed && tileStatusType != TileStatusType.Empty;
+            var can = tileStatus.TileStatusType != TileStatusType.Closed
+                      && tileStatus.TileStatusType != TileStatusType.Empty;
+            Assert.IsTrue(!(can ^ tileStatus.GemColorType.HasValue), "!(can ^ tileStatus.GemColorType.HasValue)");
+
+            return can;
         }
     }
 }
