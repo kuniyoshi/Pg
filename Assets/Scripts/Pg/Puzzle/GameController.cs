@@ -13,7 +13,7 @@ namespace Pg.Puzzle
 
         public static bool CanSwap(TileData a, TileData b)
         {
-            return TileStatusService.CanBothBeSwappable(a.TileStatus, b.TileStatus)
+            return TileStatusService.CanBothBeSwappable(a.TileStatusType, b.TileStatusType)
                    && DirectionService.IsNeighborEachOther(a.Coordinate, b.Coordinate);
         }
 
@@ -38,6 +38,6 @@ namespace Pg.Puzzle
             _simulator!.WorkTransaction(operations);
         }
 
-        public static TileStatus[,] Tiles => _simulator!.Tiles;
+        public static TileStatusType[,] Tiles => _simulator!.Tiles;
     }
 }

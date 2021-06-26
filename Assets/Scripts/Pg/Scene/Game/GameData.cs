@@ -12,28 +12,28 @@ namespace Pg.Scene.Game
         : ScriptableObject, IGameData
     {
         [SerializeField]
-        TileStatus[]? TileStatusesRow0;
+        TileStatusType[]? TileStatusesRow0;
 
         [SerializeField]
-        TileStatus[]? TileStatusesRow1;
+        TileStatusType[]? TileStatusesRow1;
 
         [SerializeField]
-        TileStatus[]? TileStatusesRow2;
+        TileStatusType[]? TileStatusesRow2;
 
         [SerializeField]
-        TileStatus[]? TileStatusesRow3;
+        TileStatusType[]? TileStatusesRow3;
 
         [SerializeField]
-        TileStatus[]? TileStatusesRow4;
+        TileStatusType[]? TileStatusesRow4;
 
         [SerializeField]
-        TileStatus[]? TileStatusesRow5;
+        TileStatusType[]? TileStatusesRow5;
 
-        public TileStatus[,] TileStatuses => CreateTileStatuses();
+        public TileStatusType[,] TileStatuses => CreateTileStatuses();
 
-        TileStatus[,] CreateTileStatuses()
+        TileStatusType[,] CreateTileStatuses()
         {
-            var result = new TileStatus[TileSize.ColSize, TileSize.RowSize];
+            var result = new TileStatusType[TileSize.ColSize, TileSize.RowSize];
 
             var rows = new[]
             {

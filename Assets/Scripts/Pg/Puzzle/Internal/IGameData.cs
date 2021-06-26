@@ -3,6 +3,6 @@ namespace Pg.Puzzle.Internal
 {
     public interface IGameData
     {
-        TileStatus[,] TileStatuses { get; }
+        TileStatusType[,] TileStatuses { get; }
     }
 }

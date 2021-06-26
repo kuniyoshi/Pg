@@ -3,7 +3,7 @@ namespace Pg.Puzzle.Internal
 {
     internal static class TileStatusService
     {
-        public static bool CanBothBeSwappable(TileStatus a, TileStatus b)
+        public static bool CanBothBeSwappable(TileStatusType a, TileStatusType b)
         {
             var canBothBeSwappable = IsTileStatusSwappable(a)
                                      && IsTileStatusSwappable(b);
@@ -11,22 +11,22 @@ namespace Pg.Puzzle.Internal
             return canBothBeSwappable;
         }
 
-        public static TileStatus[] GetColorStatusesExceptSpecial()
+        public static TileStatusType[] GetColorStatusesExceptSpecial()
         {
             return new[]
             {
-                TileStatus.Green,
-                TileStatus.Red,
-                TileStatus.Purple,
-                TileStatus.Blue,
-                TileStatus.Yellow,
-                TileStatus.Orange,
+                TileStatusType.Green,
+                TileStatusType.Red,
+                TileStatusType.Purple,
+                TileStatusType.Blue,
+                TileStatusType.Yellow,
+                TileStatusType.Orange,
             };
         }
 
-        static bool IsTileStatusSwappable(TileStatus tileStatus)
+        static bool IsTileStatusSwappable(TileStatusType tileStatusType)
         {
-            return tileStatus != TileStatus.Closed && tileStatus != TileStatus.Empty;
+            return tileStatusType != TileStatusType.Closed && tileStatusType != TileStatusType.Empty;
         }
     }
 }

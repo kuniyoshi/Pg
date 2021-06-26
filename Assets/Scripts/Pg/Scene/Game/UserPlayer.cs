@@ -132,7 +132,7 @@ namespace Pg.Scene.Game
 
                 public void DoSwap()
                 {
-                    var (currentA, currentB) = (TileA.TileStatus, TileB.TileStatus);
+                    var (currentA, currentB) = (TileA.TileStatusType, TileB.TileStatusType);
                     var (nextA, nextB) = (currentB, currentA);
                     TileA.UpdateStatus(nextA);
                     TileB.UpdateStatus(nextB);

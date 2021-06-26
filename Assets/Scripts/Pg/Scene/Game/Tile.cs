@@ -25,7 +25,7 @@ namespace Pg.Scene.Game
 
         Sequence? _sequence;
 
-        public TileStatus TileStatus => TileData.TileStatus;
+        public TileStatusType TileStatusType => TileData.TileStatusType;
 
         public Coordinate Coordinate { get; private set; }
 
@@ -46,7 +46,7 @@ namespace Pg.Scene.Game
         public void Initialize(int colIndex, int rowIndex, Vector2 localPosition)
         {
             Coordinate = new Coordinate(colIndex, rowIndex);
-            TileData = new TileData(Coordinate, TileStatus.Empty);
+            TileData = new TileData(Coordinate, TileStatusType.Empty);
             var text = this.GetComponentInChildrenStrictly<Text>();
             text.text = Coordinate.ToString();
             var rectTransform = this.GetComponentStrictly<RectTransform>();
@@ -94,10 +94,10 @@ namespace Pg.Scene.Game
                 .AddTo(gameObject);
         }
 
-        public void UpdateStatus(TileStatus newStatus)
+        public void UpdateStatus(TileStatusType newStatusType)
         {
-            TileData = new TileData(Coordinate, newStatus);
-            var statusVsSprite = Map!.FirstOrDefault(pair => pair.First == newStatus);
+            TileData = new TileData(Coordinate, newStatusType);
+            var statusVsSprite = Map!.FirstOrDefault(pair => pair.First == newStatusType);
 
             if (statusVsSprite != null)
             {
@@ -107,14 +107,14 @@ namespace Pg.Scene.Game
                 return;
             }
 
-            if (newStatus == TileStatus.Empty)
+            if (newStatusType == TileStatusType.Empty)
             {
                 Image!.enabled = false;
 
                 return;
             }
 
-            Assert.AreEqual(TileStatus.Closed, newStatus);
+            Assert.AreEqual(TileStatusType.Closed, newStatusType);
             gameObject.SetActive(value: false);
         }
 
@@ -152,13 +152,13 @@ namespace Pg.Scene.Game
         [Conditional("DEBUG")]
         void ZzDebugAssertMapValue()
         {
-            foreach (var value in Enum.GetValues(typeof(TileStatus)))
+            foreach (var value in Enum.GetValues(typeof(TileStatusType)))
             {
-                var tileStatus = (TileStatus) value;
+                var tileStatus = (TileStatusType) value;
 
                 Assert.IsTrue(
-                    tileStatus == TileStatus.Closed
-                    || tileStatus == TileStatus.Empty
+                    tileStatus == TileStatusType.Closed
+                    || tileStatus == TileStatusType.Empty
                     || Map!.Any(item => item.First == tileStatus),
                     "Invalid Status Found"
                 );
@@ -172,9 +172,9 @@ namespace Pg.Scene.Game
 
         [Serializable]
         public class TileStatusVsSprite
-            : Pair<TileStatus, Sprite>
+            : Pair<TileStatusType, Sprite>
         {
-            public TileStatusVsSprite(TileStatus first, Sprite second)
+            public TileStatusVsSprite(TileStatusType first, Sprite second)
                 : base(first, second)
             {
             }

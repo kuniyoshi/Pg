@@ -3,13 +3,13 @@ namespace Pg.Puzzle
 {
     public readonly struct TileData
     {
-        public TileStatus TileStatus { get; }
+        public TileStatusType TileStatusType { get; }
         public Coordinate Coordinate { get; }
 
-        public TileData(Coordinate coordinate, TileStatus tileStatus)
+        public TileData(Coordinate coordinate, TileStatusType tileStatusType)
         {
             Coordinate = coordinate;
-            TileStatus = tileStatus;
+            TileStatusType = tileStatusType;
         }
     }
 }

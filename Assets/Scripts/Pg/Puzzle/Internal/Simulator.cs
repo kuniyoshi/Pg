@@ -15,7 +15,7 @@ namespace Pg.Puzzle.Internal
             Assert.AreEqual(TileSize.ColSize, tileStatuses.GetLength(dimension: 0));
             Assert.AreEqual(TileSize.RowSize, tileStatuses.GetLength(dimension: 1));
 
-            Tiles = new TileStatus[TileSize.ColSize, TileSize.RowSize];
+            Tiles = new TileStatusType[TileSize.ColSize, TileSize.RowSize];
 
             for (var colIndex = 0; colIndex < TileSize.ColSize; ++colIndex)
             {
@@ -26,13 +26,13 @@ namespace Pg.Puzzle.Internal
             }
         }
 
-        internal TileStatus[,] Tiles { get; }
+        internal TileStatusType[,] Tiles { get; }
 
         public SimulationStepData ProcessTurn()
         {
             var colorStatuses = TileStatusService.GetColorStatusesExceptSpecial();
             var test = new Dictionary<Coordinate, bool>();
-            var clusters = new Dictionary<TileStatus, List<List<Coordinate>>>();
+            var clusters = new Dictionary<TileStatusType, List<List<Coordinate>>>();
             var specialTest = new Dictionary<Coordinate, bool>();
 
             foreach (var colorStatus in colorStatuses)
@@ -93,7 +93,7 @@ namespace Pg.Puzzle.Internal
                             Coordinate coordinate,
                             Dictionary<Coordinate, bool> test,
                             Dictionary<Coordinate, bool> specialTest,
-                            TileStatus colorStatus)
+                            TileStatusType colorStatusType)
         {
             for (var i = 0; i < DirectionService.NeighborSize; ++i)
             {
@@ -111,22 +111,22 @@ namespace Pg.Puzzle.Internal
 
                 test[neighbor] = true;
 
-                if (TilesAt(neighbor) == TileStatus.Special && !specialTest.ContainsKey(neighbor))
+                if (TilesAt(neighbor) == TileStatusType.Special && !specialTest.ContainsKey(neighbor))
                 {
                     specialTest[neighbor] = true;
                     outNeighbors.Add(neighbor);
-                    GetClusterOfBy(outNeighbors, neighbor, test, specialTest, colorStatus);
+                    GetClusterOfBy(outNeighbors, neighbor, test, specialTest, colorStatusType);
 
                     continue;
                 }
 
-                if (TilesAt(neighbor) != colorStatus)
+                if (TilesAt(neighbor) != colorStatusType)
                 {
                     continue;
                 }
 
                 outNeighbors.Add(neighbor);
-                GetClusterOfBy(outNeighbors, neighbor, test, specialTest, colorStatus);
+                GetClusterOfBy(outNeighbors, neighbor, test, specialTest, colorStatusType);
             }
         }
 
@@ -138,7 +138,7 @@ namespace Pg.Puzzle.Internal
                    && coordinate.Row < Tiles.GetLength(dimension: 1);
         }
 
-        TileStatus TilesAt(Coordinate coordinate)
+        TileStatusType TilesAt(Coordinate coordinate)
         {
             return Tiles[coordinate.Column, coordinate.Row];
         }

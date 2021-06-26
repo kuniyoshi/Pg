@@ -1,6 +1,6 @@
 namespace Pg.Puzzle
 {
-    public enum TileStatus
+    public enum TileStatusType
     {
         Closed,
         Empty,

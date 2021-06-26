@@ -75,7 +75,7 @@ namespace Pg.Scene.Game
             }
         }
 
-        public void ApplyTiles(TileStatus[,] tiles)
+        public void ApplyTiles(TileStatusType[,] tiles)
         {
             Assert.AreEqual(_tiles!.GetLength(dimension: 0), tiles.GetLength(dimension: 0));
             Assert.AreEqual(_tiles!.GetLength(dimension: 1), tiles.GetLength(dimension: 1));
