@@ -8,7 +8,7 @@ namespace Pg.Puzzle.Internal
     /// </summary>
     internal static class DirectionService
     {
-        public static Coordinate GetNeighborOf(Coordinate coordinate, int neighborIndex)
+        internal static Coordinate GetNeighborOf(Coordinate coordinate, int neighborIndex)
         {
             Assert.IsTrue(
                 neighborIndex >= 0 && neighborIndex < NeighborDirections.GetLength(dimension: 1),
@@ -23,7 +23,7 @@ namespace Pg.Puzzle.Internal
             );
         }
 
-        public static bool IsNeighborEachOther(Coordinate a, Coordinate b)
+        internal static bool IsNeighborEachOther(Coordinate a, Coordinate b)
         {
             var directionSize = NeighborDirections.GetLength(dimension: 1);
 
@@ -38,7 +38,7 @@ namespace Pg.Puzzle.Internal
             return false;
         }
 
-        public static int NeighborSize => NeighborDirections.GetLength(dimension: 1);
+        internal static int NeighborSize => NeighborDirections.GetLength(dimension: 1);
 
         static Coordinate[,] NeighborDirections { get; } =
         {

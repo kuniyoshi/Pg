@@ -3,7 +3,7 @@ namespace Pg.Puzzle.Internal
 {
     internal static class TileStatusService
     {
-        public static bool CanBothBeSwappable(TileStatusType a, TileStatusType b)
+        internal static bool CanBothBeSwappable(TileStatusType a, TileStatusType b)
         {
             var canBothBeSwappable = IsTileStatusSwappable(a)
                                      && IsTileStatusSwappable(b);
@@ -11,7 +11,7 @@ namespace Pg.Puzzle.Internal
             return canBothBeSwappable;
         }
 
-        public static TileStatusType[] GetColorStatusesExceptSpecial()
+        internal static TileStatusType[] GetColorStatusesExceptSpecial()
         {
             return new[]
             {

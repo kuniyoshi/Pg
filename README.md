@@ -47,3 +47,7 @@ The simulation response contains,
 
 1. Which the tiles did vanish
 2. 
+
+# REFERENCE
+
+https://www.redblobgames.com/grids/hexagons/
