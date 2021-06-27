@@ -7,23 +7,8 @@ namespace Pg.Puzzle.Internal
     {
         internal static bool CanBothBeSwappable(TileStatus a, TileStatus b)
         {
-            var canBothBeSwappable = IsTileStatusSwappable(a)
-                                     && IsTileStatusSwappable(b);
-
-            return canBothBeSwappable;
-        }
-
-        internal static TileStatusType[] GetColorStatusesExceptSpecial()
-        {
-            return new[]
-            {
-                TileStatusType.Green,
-                TileStatusType.Red,
-                TileStatusType.Purple,
-                TileStatusType.Blue,
-                TileStatusType.Yellow,
-                TileStatusType.Orange,
-            };
+            return IsTileStatusSwappable(a)
+                   && IsTileStatusSwappable(b);
         }
 
         static bool IsTileStatusSwappable(TileStatus tileStatus)
