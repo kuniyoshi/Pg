@@ -11,12 +11,6 @@ namespace Pg.Puzzle
     {
         static Simulator? _simulator;
 
-        public static bool CanSwap(TileData a, TileData b)
-        {
-            return TileStatusService.CanBothBeSwappable(a.TileStatus, b.TileStatus)
-                   && DirectionService.IsNeighborEachOther(a.Coordinate, b.Coordinate);
-        }
-
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         public static void InitializeOnReloadDomain()
         {

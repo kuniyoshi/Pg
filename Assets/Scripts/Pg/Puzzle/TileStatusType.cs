@@ -1,3 +1,4 @@
+#nullable enable
 namespace Pg.Puzzle
 {
     public enum TileStatusType

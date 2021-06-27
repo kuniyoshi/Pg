@@ -88,7 +88,7 @@ namespace Pg.Scene.Game
                     return false;
                 }
 
-                return GameController.CanSwap(tile.TileData, _lastSelection!.TileData);
+                return GameRule.CanSwap(tile.TileData, _lastSelection!.TileData);
             }
 
             public TileOperation[] DumpOperations()

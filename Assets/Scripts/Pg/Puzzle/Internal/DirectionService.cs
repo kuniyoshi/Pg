@@ -1,6 +1,6 @@
+#nullable enable
 using UnityEngine.Assertions;
 
-#nullable enable
 namespace Pg.Puzzle.Internal
 {
     /// <summary>
