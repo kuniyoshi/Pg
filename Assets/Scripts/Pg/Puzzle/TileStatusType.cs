@@ -5,13 +5,6 @@ namespace Pg.Puzzle
     {
         Closed,
         Empty,
-        Green,
-        Red,
-        Purple,
-        Blue,
-        Yellow,
-        Orange,
-        Special,
         Contain,
     }
 }

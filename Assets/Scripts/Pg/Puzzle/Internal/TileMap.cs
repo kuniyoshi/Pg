@@ -19,35 +19,7 @@ namespace Pg.Puzzle.Internal
             {
                 for (var rowIndex = 0; rowIndex < TileSize.RowSize; ++rowIndex)
                 {
-                    map[colIndex, rowIndex] = new TileStatus(
-                        tileStatuses[colIndex, rowIndex].TileStatusType switch
-                        {
-                            TileStatusType.Closed => TileStatusType.Closed,
-                            TileStatusType.Empty => TileStatusType.Empty,
-                            TileStatusType.Green => TileStatusType.Contain,
-                            TileStatusType.Red => TileStatusType.Contain,
-                            TileStatusType.Purple => TileStatusType.Contain,
-                            TileStatusType.Blue => TileStatusType.Contain,
-                            TileStatusType.Yellow => TileStatusType.Contain,
-                            TileStatusType.Orange => TileStatusType.Contain,
-                            TileStatusType.Special => TileStatusType.Contain,
-                            _ => throw new ArgumentOutOfRangeException(),
-                        },
-                        tileStatuses[colIndex, rowIndex].TileStatusType switch
-                        {
-                            TileStatusType.Closed => null,
-                            TileStatusType.Empty => null,
-                            TileStatusType.Green => GemColorType.Green,
-                            TileStatusType.Red => GemColorType.Red,
-                            TileStatusType.Purple => GemColorType.Purple,
-                            TileStatusType.Blue => GemColorType.Blue,
-                            TileStatusType.Yellow => GemColorType.Yellow,
-                            TileStatusType.Orange => GemColorType.Orange,
-                            TileStatusType.Special => GemColorType.Rainbow,
-                            TileStatusType.Contain => null,
-                            _ => throw new ArgumentOutOfRangeException(),
-                        }
-                    );
+                    map[colIndex, rowIndex] = tileStatuses[colIndex, rowIndex];
                 }
             }
 
@@ -168,7 +140,7 @@ namespace Pg.Puzzle.Internal
 
         bool HasTileStatusContain(Coordinate coordinate, GemColorType gemColorType)
         {
-            return CurrentTileStatuses[coordinate.Column, coordinate.Row].GemColorType != gemColorType;
+            return CurrentTileStatuses[coordinate.Column, coordinate.Row].GemColorType == gemColorType;
         }
 
         bool IsCoordinateInRange(Coordinate coordinate)

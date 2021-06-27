@@ -1,3 +1,5 @@
+using UnityEngine.Assertions;
+
 #nullable enable
 namespace Pg.Puzzle
 {
@@ -10,6 +12,10 @@ namespace Pg.Puzzle
 
         public TileStatus(TileStatusType tileStatusType, GemColorType? gemColorType)
         {
+            Assert.IsTrue(
+                !((tileStatusType == TileStatusType.Contain) ^ gemColorType.HasValue),
+                "!(tileStatusType == TileStatusType.Contain ^ gemColorType.HasValue)"
+            );
             TileStatusType = tileStatusType;
             GemColorType = gemColorType;
         }
