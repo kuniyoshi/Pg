@@ -61,6 +61,23 @@ namespace Pg.Puzzle.Internal
 
         internal SimulationStepData ProcessTurn()
         {
+            var clusters = DetectClusters();
+
+            return new SimulationStepData(new VanishingClusters(clusters));
+        }
+
+        internal void WorkTransaction(IEnumerable<TileOperation> operations)
+        {
+            foreach (var tileOperation in operations)
+            {
+                var (a, b) = (tileOperation.A, tileOperation.B);
+
+                (Tiles[a.Column, a.Row], Tiles[b.Column, b.Row]) = (Tiles[b.Column, b.Row], Tiles[a.Column, a.Row]);
+            }
+        }
+
+        Dictionary<TileStatusType, List<List<Coordinate>>> DetectClusters()
+        {
             var colorStatuses = TileStatusService.GetColorStatusesExceptSpecial();
             var test = new Dictionary<Coordinate, bool>();
             var clusters = new Dictionary<TileStatusType, List<List<Coordinate>>>();
@@ -104,17 +121,7 @@ namespace Pg.Puzzle.Internal
                 }
             }
 
-            return new SimulationStepData(new VanishingClusters(clusters));
-        }
-
-        internal void WorkTransaction(IEnumerable<TileOperation> operations)
-        {
-            foreach (var tileOperation in operations)
-            {
-                var (a, b) = (tileOperation.A, tileOperation.B);
-
-                (Tiles[a.Column, a.Row], Tiles[b.Column, b.Row]) = (Tiles[b.Column, b.Row], Tiles[a.Column, a.Row]);
-            }
+            return clusters;
         }
 
         void GetClusterOfBy(List<Coordinate> outNeighbors,
