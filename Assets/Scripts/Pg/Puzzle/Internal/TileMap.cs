@@ -8,22 +8,18 @@ namespace Pg.Puzzle.Internal
 {
     internal class TileMap
     {
-        internal TileMap(TileStatusType[,] tileStatusTypes, TileStatus[,] x)
+        internal TileMap(TileStatus[,] tileStatuses)
         {
-            var colSize = tileStatusTypes.GetLength(dimension: 0);
-            var rowSize = tileStatusTypes.GetLength(dimension: 1);
-            var colSize2 = x.GetLength(dimension: 0);
-            var rowSize2 = x.GetLength(dimension: 1);
-            var map = new TileStatusType[colSize, rowSize];
-            var map2 = new TileStatus[colSize2, rowSize2];
+            var colSize = tileStatuses.GetLength(dimension: 0);
+            var rowSize = tileStatuses.GetLength(dimension: 1);
+            var map = new TileStatus[colSize, rowSize];
 
             for (var colIndex = 0; colIndex < TileSize.ColSize; ++colIndex)
             {
                 for (var rowIndex = 0; rowIndex < TileSize.RowSize; ++rowIndex)
                 {
-                    map[colIndex, rowIndex] = tileStatusTypes[colIndex, rowIndex];
-                    map2[colIndex, rowIndex] = new TileStatus(
-                        x[colIndex, rowIndex].TileStatusType switch
+                    map[colIndex, rowIndex] = new TileStatus(
+                        tileStatuses[colIndex, rowIndex].TileStatusType switch
                         {
                             TileStatusType.Closed => TileStatusType.Closed,
                             TileStatusType.Empty => TileStatusType.Empty,
@@ -36,7 +32,7 @@ namespace Pg.Puzzle.Internal
                             TileStatusType.Special => TileStatusType.Contain,
                             _ => throw new ArgumentOutOfRangeException(),
                         },
-                        x[colIndex, rowIndex].TileStatusType switch
+                        tileStatuses[colIndex, rowIndex].TileStatusType switch
                         {
                             TileStatusType.Closed => null,
                             TileStatusType.Empty => null,
@@ -54,7 +50,7 @@ namespace Pg.Puzzle.Internal
                 }
             }
 
-            Tiles = map2;
+            Tiles = map;
         }
 
         internal TileStatus[,] Tiles { get; }
