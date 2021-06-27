@@ -72,17 +72,18 @@ namespace Pg.Puzzle.Internal
             }
         }
 
-        Dictionary<TileStatusType, List<List<Coordinate>>> DetectClusters()
+        Dictionary<GemColorType, List<List<Coordinate>>> DetectClusters()
         {
-            var colorStatuses = TileStatusService.GetColorStatusesExceptSpecial();
             var test = new Dictionary<Coordinate, bool>();
-            var clusters = new Dictionary<TileStatusType, List<List<Coordinate>>>();
+            var clusters = new Dictionary<GemColorType, List<List<Coordinate>>>();
             var specialTest = new Dictionary<Coordinate, bool>();
 
-            foreach (var colorStatus in colorStatuses)
+            foreach (var enumValue in Enum.GetValues(typeof(GemColorType)))
             {
+                var gemColorType = (GemColorType) enumValue;
+
                 test.Clear();
-                clusters[colorStatus] = new List<List<Coordinate>>();
+                clusters[gemColorType] = new List<List<Coordinate>>();
 
                 for (var colIndex = 0; colIndex < TileSize.ColSize; ++colIndex)
                 {
@@ -97,13 +98,13 @@ namespace Pg.Puzzle.Internal
 
                         test[coordinate] = true;
 
-                        if (IsTileStatusAt(coordinate, colorStatus))
+                        if (HasTileStatusContain(coordinate, gemColorType))
                         {
                             continue;
                         }
 
                         var cluster = new List<Coordinate>();
-                        GetClusterOfBy(cluster, coordinate, colorStatus, test, specialTest);
+                        GetClusterOfBy(cluster, coordinate, gemColorType, test, specialTest);
 
                         cluster.Add(coordinate);
 
@@ -112,7 +113,7 @@ namespace Pg.Puzzle.Internal
                             continue;
                         }
 
-                        clusters[colorStatus].Add(cluster);
+                        clusters[gemColorType].Add(cluster);
                     }
                 }
             }
@@ -122,7 +123,7 @@ namespace Pg.Puzzle.Internal
 
         void GetClusterOfBy(List<Coordinate> outNeighbors,
                             Coordinate coordinate,
-                            TileStatusType colorStatusType,
+                            GemColorType gemColorType,
                             Dictionary<Coordinate, bool> test,
                             Dictionary<Coordinate, bool> specialTest)
         {
@@ -142,23 +143,28 @@ namespace Pg.Puzzle.Internal
 
                 test[neighbor] = true;
 
-                if (IsTileStatusAt(neighbor, TileStatusType.Special) && !specialTest.ContainsKey(neighbor))
+                if (HasTileStatusContain(neighbor, GemColorType.Rainbow) && !specialTest.ContainsKey(neighbor))
                 {
                     specialTest[neighbor] = true;
                     outNeighbors.Add(neighbor);
-                    GetClusterOfBy(outNeighbors, neighbor, colorStatusType, test, specialTest);
+                    GetClusterOfBy(outNeighbors, neighbor, gemColorType, test, specialTest);
 
                     continue;
                 }
 
-                if (!IsTileStatusAt(neighbor, colorStatusType))
+                if (!HasTileStatusContain(neighbor, gemColorType))
                 {
                     continue;
                 }
 
                 outNeighbors.Add(neighbor);
-                GetClusterOfBy(outNeighbors, neighbor, colorStatusType, test, specialTest);
+                GetClusterOfBy(outNeighbors, neighbor, gemColorType, test, specialTest);
             }
+        }
+
+        bool HasTileStatusContain(Coordinate coordinate, GemColorType gemColorType)
+        {
+            return Tiles[coordinate.Column, coordinate.Row].GemColorType != gemColorType;
         }
 
         bool IsCoordinateInRange(Coordinate coordinate)
@@ -167,11 +173,6 @@ namespace Pg.Puzzle.Internal
                    && coordinate.Column < Tiles.GetLength(dimension: 0)
                    && coordinate.Row >= 0
                    && coordinate.Row < Tiles.GetLength(dimension: 1);
-        }
-
-        bool IsTileStatusAt(Coordinate coordinate, TileStatusType colorStatus)
-        {
-            return Tiles[coordinate.Column, coordinate.Row].TileStatusType != colorStatus;
         }
     }
 }

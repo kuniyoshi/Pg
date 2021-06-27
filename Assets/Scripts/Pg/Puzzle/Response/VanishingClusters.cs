@@ -7,12 +7,12 @@ namespace Pg.Puzzle.Response
 {
     public class VanishingClusters
     {
-        public VanishingClusters(Dictionary<TileStatusType, List<List<Coordinate>>> data)
+        public VanishingClusters(Dictionary<GemColorType, List<List<Coordinate>>> data)
         {
             Data = data;
         }
 
-        Dictionary<TileStatusType, List<List<Coordinate>>> Data { get; }
+        Dictionary<GemColorType, List<List<Coordinate>>> Data { get; }
 
         public override string ToString()
         {
