@@ -43,7 +43,7 @@ namespace Pg.Scene.Game
                     var resultAfterOperation = gameController.WorkTransaction(tileOperation);
                     Coordinates!.ApplyTiles(resultAfterOperation);
                     var clusters = gameController.ProcessTurn();
-                    Debug.Log(clusters);
+                    Debug.Log(clusters.VanishingClusters);
                 })
                 .AddTo(gameObject);
         }

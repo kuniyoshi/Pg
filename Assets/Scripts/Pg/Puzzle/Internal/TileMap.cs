@@ -65,12 +65,14 @@ namespace Pg.Puzzle.Internal
 
         internal void WorkTransaction(IEnumerable<TileOperation> operations)
         {
+            static void Swap(TileStatus[,] map, Coordinate a, Coordinate b)
+            {
+                (map[a.Column, a.Row], map[b.Column, b.Row]) = (map[b.Column, b.Row], map[a.Column, a.Row]);
+            }
+
             foreach (var tileOperation in operations)
             {
-                var (a, b) = (tileOperation.A, tileOperation.B);
-
-                (CurrentTileStatuses[a.Column, a.Row], CurrentTileStatuses[b.Column, b.Row]) = (
-                    CurrentTileStatuses[b.Column, b.Row], CurrentTileStatuses[a.Column, a.Row]);
+                Swap(CurrentTileStatuses, tileOperation.A, tileOperation.B);
             }
         }
 
@@ -100,7 +102,7 @@ namespace Pg.Puzzle.Internal
 
                         test[coordinate] = true;
 
-                        if (HasTileStatusContain(coordinate, gemColorType))
+                        if (!HasTileStatusContain(coordinate, gemColorType))
                         {
                             continue;
                         }
