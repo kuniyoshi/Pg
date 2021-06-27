@@ -18,7 +18,9 @@ namespace Pg.Puzzle.Internal
             Map = new TileMap(tileStatuses);
         }
 
-        internal TileMap Map { get; }
+        TileMap Map { get; }
+
+        internal TileStatus[,] CurrentTileStatuses => Map.CurrentTileStatuses;
 
         internal SimulationStepData ProcessTurn()
         {

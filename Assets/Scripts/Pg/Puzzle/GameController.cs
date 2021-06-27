@@ -28,16 +28,18 @@ namespace Pg.Puzzle
             return _simulator!.ProcessTurn();
         }
 
-        public static void StartGame(IGameData gameData)
+        public static TileStatus[,] StartGame(IGameData gameData)
         {
             _simulator = new Simulator(gameData);
+
+            return _simulator!.CurrentTileStatuses;
         }
 
-        public static void WorkTransaction(IEnumerable<TileOperation> operations)
+        public static TileStatus[,] WorkTransaction(IEnumerable<TileOperation> operations)
         {
             _simulator!.WorkTransaction(operations);
-        }
 
-        public static TileStatus[,] CurrentTileStatuses => _simulator!.Map.CurrentTileStatuses;
+            return _simulator!.CurrentTileStatuses;
+        }
     }
 }
