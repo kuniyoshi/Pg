@@ -32,16 +32,17 @@ namespace Pg.Scene.Game
         async void Start()
         {
             await StartDirection!.Play();
-            var tileStatuses = GameController.StartGame(GameData!);
+            var gameController = new GameController(GameData!);
+            var tileStatuses = gameController.StartGame();
             await Coordinates!.SetTileEvents(UserPlayer!);
             Coordinates!.ApplyTiles(tileStatuses);
 
             UserPlayer!.OnTransaction
                 .Subscribe(tileOperation =>
                 {
-                    var resultAfterOperation = GameController.WorkTransaction(tileOperation);
+                    var resultAfterOperation = gameController.WorkTransaction(tileOperation);
                     Coordinates!.ApplyTiles(resultAfterOperation);
-                    var clusters = GameController.ProcessTurn();
+                    var clusters = gameController.ProcessTurn();
                     Debug.Log(clusters);
                 })
                 .AddTo(gameObject);

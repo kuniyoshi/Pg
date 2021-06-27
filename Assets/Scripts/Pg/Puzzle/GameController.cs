@@ -3,37 +3,33 @@ using System.Collections.Generic;
 using Pg.Puzzle.Internal;
 using Pg.Puzzle.Request;
 using Pg.Puzzle.Response;
-using UnityEngine;
 
 namespace Pg.Puzzle
 {
-    public static class GameController
+    public class GameController
     {
-        static Simulator? _simulator;
-
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        public static void InitializeOnReloadDomain()
+        public GameController(IGameData gameData)
         {
-            _simulator = null;
+            Simulator = new Simulator(gameData);
         }
 
-        public static SimulationStepData ProcessTurn()
+        Simulator Simulator { get; }
+
+        public SimulationStepData ProcessTurn()
         {
-            return _simulator!.ProcessTurn();
+            return Simulator.ProcessTurn();
         }
 
-        public static TileStatus[,] StartGame(IGameData gameData)
+        public TileStatus[,] StartGame()
         {
-            _simulator = new Simulator(gameData);
-
-            return _simulator!.CurrentTileStatuses;
+            return Simulator.CurrentTileStatuses;
         }
 
-        public static TileStatus[,] WorkTransaction(IEnumerable<TileOperation> operations)
+        public TileStatus[,] WorkTransaction(IEnumerable<TileOperation> operations)
         {
-            _simulator!.WorkTransaction(operations);
+            Simulator.WorkTransaction(operations);
 
-            return _simulator!.CurrentTileStatuses;
+            return Simulator.CurrentTileStatuses;
         }
     }
 }
