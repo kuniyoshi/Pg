@@ -34,13 +34,13 @@ namespace Pg.Scene.Game
             await StartDirection!.Play();
             GameController.StartGame(GameData!);
             await Coordinates!.SetTileEvents(UserPlayer!);
-            Coordinates!.ApplyTiles(GameController.Tiles);
+            Coordinates!.ApplyTiles(GameController.CurrentTileStatuses);
 
             UserPlayer!.OnTransaction
                 .Subscribe(tileOperation =>
                 {
                     GameController.WorkTransaction(tileOperation);
-                    Coordinates!.ApplyTiles(GameController.Tiles);
+                    Coordinates!.ApplyTiles(GameController.CurrentTileStatuses);
                     var clusters = GameController.ProcessTurn();
                     Debug.Log(clusters);
                 })

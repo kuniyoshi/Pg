@@ -50,10 +50,10 @@ namespace Pg.Puzzle.Internal
                 }
             }
 
-            Tiles = map;
+            CurrentTileStatuses = map;
         }
 
-        internal TileStatus[,] Tiles { get; }
+        internal TileStatus[,] CurrentTileStatuses { get; }
 
         internal SimulationStepData ProcessTurn()
         {
@@ -68,7 +68,8 @@ namespace Pg.Puzzle.Internal
             {
                 var (a, b) = (tileOperation.A, tileOperation.B);
 
-                (Tiles[a.Column, a.Row], Tiles[b.Column, b.Row]) = (Tiles[b.Column, b.Row], Tiles[a.Column, a.Row]);
+                (CurrentTileStatuses[a.Column, a.Row], CurrentTileStatuses[b.Column, b.Row]) = (
+                    CurrentTileStatuses[b.Column, b.Row], CurrentTileStatuses[a.Column, a.Row]);
             }
         }
 
@@ -164,15 +165,15 @@ namespace Pg.Puzzle.Internal
 
         bool HasTileStatusContain(Coordinate coordinate, GemColorType gemColorType)
         {
-            return Tiles[coordinate.Column, coordinate.Row].GemColorType != gemColorType;
+            return CurrentTileStatuses[coordinate.Column, coordinate.Row].GemColorType != gemColorType;
         }
 
         bool IsCoordinateInRange(Coordinate coordinate)
         {
             return coordinate.Column >= 0
-                   && coordinate.Column < Tiles.GetLength(dimension: 0)
+                   && coordinate.Column < CurrentTileStatuses.GetLength(dimension: 0)
                    && coordinate.Row >= 0
-                   && coordinate.Row < Tiles.GetLength(dimension: 1);
+                   && coordinate.Row < CurrentTileStatuses.GetLength(dimension: 1);
         }
     }
 }

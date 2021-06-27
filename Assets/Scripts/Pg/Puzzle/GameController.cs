@@ -38,6 +38,6 @@ namespace Pg.Puzzle
             _simulator!.WorkTransaction(operations);
         }
 
-        public static TileStatus[,] Tiles => _simulator!.Map.Tiles;
+        public static TileStatus[,] CurrentTileStatuses => _simulator!.Map.CurrentTileStatuses;
     }
 }
