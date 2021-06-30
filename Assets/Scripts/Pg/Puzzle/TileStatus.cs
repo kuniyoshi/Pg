@@ -1,11 +1,11 @@
+#nullable enable
 using UnityEngine.Assertions;
 
-#nullable enable
 namespace Pg.Puzzle
 {
     public readonly struct TileStatus
     {
-        public static TileStatus Empty = new TileStatus(
+        public static TileStatus Empty { get; } = new TileStatus(
             TileStatusType.Empty,
             gemColorType: null
         );

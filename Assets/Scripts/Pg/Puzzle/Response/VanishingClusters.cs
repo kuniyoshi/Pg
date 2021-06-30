@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine.Assertions;
 
 namespace Pg.Puzzle.Response
 {
@@ -13,6 +14,14 @@ namespace Pg.Puzzle.Response
         }
 
         Dictionary<GemColorType, List<List<Coordinate>>> Data { get; }
+
+        public IEnumerable<GemColorType> GemColorTypes => Data.Keys;
+
+        public IEnumerable<IEnumerable<Coordinate>> GetVanishingCoordinatesOf(GemColorType gemColorType)
+        {
+            Assert.IsTrue(Data.ContainsKey(gemColorType), "Data.ContainsKey(gemColorType)");
+            return Data[gemColorType];
+        }
 
         public override string ToString()
         {

@@ -1,14 +1,43 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Pg.Etc.Puzzle;
 using Pg.Puzzle.Request;
 using Pg.Puzzle.Response;
+using UnityEngine.Assertions;
 
 namespace Pg.Puzzle.Internal
 {
     internal class TileMap
     {
+        static NewSlidingGems NewSlidingGems(VanishingClusters vanishingClusters)
+        {
+            var rowCountOf = new Dictionary<int, int>();
+
+            foreach (var gemColorType in vanishingClusters.GemColorTypes)
+            {
+                foreach (var coordinateList in vanishingClusters.GetVanishingCoordinatesOf(gemColorType))
+                {
+                    foreach (var coordinate in coordinateList)
+                    {
+                        if (rowCountOf.ContainsKey(coordinate.Column))
+                        {
+                            rowCountOf[coordinate.Column]++;
+                        }
+                    }
+                }
+            }
+
+            var newCoordinates = rowCountOf.Keys
+                .Select(column => new Coordinate(column, row: -1))
+                .Select(top => Enumerable.Range(start: 0, rowCountOf[top.Column])
+                    .Aggregate(top, (coordinate, _) => DirectionService.GetBelow(coordinate))
+                );
+
+            return new NewSlidingGems(newCoordinates);
+        }
+
         internal TileMap(TileStatus[,] tileStatuses)
         {
             var colSize = tileStatuses.GetLength(dimension: 0);
@@ -31,20 +60,19 @@ namespace Pg.Puzzle.Internal
         internal SimulationStepData ProcessTurn()
         {
             var clusters = DetectClusters();
+            var vanishingClusters = new VanishingClusters(clusters);
+            MakeClustersVanish(vanishingClusters);
+            var slidingGems = SlideGems(vanishingClusters);
+            var newGems = NewSlidingGems(vanishingClusters);
 
-            return new SimulationStepData(new VanishingClusters(clusters));
+            return new SimulationStepData(vanishingClusters, slidingGems, newGems);
         }
 
         internal void WorkTransaction(IEnumerable<TileOperation> operations)
         {
-            static void Swap(TileStatus[,] map, Coordinate a, Coordinate b)
-            {
-                (map[a.Column, a.Row], map[b.Column, b.Row]) = (map[b.Column, b.Row], map[a.Column, a.Row]);
-            }
-
             foreach (var tileOperation in operations)
             {
-                Swap(CurrentTileStatuses, tileOperation.A, tileOperation.B);
+                Swap(tileOperation.A, tileOperation.B);
             }
         }
 
@@ -138,6 +166,12 @@ namespace Pg.Puzzle.Internal
             }
         }
 
+        TileStatus GetTileStatusAt(Coordinate atCoordinate)
+        {
+            Assert.IsTrue(IsCoordinateInRange(atCoordinate), "IsCoordinateInRange(atCoordinate)");
+            return CurrentTileStatuses[atCoordinate.Column, atCoordinate.Row];
+        }
+
         bool HasTileStatusContain(Coordinate coordinate, GemColorType gemColorType)
         {
             return CurrentTileStatuses[coordinate.Column, coordinate.Row].GemColorType == gemColorType;
@@ -149,6 +183,71 @@ namespace Pg.Puzzle.Internal
                    && coordinate.Column < CurrentTileStatuses.GetLength(dimension: 0)
                    && coordinate.Row >= 0
                    && coordinate.Row < CurrentTileStatuses.GetLength(dimension: 1);
+        }
+
+        void MakeClustersVanish(VanishingClusters vanishingClusters)
+        {
+            foreach (var gemColorType in vanishingClusters.GemColorTypes)
+            {
+                foreach (var coordinates in vanishingClusters.GetVanishingCoordinatesOf(gemColorType))
+                {
+                    foreach (var coordinate in coordinates)
+                    {
+                        CurrentTileStatuses[coordinate.Column, coordinate.Row] = TileStatus.Empty;
+                    }
+                }
+            }
+        }
+
+        SlidingGems SlideGems(VanishingClusters vanishingClusters)
+        {
+            var maxRowLength = vanishingClusters.GemColorTypes
+                .SelectMany(vanishingClusters.GetVanishingCoordinatesOf)
+                .SelectMany(coordinates => coordinates)
+                .GroupBy(coordinate => coordinate.Row)
+                .Max(group => group.Count());
+
+            var slidingGemList = new List<SlidingGems.SlidingGem>();
+
+            var count = 0;
+
+            while (count++ < maxRowLength)
+            {
+                for (var colIndex = TileSize.ColSize - 1; colIndex >= 0; --colIndex)
+                {
+                    for (var rowIndex = TileSize.RowSize - 1; rowIndex >= 0; --rowIndex)
+                    {
+                        var coordinate = new Coordinate(colIndex, rowIndex);
+
+                        var hasGem = GetTileStatusAt(coordinate).TileStatusType == TileStatusType.Contain;
+                        var below = DirectionService.GetBelow(coordinate);
+                        var hasBelow = IsCoordinateInRange(below)
+                                       && GetTileStatusAt(coordinate).TileStatusType == TileStatusType.Empty;
+
+                        if (!hasGem || !hasBelow)
+                        {
+                            continue;
+                        }
+
+                        var slidingGem = new SlidingGems.SlidingGem(
+                            GetTileStatusAt(below).GemColorType!.Value,
+                            coordinate, below
+                        );
+
+                        slidingGemList.Add(slidingGem);
+
+                        Swap(slidingGem.From, slidingGem.To);
+                    }
+                }
+            }
+
+            return new SlidingGems(slidingGemList);
+        }
+
+        void Swap(Coordinate a, Coordinate b)
+        {
+            TileStatus[,] map = CurrentTileStatuses;
+            (map[a.Column, a.Row], map[b.Column, b.Row]) = (map[b.Column, b.Row], map[a.Column, a.Row]);
         }
     }
 }

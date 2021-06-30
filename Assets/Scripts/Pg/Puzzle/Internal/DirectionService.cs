@@ -8,6 +8,11 @@ namespace Pg.Puzzle.Internal
     /// </summary>
     internal static class DirectionService
     {
+        internal static Coordinate GetBelow(Coordinate above)
+        {
+            return new Coordinate(above.Column, above.Row + 1);
+        }
+
         internal static Coordinate GetNeighborOf(Coordinate coordinate, int neighborIndex)
         {
             Assert.IsTrue(

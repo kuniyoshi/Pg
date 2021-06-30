@@ -42,8 +42,8 @@ namespace Pg.Scene.Game
                 {
                     var resultAfterOperation = gameController.WorkTransaction(tileOperation);
                     Coordinates!.ApplyTiles(resultAfterOperation);
-                    var clusters = gameController.ProcessTurn();
-                    Debug.Log(clusters.VanishingClusters);
+                    var simulationStepData = gameController.ProcessTurn();
+                    Debug.Log(simulationStepData);
                 })
                 .AddTo(gameObject);
         }
