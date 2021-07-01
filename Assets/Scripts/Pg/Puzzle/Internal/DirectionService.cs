@@ -64,5 +64,23 @@ namespace Pg.Puzzle.Internal
                 new Coordinate(column: 0, row: 1),
             },
         };
+
+        internal static Coordinate GetJustAbove(Coordinate coordinate)
+        {
+            const int aboveIndex = 2;
+            return GetNeighborOf(coordinate, aboveIndex);
+        }
+
+        internal static Coordinate GetUpperLeft(Coordinate coordinate)
+        {
+            const int upperLeftIndex = 3;
+            return GetNeighborOf(coordinate, upperLeftIndex);
+        }
+
+        internal static Coordinate GetUpperRight(Coordinate coordinate)
+        {
+            const int upperRightIndex = 1;
+            return GetNeighborOf(coordinate, upperRightIndex);
+        }
     }
 }

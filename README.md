@@ -48,6 +48,17 @@ The simulation response contains,
 1. Which the tiles did vanish
 2. 
 
+## SLIDING RULE
+
+1. Start testing from bottom right to top left.
+2. When empty tile found, test tile above.
+2.1 If the tile has no gem, then no operation.  Go next step.
+2.2 If the tile has gem, then get the gem from the tile.
+3. If the tile stil empty, test upper leftabove, and upper right.
+   And do same.
+4. If tile that was taken gem is the top of rows,
+   new gem will be dropped ito the tile.
+
 # REFERENCE
 
 https://www.redblobgames.com/grids/hexagons/

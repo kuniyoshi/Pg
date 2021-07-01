@@ -135,7 +135,7 @@ namespace Pg.Puzzle.Internal
             {
                 var neighbor = DirectionService.GetNeighborOf(coordinate, neighborIndex);
 
-                if (!IsCoordinateInRange(neighbor))
+                if (!CoordinateService.IsCoordinateInRange(neighbor, CurrentTileStatuses))
                 {
                     continue;
                 }
@@ -168,21 +168,16 @@ namespace Pg.Puzzle.Internal
 
         TileStatus GetTileStatusAt(Coordinate atCoordinate)
         {
-            Assert.IsTrue(IsCoordinateInRange(atCoordinate), "IsCoordinateInRange(atCoordinate)");
+            Assert.IsTrue(
+                CoordinateService.IsCoordinateInRange(atCoordinate, CurrentTileStatuses),
+                "CoordinateService.IsCoordinateInRange(atCoordinate, CurrentTileStatuses)"
+            );
             return CurrentTileStatuses[atCoordinate.Column, atCoordinate.Row];
         }
 
         bool HasTileStatusContain(Coordinate coordinate, GemColorType gemColorType)
         {
             return CurrentTileStatuses[coordinate.Column, coordinate.Row].GemColorType == gemColorType;
-        }
-
-        bool IsCoordinateInRange(Coordinate coordinate)
-        {
-            return coordinate.Column >= 0
-                   && coordinate.Column < CurrentTileStatuses.GetLength(dimension: 0)
-                   && coordinate.Row >= 0
-                   && coordinate.Row < CurrentTileStatuses.GetLength(dimension: 1);
         }
 
         void MakeClustersVanish(VanishingClusters vanishingClusters)
@@ -201,6 +196,25 @@ namespace Pg.Puzzle.Internal
 
         SlidingGems SlideGems(VanishingClusters vanishingClusters)
         {
+            SlidingGems.SlidingGem? GetSlidingGem(Coordinate candidate, Coordinate current)
+            {
+                var canSwap = CoordinateService.IsCoordinateInRange(candidate, CurrentTileStatuses)
+                              && GetTileStatusAt(candidate).TileStatusType == TileStatusType.Contain;
+
+                if (!canSwap)
+                {
+                    return null;
+                }
+
+                var slidingGem = new SlidingGems.SlidingGem(
+                    GetTileStatusAt(candidate).GemColorType!.Value,
+                    current,
+                    candidate
+                );
+
+                return slidingGem;
+            }
+
             var maxRowLength = vanishingClusters.GemColorTypes
                 .SelectMany(vanishingClusters.GetVanishingCoordinatesOf)
                 .SelectMany(coordinates => coordinates)
@@ -219,24 +233,46 @@ namespace Pg.Puzzle.Internal
                     {
                         var coordinate = new Coordinate(colIndex, rowIndex);
 
-                        var hasGem = GetTileStatusAt(coordinate).TileStatusType == TileStatusType.Contain;
-                        var below = DirectionService.GetBelow(coordinate);
-                        var hasBelow = IsCoordinateInRange(below)
-                                       && GetTileStatusAt(coordinate).TileStatusType == TileStatusType.Empty;
+                        var isEmpty = GetTileStatusAt(coordinate).TileStatusType == TileStatusType.Empty;
 
-                        if (!hasGem || !hasBelow)
+                        if (!isEmpty)
                         {
                             continue;
                         }
 
-                        var slidingGem = new SlidingGems.SlidingGem(
-                            GetTileStatusAt(below).GemColorType!.Value,
-                            coordinate, below
-                        );
+                        var above = DirectionService.GetJustAbove(coordinate);
 
-                        slidingGemList.Add(slidingGem);
+                        if (GetTileStatusAt(above).TileStatusType == TileStatusType.Empty)
+                        {
+                            continue;
+                        }
 
-                        Swap(slidingGem.From, slidingGem.To);
+                        var candidates = new[]
+                        {
+                            above,
+                            DirectionService.GetUpperLeft(coordinate),
+                            DirectionService.GetUpperRight(coordinate),
+                        };
+
+                        var slidingGem = candidates.Select(candidate => GetSlidingGem(candidate, coordinate))
+                            .FirstOrDefault(resultCandidate => resultCandidate.HasValue);
+
+                        if (!slidingGem.HasValue)
+                        {
+                            continue;
+                        }
+
+                        slidingGemList.Add(slidingGem.Value);
+                        Swap(slidingGem.Value.From, slidingGem.Value.To);
+
+                        if (CoordinateService.IsTopRow(slidingGem.Value.To))
+                        {
+                            Assert.AreEqual(
+                                TileStatusType.Empty,
+                                GetTileStatusAt(slidingGem.Value.To).TileStatusType
+                            );
+                            // ねむい
+                        }
                     }
                 }
             }
