@@ -204,7 +204,7 @@ namespace Pg.Puzzle.Internal
             var maxRowLength = vanishingClusters.GemColorTypes
                 .SelectMany(vanishingClusters.GetVanishingCoordinatesOf)
                 .SelectMany(coordinates => coordinates)
-                .GroupBy(coordinate => coordinate.Row)
+                .GroupBy(coordinate => coordinate.Column)
                 .Max(group => group.Count());
 
             var slidingGemList = new List<SlidingGems.SlidingGem>();
