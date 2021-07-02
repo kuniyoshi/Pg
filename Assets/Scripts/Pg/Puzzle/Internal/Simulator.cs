@@ -9,6 +9,8 @@ namespace Pg.Puzzle.Internal
 {
     internal class Simulator
     {
+        TileMap Map { get; }
+
         internal Simulator(IGameData gameData)
         {
             var tileStatuses = gameData.TileStatuses;
@@ -17,8 +19,6 @@ namespace Pg.Puzzle.Internal
 
             Map = new TileMap(tileStatuses);
         }
-
-        TileMap Map { get; }
 
         internal TileStatus[,] CurrentTileStatuses => Map.CurrentTileStatuses;
 

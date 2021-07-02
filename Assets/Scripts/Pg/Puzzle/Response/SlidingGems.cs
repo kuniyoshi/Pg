@@ -6,12 +6,21 @@ namespace Pg.Puzzle.Response
 {
     public class SlidingGems
     {
-        public SlidingGems(IEnumerable<SlidingGem> slidingGems)
+        public enum EventType
         {
-            Items = slidingGems.ToArray();
+            Take,
+            NewGem,
         }
 
         public IEnumerable<SlidingGem> Items { get; }
+        public IEnumerable<NewGem> NewGems { get; }
+
+        SlidingGems(IEnumerable<SlidingGem> slidingGems,
+                    IEnumerable<NewGem> newGems)
+        {
+            Items = slidingGems.ToArray();
+            NewGems = newGems;
+        }
 
         public override string ToString()
         {
@@ -20,18 +29,40 @@ namespace Pg.Puzzle.Response
                    + "}";
         }
 
+        public readonly struct NewGem
+        {
+            public Coordinate Coordinate { get; }
+            public GemColorType GemColorType { get; }
+
+            public NewGem(Coordinate coordinate, GemColorType gemColorType)
+            {
+                Coordinate = coordinate;
+                GemColorType = gemColorType;
+            }
+
+            public override string ToString()
+            {
+                return $"{nameof(NewGem)}{{"
+                       + $"{nameof(Coordinate)}: {Coordinate}"
+                       + $", {nameof(GemColorType)}: {GemColorType}"
+                       + "}";
+            }
+        }
+
         public readonly struct SlidingGem
         {
+            public Coordinate From { get; }
+
+            public Coordinate To { get; }
+
+            public GemColorType GemColorType { get; }
+
             public SlidingGem(GemColorType gemColorType, Coordinate from, Coordinate to)
             {
                 GemColorType = gemColorType;
                 From = from;
                 To = to;
             }
-
-            public Coordinate From { get; }
-            public Coordinate To { get; }
-            public GemColorType GemColorType { get; }
 
             public override string ToString()
             {
@@ -40,6 +71,37 @@ namespace Pg.Puzzle.Response
                        + $", {nameof(From)}: {From}"
                        + $", {nameof(To)}: {To}"
                        + "}";
+            }
+        }
+
+        internal class Builder
+        {
+            Queue<EventType> Events { get; }
+            Queue<NewGem> NewGems { get; }
+            Queue<SlidingGem> SlidingGems { get; }
+
+            internal Builder()
+            {
+                Events = new Queue<EventType>();
+                SlidingGems = new Queue<SlidingGem>();
+                NewGems = new Queue<NewGem>();
+            }
+
+            internal void AddNewGem(NewGem newGem)
+            {
+                Events.Enqueue(EventType.NewGem);
+                NewGems.Enqueue(newGem);
+            }
+
+            internal void AddSlidingGem(SlidingGem slidingGem)
+            {
+                Events.Enqueue(EventType.Take);
+                SlidingGems.Enqueue(slidingGem);
+            }
+
+            internal SlidingGems Build()
+            {
+                return new SlidingGems(SlidingGems, NewGems);
             }
         }
     }

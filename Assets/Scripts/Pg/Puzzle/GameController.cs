@@ -8,12 +8,12 @@ namespace Pg.Puzzle
 {
     public class GameController
     {
+        Simulator Simulator { get; }
+
         public GameController(IGameData gameData)
         {
             Simulator = new Simulator(gameData);
         }
-
-        Simulator Simulator { get; }
 
         public SimulationStepData ProcessTurn()
         {

@@ -8,12 +8,12 @@ namespace Pg.Puzzle.Response
 {
     public class VanishingClusters
     {
+        Dictionary<GemColorType, List<List<Coordinate>>> Data { get; }
+
         public VanishingClusters(Dictionary<GemColorType, List<List<Coordinate>>> data)
         {
             Data = data;
         }
-
-        Dictionary<GemColorType, List<List<Coordinate>>> Data { get; }
 
         public IEnumerable<GemColorType> GemColorTypes => Data.Keys;
 

@@ -38,6 +38,10 @@ namespace Pg.Puzzle.Internal
             return new NewSlidingGems(newCoordinates);
         }
 
+        internal TileStatus[,] CurrentTileStatuses { get; }
+
+        GemGenerator GemGenerator { get; }
+
         internal TileMap(TileStatus[,] tileStatuses)
         {
             var colSize = tileStatuses.GetLength(dimension: 0);
@@ -53,9 +57,8 @@ namespace Pg.Puzzle.Internal
             }
 
             CurrentTileStatuses = map;
+            GemGenerator = new GemGenerator();
         }
-
-        internal TileStatus[,] CurrentTileStatuses { get; }
 
         internal SimulationStepData ProcessTurn()
         {
@@ -221,8 +224,7 @@ namespace Pg.Puzzle.Internal
                 .GroupBy(coordinate => coordinate.Column)
                 .Max(group => group.Count());
 
-            var slidingGemList = new List<SlidingGems.SlidingGem>();
-
+            var builder = new SlidingGems.Builder();
             var count = 0;
 
             while (count++ < maxRowLength)
@@ -241,6 +243,11 @@ namespace Pg.Puzzle.Internal
                         }
 
                         var above = DirectionService.GetJustAbove(coordinate);
+
+                        if (!CoordinateService.IsCoordinateInRange(above, CurrentTileStatuses))
+                        {
+                            continue;
+                        }
 
                         if (GetTileStatusAt(above).TileStatusType == TileStatusType.Empty)
                         {
@@ -262,8 +269,10 @@ namespace Pg.Puzzle.Internal
                             continue;
                         }
 
-                        slidingGemList.Add(slidingGem.Value);
+                        builder.AddSlidingGem(slidingGem.Value);
                         Swap(slidingGem.Value.From, slidingGem.Value.To);
+
+                        throw new Exception("from to が逆っぽい");
 
                         if (CoordinateService.IsTopRow(slidingGem.Value.To))
                         {
@@ -271,13 +280,17 @@ namespace Pg.Puzzle.Internal
                                 TileStatusType.Empty,
                                 GetTileStatusAt(slidingGem.Value.To).TileStatusType
                             );
-                            // ねむい
+                            var newGem = new SlidingGems.NewGem(slidingGem.Value.To, GemGenerator.Next());
+                            builder.AddNewGem(newGem);
+
+                            throw new Exception("文字列化していない");
+                            throw new Exception("ループ回数の見直し");
                         }
                     }
                 }
             }
 
-            return new SlidingGems(slidingGemList);
+            return builder.Build();
         }
 
         void Swap(Coordinate a, Coordinate b)

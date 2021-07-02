@@ -3,6 +3,12 @@ namespace Pg.Puzzle.Response
 {
     public class SimulationStepData
     {
+        public NewSlidingGems NewSlidingGems { get; }
+
+        public SlidingGems SlidingGems { get; }
+
+        public VanishingClusters VanishingClusters { get; }
+
         public SimulationStepData(VanishingClusters vanishingClusters,
                                   SlidingGems slidingGems,
                                   NewSlidingGems newSlidingGems)
@@ -11,12 +17,6 @@ namespace Pg.Puzzle.Response
             NewSlidingGems = newSlidingGems;
             VanishingClusters = vanishingClusters;
         }
-
-        public SlidingGems SlidingGems { get; }
-
-        public NewSlidingGems NewSlidingGems { get; }
-
-        public VanishingClusters VanishingClusters { get; }
 
         public override string ToString()
         {

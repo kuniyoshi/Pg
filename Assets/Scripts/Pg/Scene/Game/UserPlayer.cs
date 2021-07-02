@@ -71,6 +71,7 @@ namespace Pg.Scene.Game
 
         class Sequence
         {
+            Queue<Operation> Histories { get; }
             Tile? _lastSelection;
 
             public Sequence(Tile tile)
@@ -78,8 +79,6 @@ namespace Pg.Scene.Game
                 _lastSelection = tile;
                 Histories = new Queue<Operation>();
             }
-
-            Queue<Operation> Histories { get; }
 
             public bool CanSwap(Tile tile)
             {
@@ -116,14 +115,14 @@ namespace Pg.Scene.Game
 
             class Operation
             {
+                Tile TileA { get; }
+                Tile TileB { get; }
+
                 public Operation(Tile tileA, Tile tileB)
                 {
                     TileA = tileA;
                     TileB = tileB;
                 }
-
-                Tile TileA { get; }
-                Tile TileB { get; }
 
                 public TileOperation CreateTileOperation()
                 {

@@ -13,6 +13,12 @@ namespace Pg.Puzzle.Internal
             return new Coordinate(above.Column, above.Row + 1);
         }
 
+        internal static Coordinate GetJustAbove(Coordinate coordinate)
+        {
+            const int aboveIndex = 2;
+            return GetNeighborOf(coordinate, aboveIndex);
+        }
+
         internal static Coordinate GetNeighborOf(Coordinate coordinate, int neighborIndex)
         {
             Assert.IsTrue(
@@ -26,6 +32,18 @@ namespace Pg.Puzzle.Internal
                 coordinate.Column + direction.Column,
                 coordinate.Row + direction.Row
             );
+        }
+
+        internal static Coordinate GetUpperLeft(Coordinate coordinate)
+        {
+            const int upperLeftIndex = 3;
+            return GetNeighborOf(coordinate, upperLeftIndex);
+        }
+
+        internal static Coordinate GetUpperRight(Coordinate coordinate)
+        {
+            const int upperRightIndex = 1;
+            return GetNeighborOf(coordinate, upperRightIndex);
         }
 
         internal static bool IsNeighborEachOther(Coordinate a, Coordinate b)
@@ -64,23 +82,5 @@ namespace Pg.Puzzle.Internal
                 new Coordinate(column: 0, row: 1),
             },
         };
-
-        internal static Coordinate GetJustAbove(Coordinate coordinate)
-        {
-            const int aboveIndex = 2;
-            return GetNeighborOf(coordinate, aboveIndex);
-        }
-
-        internal static Coordinate GetUpperLeft(Coordinate coordinate)
-        {
-            const int upperLeftIndex = 3;
-            return GetNeighborOf(coordinate, upperLeftIndex);
-        }
-
-        internal static Coordinate GetUpperRight(Coordinate coordinate)
-        {
-            const int upperRightIndex = 1;
-            return GetNeighborOf(coordinate, upperRightIndex);
-        }
     }
 }
