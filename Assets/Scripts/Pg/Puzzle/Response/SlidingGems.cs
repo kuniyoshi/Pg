@@ -19,13 +19,14 @@ namespace Pg.Puzzle.Response
                     IEnumerable<NewGem> newGems)
         {
             Items = slidingGems.ToArray();
-            NewGems = newGems;
+            NewGems = newGems.ToArray();
         }
 
         public override string ToString()
         {
             return $"{nameof(SlidingGem)}{{"
                    + $"{nameof(Items)}: [{string.Join(", ", Items.Select(item => item.ToString()))}]"
+                   + $", {nameof(NewGems)}: [{string.Join(", ", NewGems.Select(item => item.ToString()))}]"
                    + "}";
         }
 

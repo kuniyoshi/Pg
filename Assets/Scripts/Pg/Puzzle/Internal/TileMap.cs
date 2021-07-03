@@ -11,33 +11,6 @@ namespace Pg.Puzzle.Internal
 {
     internal class TileMap
     {
-        static NewSlidingGems NewSlidingGems(VanishingClusters vanishingClusters)
-        {
-            var rowCountOf = new Dictionary<int, int>();
-
-            foreach (var gemColorType in vanishingClusters.GemColorTypes)
-            {
-                foreach (var coordinateList in vanishingClusters.GetVanishingCoordinatesOf(gemColorType))
-                {
-                    foreach (var coordinate in coordinateList)
-                    {
-                        if (rowCountOf.ContainsKey(coordinate.Column))
-                        {
-                            rowCountOf[coordinate.Column]++;
-                        }
-                    }
-                }
-            }
-
-            var newCoordinates = rowCountOf.Keys
-                .Select(column => new Coordinate(column, row: -1))
-                .Select(top => Enumerable.Range(start: 0, rowCountOf[top.Column])
-                    .Aggregate(top, (coordinate, _) => DirectionService.GetBelow(coordinate))
-                );
-
-            return new NewSlidingGems(newCoordinates);
-        }
-
         internal TileStatus[,] CurrentTileStatuses { get; }
 
         GemGenerator GemGenerator { get; }
@@ -66,9 +39,8 @@ namespace Pg.Puzzle.Internal
             var vanishingClusters = new VanishingClusters(clusters);
             MakeClustersVanish(vanishingClusters);
             var slidingGems = SlideGems(vanishingClusters);
-            var newGems = NewSlidingGems(vanishingClusters);
 
-            return new SimulationStepData(vanishingClusters, slidingGems, newGems);
+            return new SimulationStepData(vanishingClusters, slidingGems);
         }
 
         internal void WorkTransaction(IEnumerable<TileOperation> operations)
@@ -211,8 +183,8 @@ namespace Pg.Puzzle.Internal
 
                 var slidingGem = new SlidingGems.SlidingGem(
                     GetTileStatusAt(candidate).GemColorType!.Value,
-                    current,
-                    candidate
+                    candidate,
+                    current
                 );
 
                 return slidingGem;
@@ -272,8 +244,6 @@ namespace Pg.Puzzle.Internal
                         builder.AddSlidingGem(slidingGem.Value);
                         Swap(slidingGem.Value.From, slidingGem.Value.To);
 
-                        throw new Exception("from to が逆っぽい");
-
                         if (CoordinateService.IsTopRow(slidingGem.Value.To))
                         {
                             Assert.AreEqual(
@@ -283,7 +253,6 @@ namespace Pg.Puzzle.Internal
                             var newGem = new SlidingGems.NewGem(slidingGem.Value.To, GemGenerator.Next());
                             builder.AddNewGem(newGem);
 
-                            throw new Exception("文字列化していない");
                             throw new Exception("ループ回数の見直し");
                         }
                     }

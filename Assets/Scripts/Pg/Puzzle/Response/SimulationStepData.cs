@@ -3,18 +3,14 @@ namespace Pg.Puzzle.Response
 {
     public class SimulationStepData
     {
-        public NewSlidingGems NewSlidingGems { get; }
-
         public SlidingGems SlidingGems { get; }
 
         public VanishingClusters VanishingClusters { get; }
 
         public SimulationStepData(VanishingClusters vanishingClusters,
-                                  SlidingGems slidingGems,
-                                  NewSlidingGems newSlidingGems)
+                                  SlidingGems slidingGems)
         {
             SlidingGems = slidingGems;
-            NewSlidingGems = newSlidingGems;
             VanishingClusters = vanishingClusters;
         }
 
@@ -23,7 +19,6 @@ namespace Pg.Puzzle.Response
             return $"{nameof(SimulationStepData)}{{"
                    + $"{nameof(VanishingClusters)}: {VanishingClusters}"
                    + $", {nameof(SlidingGems)}: {SlidingGems}"
-                   + $", {nameof(NewSlidingGems)}: {NewSlidingGems}"
                    + "}";
         }
     }
