@@ -44,6 +44,7 @@ namespace Pg.Scene.Game
                     Coordinates!.ApplyTiles(resultAfterOperation);
                     var simulationStepData = gameController.ProcessTurn();
                     Debug.Log(simulationStepData);
+                    Debug.Log(gameController.DebugGetTileStatuses());
                 })
                 .AddTo(gameObject);
         }

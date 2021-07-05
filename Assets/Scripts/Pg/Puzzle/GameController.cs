@@ -15,6 +15,11 @@ namespace Pg.Puzzle
             Simulator = new Simulator(gameData);
         }
 
+        public TileStatus[,] DebugGetTileStatuses()
+        {
+            return Simulator.CurrentTileStatuses;
+        }
+
         public SimulationStepData ProcessTurn()
         {
             return Simulator.ProcessTurn();

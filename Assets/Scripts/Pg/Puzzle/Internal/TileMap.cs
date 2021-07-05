@@ -1,5 +1,4 @@
 #nullable enable
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Pg.Etc.Puzzle;
@@ -35,10 +34,9 @@ namespace Pg.Puzzle.Internal
 
         internal SimulationStepData ProcessTurn()
         {
-            var clusters = DetectClusters();
-            var vanishingClusters = new VanishingClusters(clusters);
+            var vanishingClusters = new VanishingClusters(DetectClusters());
             MakeClustersVanish(vanishingClusters);
-            var slidingGems = SlideGems(vanishingClusters);
+            var slidingGems = SlideGems();
 
             return new SimulationStepData(vanishingClusters, slidingGems);
         }
@@ -57,12 +55,10 @@ namespace Pg.Puzzle.Internal
             var clusters = new Dictionary<GemColorType, List<List<Coordinate>>>();
             var specialTest = new Dictionary<Coordinate, bool>();
 
-            foreach (var enumValue in Enum.GetValues(typeof(GemColorType)))
+            foreach (var newGemColorType in GemColorType.Values)
             {
-                var gemColorType = (GemColorType) enumValue;
-
                 test.Clear();
-                clusters[gemColorType] = new List<List<Coordinate>>();
+                clusters[newGemColorType] = new List<List<Coordinate>>();
 
                 for (var colIndex = 0; colIndex < TileSize.ColSize; ++colIndex)
                 {
@@ -77,13 +73,13 @@ namespace Pg.Puzzle.Internal
 
                         test[coordinate] = true;
 
-                        if (!HasTileStatusContain(coordinate, gemColorType))
+                        if (!HasTileStatusContain(coordinate, newGemColorType))
                         {
                             continue;
                         }
 
                         var cluster = new List<Coordinate>();
-                        GetClusterOfBy(cluster, coordinate, gemColorType, test, specialTest);
+                        GetClusterOfBy(cluster, coordinate, newGemColorType, test, specialTest);
 
                         cluster.Add(coordinate);
 
@@ -92,7 +88,7 @@ namespace Pg.Puzzle.Internal
                             continue;
                         }
 
-                        clusters[gemColorType].Add(cluster);
+                        clusters[newGemColorType].Add(cluster);
                     }
                 }
             }
@@ -157,7 +153,7 @@ namespace Pg.Puzzle.Internal
 
         void MakeClustersVanish(VanishingClusters vanishingClusters)
         {
-            foreach (var gemColorType in vanishingClusters.GemColorTypes)
+            foreach (var gemColorType in vanishingClusters.NewGemColorTypes)
             {
                 foreach (var coordinates in vanishingClusters.GetVanishingCoordinatesOf(gemColorType))
                 {
@@ -169,41 +165,15 @@ namespace Pg.Puzzle.Internal
             }
         }
 
-        SlidingGems SlideGems(VanishingClusters vanishingClusters)
+        SlidingGems SlideGems()
         {
-            SlidingGems.SlidingGem? GetSlidingGem(Coordinate candidate, Coordinate current)
+            bool UpdateChanges(SlidingGems.Builder builder)
             {
-                var canSwap = CoordinateService.IsCoordinateInRange(candidate, CurrentTileStatuses)
-                              && GetTileStatusAt(candidate).TileStatusType == TileStatusType.Contain;
+                var didChange = false;
 
-                if (!canSwap)
+                for (var rowIndex = TileSize.RowSize - 1; rowIndex >= 0; --rowIndex)
                 {
-                    return null;
-                }
-
-                var slidingGem = new SlidingGems.SlidingGem(
-                    GetTileStatusAt(candidate).GemColorType!.Value,
-                    candidate,
-                    current
-                );
-
-                return slidingGem;
-            }
-
-            var maxRowLength = vanishingClusters.GemColorTypes
-                .SelectMany(vanishingClusters.GetVanishingCoordinatesOf)
-                .SelectMany(coordinates => coordinates)
-                .GroupBy(coordinate => coordinate.Column)
-                .Max(group => group.Count());
-
-            var builder = new SlidingGems.Builder();
-            var count = 0;
-
-            while (count++ < maxRowLength)
-            {
-                for (var colIndex = TileSize.ColSize - 1; colIndex >= 0; --colIndex)
-                {
-                    for (var rowIndex = TileSize.RowSize - 1; rowIndex >= 0; --rowIndex)
+                    for (var colIndex = TileSize.ColSize - 1; colIndex >= 0; --colIndex)
                     {
                         var coordinate = new Coordinate(colIndex, rowIndex);
 
@@ -241,25 +211,55 @@ namespace Pg.Puzzle.Internal
                             continue;
                         }
 
+                        didChange = true;
+
                         builder.AddSlidingGem(slidingGem.Value);
                         Swap(slidingGem.Value.From, slidingGem.Value.To);
 
-                        if (CoordinateService.IsTopRow(slidingGem.Value.To))
+                        if (CoordinateService.IsTopRow(slidingGem.Value.From))
                         {
                             Assert.AreEqual(
                                 TileStatusType.Empty,
-                                GetTileStatusAt(slidingGem.Value.To).TileStatusType
+                                GetTileStatusAt(slidingGem.Value.From).TileStatusType
                             );
-                            var newGem = new SlidingGems.NewGem(slidingGem.Value.To, GemGenerator.Next());
+                            var newGem = new SlidingGems.NewGem(slidingGem.Value.From, GemGenerator.Next());
                             builder.AddNewGem(newGem);
-
-                            throw new Exception("ループ回数の見直し");
                         }
                     }
                 }
+
+                return didChange;
             }
 
-            return builder.Build();
+            SlidingGems.SlidingGem? GetSlidingGem(Coordinate candidate, Coordinate current)
+            {
+                var canSwap = CoordinateService.IsCoordinateInRange(candidate, CurrentTileStatuses)
+                              && GetTileStatusAt(candidate).TileStatusType == TileStatusType.Contain;
+
+                if (!canSwap)
+                {
+                    return null;
+                }
+
+                var slidingGem = new SlidingGems.SlidingGem(GetTileStatusAt(candidate).GemColorType!,
+                    candidate,
+                    current
+                );
+
+                return slidingGem;
+            }
+
+            var resultBuilder = new SlidingGems.Builder();
+
+            while (true)
+            {
+                if (!UpdateChanges(resultBuilder))
+                {
+                    break;
+                }
+            }
+
+            return resultBuilder.Build();
         }
 
         void Swap(Coordinate a, Coordinate b)

@@ -1,6 +1,8 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Pg.Puzzle.Response
 {
@@ -12,14 +14,49 @@ namespace Pg.Puzzle.Response
             NewGem,
         }
 
+        public IEnumerable<EventType> EventTypes { get; }
+
         public IEnumerable<SlidingGem> Items { get; }
         public IEnumerable<NewGem> NewGems { get; }
 
         SlidingGems(IEnumerable<SlidingGem> slidingGems,
-                    IEnumerable<NewGem> newGems)
+                    IEnumerable<NewGem> newGems,
+                    IEnumerable<EventType> eventTypes)
         {
             Items = slidingGems.ToArray();
             NewGems = newGems.ToArray();
+            EventTypes = eventTypes.ToArray();
+        }
+
+        public string DebugDescribeHistory()
+        {
+            var builder = new StringBuilder();
+            var x = Items.GetEnumerator();
+            var y = NewGems.GetEnumerator();
+
+            foreach (var eventType in EventTypes)
+            {
+                switch (eventType)
+                {
+                    case EventType.Take:
+                        x.MoveNext();
+                        builder.Append($"{eventType}: {x.Current}");
+                        break;
+
+                    case EventType.NewGem:
+                        y.MoveNext();
+                        builder.Append($"{eventType}: {y.Current}");
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            x.Dispose();
+            y.Dispose();
+
+            return builder.ToString();
         }
 
         public override string ToString()
@@ -27,6 +64,7 @@ namespace Pg.Puzzle.Response
             return $"{nameof(SlidingGem)}{{"
                    + $"{nameof(Items)}: [{string.Join(", ", Items.Select(item => item.ToString()))}]"
                    + $", {nameof(NewGems)}: [{string.Join(", ", NewGems.Select(item => item.ToString()))}]"
+                   + $", {nameof(EventTypes)}: [{string.Join(", ", EventTypes.Select(item => item.ToString()))}]"
                    + "}";
         }
 
@@ -102,7 +140,7 @@ namespace Pg.Puzzle.Response
 
             internal SlidingGems Build()
             {
-                return new SlidingGems(SlidingGems, NewGems);
+                return new SlidingGems(SlidingGems, NewGems, Events);
             }
         }
     }

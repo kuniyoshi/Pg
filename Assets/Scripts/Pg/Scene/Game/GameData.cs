@@ -87,10 +87,8 @@ namespace Pg.Scene.Game
                 {
                     var tileGemType = rows[rowIndex][colIndex];
 
-                    result[colIndex, rowIndex] = new TileStatus(
-                        ConvertToTileStatusType(tileGemType),
-                        ConvertToGemColorType(tileGemType)
-                    );
+                    result[colIndex, rowIndex] = new TileStatus(ConvertToTileStatusType(tileGemType),
+                        ConvertToGemColorType(tileGemType));
                 }
             }
 

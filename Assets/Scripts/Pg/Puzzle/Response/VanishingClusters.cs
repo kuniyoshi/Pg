@@ -15,11 +15,11 @@ namespace Pg.Puzzle.Response
             Data = data;
         }
 
-        public IEnumerable<GemColorType> GemColorTypes => Data.Keys;
+        public IEnumerable<GemColorType> NewGemColorTypes => Data.Keys;
 
         public IEnumerable<IEnumerable<Coordinate>> GetVanishingCoordinatesOf(GemColorType gemColorType)
         {
-            Assert.IsTrue(Data.ContainsKey(gemColorType), "Data.ContainsKey(gemColorType)");
+            Assert.IsTrue(Data.ContainsKey(gemColorType), "Data2.ContainsKey(gemColorType)");
             return Data[gemColorType];
         }
 

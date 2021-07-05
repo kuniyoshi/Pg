@@ -18,7 +18,7 @@ namespace Pg.Scene.Game
         : MonoBehaviour
     {
         [SerializeField]
-        List<GemColorTypeVsSprite>? Map;
+        List<NewGemColorTypeVsSprite>? Map;
 
         [SerializeField]
         Image? Image;
@@ -98,31 +98,17 @@ namespace Pg.Scene.Game
         {
             TileData = new TileData(Coordinate, newTileStatus);
 
-            switch (newTileStatus.TileStatusType)
-            {
-                case TileStatusType.Contain:
+            newTileStatus.TileStatusType.Switch(
+                () => { gameObject.SetActive(value: false); },
+                () => { Image!.enabled = false; },
+                () =>
                 {
-                    Assert.IsTrue(newTileStatus.GemColorType.HasValue, "newTileStatus.GemColorType.HasValue");
-                    var statusVsSprite = Map!.First(pair => pair.First == newTileStatus.GemColorType);
+                    Assert.IsNotNull(newTileStatus.GemColorType, "newTileStatus.NewGemColorType != null");
+                    var statusVsSprite = Map!.First(pair => pair.First.Convert() == newTileStatus.GemColorType);
                     Image!.sprite = statusVsSprite.Second;
                     Image!.enabled = true;
-
-                    return;
                 }
-
-                case TileStatusType.Empty:
-                    Image!.enabled = false;
-
-                    return;
-
-                case TileStatusType.Closed:
-                    gameObject.SetActive(value: false);
-
-                    return;
-
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            );
         }
 
         void MakeWorking()
@@ -159,13 +145,11 @@ namespace Pg.Scene.Game
         [Conditional("DEBUG")]
         void ZzDebugAssertMapValue()
         {
-            foreach (var value in Enum.GetValues(typeof(GemColorType)))
+            foreach (var newGemColorType in GemColorType.Values)
             {
-                var gemColorType = (GemColorType) value;
-
                 Assert.IsTrue(
-                    Map!.Any(item => item.First == gemColorType),
-                    "Map!.Any(item => item.First == gemColorType)"
+                    Map!.Any(item => item.First.Convert() == newGemColorType),
+                    "Map!.Any(item => item.First.Convert() == newGemColorType)"
                 );
             }
 
@@ -176,10 +160,10 @@ namespace Pg.Scene.Game
         }
 
         [Serializable]
-        public class GemColorTypeVsSprite
-            : Pair<GemColorType, Sprite>
+        public class NewGemColorTypeVsSprite
+            : Pair<SerializableGemColorType, Sprite>
         {
-            public GemColorTypeVsSprite(GemColorType first, Sprite second)
+            public NewGemColorTypeVsSprite(SerializableGemColorType first, Sprite second)
                 : base(first, second)
             {
             }

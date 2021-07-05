@@ -15,7 +15,7 @@ namespace Pg.Puzzle.Internal
         {
             var can = tileStatus.TileStatusType != TileStatusType.Closed
                       && tileStatus.TileStatusType != TileStatusType.Empty;
-            Assert.IsTrue(!(can ^ tileStatus.GemColorType.HasValue), "!(can ^ tileStatus.GemColorType.HasValue)");
+            Assert.IsTrue(!(can ^ (tileStatus.GemColorType != null)), "!(can ^ tileStatus.NewGemColorType != null)");
 
             return can;
         }
