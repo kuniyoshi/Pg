@@ -20,5 +20,11 @@ namespace Pg.Puzzle
 
         public TileStatusType TileStatusType { get; }
         public GemColorType? GemColorType { get; }
+        public string Sigil => GetSigil();
+
+        string GetSigil()
+        {
+            return GemColorType?.Sigil ?? TileStatusType.Sigil!;
+        }
     }
 }

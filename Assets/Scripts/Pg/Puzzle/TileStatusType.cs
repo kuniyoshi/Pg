@@ -8,41 +8,60 @@ namespace Pg.Puzzle
     public class TileStatusType
         : Enumeration
     {
-        IEnumerable<TileStatusType> Values { get; } = new[]
+        static Dictionary<InternalType, TileStatusType> ValueOf { get; } = new Dictionary<InternalType, TileStatusType>
         {
-            Closed,
-            Empty,
-            Contain,
+            [InternalType.Closed] = new TileStatusType(InternalType.Closed),
+            [InternalType.Empty] = new TileStatusType(InternalType.Empty),
+            [InternalType.Contain] = new TileStatusType(InternalType.Contain),
         };
 
-        TileStatusType(int id, string name)
-            : base(id, name)
+        TileStatusType(InternalType internalType)
+            : base((int) internalType, internalType.ToString())
         {
         }
 
-        public static TileStatusType Closed { get; } = new TileStatusType(id: 1, nameof(Closed));
-        public static TileStatusType Contain { get; } = new TileStatusType(id: 3, nameof(Contain));
-        public static TileStatusType Empty { get; } = new TileStatusType(id: 2, nameof(Empty));
+        public static TileStatusType Closed => ValueOf[InternalType.Closed];
+        public static TileStatusType Contain => ValueOf[InternalType.Contain];
+        public static TileStatusType Empty => ValueOf[InternalType.Empty];
+        public string? Sigil => GetSigil();
 
         public void Switch(Action ifClosed, Action ifEmpty, Action ifContain)
         {
-            switch (Id)
+            switch ((InternalType) Id)
             {
-                case 1:
+                case InternalType.Closed:
                     ifClosed.Invoke();
                     break;
 
-                case 2:
-                    ifEmpty.Invoke();
-                    break;
-
-                case 3:
+                case InternalType.Contain:
                     ifContain.Invoke();
                     break;
 
+                case InternalType.Empty:
+                    ifEmpty.Invoke();
+                    break;
+
                 default:
-                    throw new ArgumentOutOfRangeException($"{this} is out of range [{string.Join(", ", Values)}]");
+                    throw new ArgumentOutOfRangeException();
             }
+        }
+
+        string? GetSigil()
+        {
+            return (InternalType) Id switch
+            {
+                InternalType.Closed => "X",
+                InternalType.Empty => " ",
+                InternalType.Contain => null,
+                _ => throw new ArgumentOutOfRangeException(),
+            };
+        }
+
+        enum InternalType
+        {
+            Closed = 1,
+            Empty = 2,
+            Contain = 3,
         }
     }
 }

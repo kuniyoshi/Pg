@@ -8,6 +8,26 @@ namespace Pg.Puzzle.Internal
     /// </summary>
     internal static class DirectionService
     {
+        static Coordinate[,] NeighborDirections { get; } =
+        {
+            {
+                new Coordinate(column: 1, row: 1),
+                new Coordinate(column: 1, row: 0),
+                new Coordinate(column: 0, row: -1),
+                new Coordinate(column: -1, row: 0),
+                new Coordinate(column: -1, row: 1),
+                new Coordinate(column: 0, row: 1),
+            },
+            {
+                new Coordinate(column: 1, row: 0),
+                new Coordinate(column: 1, row: -1),
+                new Coordinate(column: 0, row: -1),
+                new Coordinate(column: -1, row: -1),
+                new Coordinate(column: -1, row: 0),
+                new Coordinate(column: 0, row: 1),
+            },
+        };
+
         internal static Coordinate GetBelow(Coordinate above)
         {
             return new Coordinate(above.Column, above.Row + 1);
@@ -62,25 +82,5 @@ namespace Pg.Puzzle.Internal
         }
 
         internal static int NeighborSize => NeighborDirections.GetLength(dimension: 1);
-
-        static Coordinate[,] NeighborDirections { get; } =
-        {
-            {
-                new Coordinate(column: 1, row: 1),
-                new Coordinate(column: 1, row: 0),
-                new Coordinate(column: 0, row: -1),
-                new Coordinate(column: -1, row: 0),
-                new Coordinate(column: -1, row: 1),
-                new Coordinate(column: 0, row: 1),
-            },
-            {
-                new Coordinate(column: 1, row: 0),
-                new Coordinate(column: 1, row: -1),
-                new Coordinate(column: 0, row: -1),
-                new Coordinate(column: -1, row: -1),
-                new Coordinate(column: -1, row: 0),
-                new Coordinate(column: 0, row: 1),
-            },
-        };
     }
 }

@@ -1,6 +1,6 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using Pg.Puzzle.Util;
 
 namespace Pg.Puzzle
@@ -8,34 +8,81 @@ namespace Pg.Puzzle
     public class GemColorType
         : Enumeration
     {
-        public static GemColorType Convert(int id)
-        {
-            return Values.Single(value => value.Id == id);
-        }
+        static GemColorType[]? _valuesCache;
 
-        GemColorType(int id, string name)
-            : base(id, name)
+        static Dictionary<InternalType, GemColorType> ValueOf { get; } = new Dictionary<InternalType, GemColorType>
         {
-        }
-
-        public static GemColorType Blue { get; } = new GemColorType(id: 4, nameof(Blue));
-        public static GemColorType Green { get; } = new GemColorType(id: 1, nameof(Green));
-        public static GemColorType Orange { get; } = new GemColorType(id: 6, nameof(Orange));
-        public static GemColorType Purple { get; } = new GemColorType(id: 3, nameof(Purple));
-        public static GemColorType Rainbow { get; } = new GemColorType(id: 7, nameof(Rainbow));
-        public static GemColorType Red { get; } = new GemColorType(id: 2, nameof(Red));
-
-        public static IEnumerable<GemColorType> Values { get; } = new[]
-        {
-            Green,
-            Red,
-            Purple,
-            Blue,
-            Yellow,
-            Orange,
-            Rainbow,
+            [InternalType.Green] = new GemColorType(InternalType.Green),
+            [InternalType.Red] = new GemColorType(InternalType.Red),
+            [InternalType.Purple] = new GemColorType(InternalType.Purple),
+            [InternalType.Blue] = new GemColorType(InternalType.Blue),
+            [InternalType.Yellow] = new GemColorType(InternalType.Yellow),
+            [InternalType.Orange] = new GemColorType(InternalType.Orange),
+            [InternalType.Rainbow] = new GemColorType(InternalType.Rainbow),
         };
 
-        public static GemColorType Yellow { get; } = new GemColorType(id: 5, nameof(Yellow));
+        public static GemColorType Convert(int id)
+        {
+            var internalType = (InternalType) id;
+            return ValueOf[internalType];
+        }
+
+        static IEnumerable<GemColorType> GetValues()
+        {
+            return _valuesCache ??= new[]
+            {
+                Green,
+                Red,
+                Purple,
+                Blue,
+                Yellow,
+                Orange,
+                Rainbow,
+            };
+        }
+
+        GemColorType(InternalType baseValue)
+            : base((int) baseValue, baseValue.ToString())
+        {
+        }
+
+        public static GemColorType Blue => ValueOf[InternalType.Blue];
+        public static GemColorType Green => ValueOf[InternalType.Green];
+        public static GemColorType Orange => ValueOf[InternalType.Orange];
+        public static GemColorType Purple => ValueOf[InternalType.Purple];
+        public static GemColorType Rainbow => ValueOf[InternalType.Rainbow];
+
+        public static GemColorType Red => ValueOf[InternalType.Red];
+
+        public string Sigil => GetSigil();
+
+        public static IEnumerable<GemColorType> Values => GetValues();
+        public static GemColorType Yellow => ValueOf[InternalType.Yellow];
+
+        string GetSigil()
+        {
+            return (InternalType) Id switch
+            {
+                InternalType.Green => "g",
+                InternalType.Red => "r",
+                InternalType.Purple => "p",
+                InternalType.Blue => "b",
+                InternalType.Yellow => "y",
+                InternalType.Orange => "o",
+                InternalType.Rainbow => "a",
+                _ => throw new ArgumentOutOfRangeException(),
+            };
+        }
+
+        enum InternalType
+        {
+            Green = 1,
+            Red = 2,
+            Purple = 3,
+            Blue = 4,
+            Yellow = 5,
+            Orange = 6,
+            Rainbow = 7,
+        }
     }
 }

@@ -1,5 +1,6 @@
 #nullable enable
 using Pg.Puzzle;
+using Pg.Puzzle.Util;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -44,7 +45,7 @@ namespace Pg.Scene.Game
                     Coordinates!.ApplyTiles(resultAfterOperation);
                     var simulationStepData = gameController.ProcessTurn();
                     Debug.Log(simulationStepData);
-                    Debug.Log(gameController.DebugGetTileStatuses());
+                    Debug.Log(Dumper.Dump(gameController.DebugGetTileStatuses()));
                 })
                 .AddTo(gameObject);
         }
