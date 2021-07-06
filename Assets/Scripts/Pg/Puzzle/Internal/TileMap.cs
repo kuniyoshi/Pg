@@ -177,9 +177,9 @@ namespace Pg.Puzzle.Internal
                     {
                         var coordinate = new Coordinate(colIndex, rowIndex);
 
-                        var isEmpty = GetTileStatusAt(coordinate).TileStatusType == TileStatusType.Empty;
+                        var isNotEmpty = GetTileStatusAt(coordinate).TileStatusType != TileStatusType.Empty;
 
-                        if (!isEmpty)
+                        if (isNotEmpty)
                         {
                             continue;
                         }

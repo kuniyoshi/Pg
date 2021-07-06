@@ -30,22 +30,22 @@ namespace Pg.Puzzle.Response
 
         public string DebugDescribeHistory()
         {
-            var builder = new StringBuilder();
-            var x = Items.GetEnumerator();
-            var y = NewGems.GetEnumerator();
+            var items = Items.GetEnumerator();
+            var newGems = NewGems.GetEnumerator();
+            var resultItems = new List<string>();
 
             foreach (var eventType in EventTypes)
             {
                 switch (eventType)
                 {
                     case EventType.Take:
-                        x.MoveNext();
-                        builder.Append($"{eventType}: {x.Current}");
+                        items.MoveNext();
+                        resultItems.Add($"{eventType}: {items.Current}");
                         break;
 
                     case EventType.NewGem:
-                        y.MoveNext();
-                        builder.Append($"{eventType}: {y.Current}");
+                        newGems.MoveNext();
+                        resultItems.Add($"{eventType}: {newGems.Current}");
                         break;
 
                     default:
@@ -53,10 +53,10 @@ namespace Pg.Puzzle.Response
                 }
             }
 
-            x.Dispose();
-            y.Dispose();
+            items.Dispose();
+            newGems.Dispose();
 
-            return builder.ToString();
+            return string.Join(", ", resultItems);
         }
 
         public override string ToString()

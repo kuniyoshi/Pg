@@ -18,7 +18,7 @@ namespace Pg.Puzzle.Response
         {
             return $"{nameof(SimulationStepData)}{{"
                    + $"{nameof(VanishingClusters)}: {VanishingClusters}"
-                   + $", {nameof(SlidingGems)}: {SlidingGems.DebugDescribeHistory()}"
+                   + $", {nameof(SlidingGems)}: [{SlidingGems.DebugDescribeHistory()}]"
                    + "}";
         }
     }
