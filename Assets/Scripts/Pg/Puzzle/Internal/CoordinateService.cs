@@ -1,7 +1,7 @@
 #nullable enable
 namespace Pg.Puzzle.Internal
 {
-    public static class CoordinateService
+    internal static class CoordinateService
     {
         internal static bool IsCoordinateInRange(Coordinate coordinate, TileStatus[,] array)
         {

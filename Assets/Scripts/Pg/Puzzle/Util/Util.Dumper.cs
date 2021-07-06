@@ -1,7 +1,7 @@
+#nullable enable
 using System.Collections.Generic;
 using System.Text;
 
-#nullable enable
 namespace Pg.Puzzle.Util
 {
     public static class Dumper
