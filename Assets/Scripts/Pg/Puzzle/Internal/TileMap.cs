@@ -49,6 +49,15 @@ namespace Pg.Puzzle.Internal
             }
         }
 
+        void AddGem(Coordinate toCoordinate, GemColorType gemColorType)
+        {
+            Assert.AreEqual(TileStatus.Empty, GetTileStatusAt(toCoordinate));
+            CurrentTileStatuses[toCoordinate.Column, toCoordinate.Row] = new TileStatus(
+                TileStatusType.Contain,
+                gemColorType
+            );
+        }
+
         Dictionary<GemColorType, List<List<Coordinate>>> DetectClusters()
         {
             var test = new Dictionary<Coordinate, bool>();
@@ -177,9 +186,20 @@ namespace Pg.Puzzle.Internal
                     {
                         var coordinate = new Coordinate(colIndex, rowIndex);
 
-                        var isNotEmpty = GetTileStatusAt(coordinate).TileStatusType != TileStatusType.Empty;
+                        var isEmpty = GetTileStatusAt(coordinate).TileStatusType == TileStatusType.Empty;
 
-                        if (isNotEmpty)
+                        if (isEmpty && CoordinateService.IsTopRow(coordinate))
+                        {
+                            didChange = true;
+                            var newGemColorType = GemGenerator.Next();
+                            var newGem = new SlidingGems.NewGem(coordinate, newGemColorType);
+                            builder.AddNewGem(newGem);
+                            AddGem(coordinate, newGemColorType);
+
+                            continue;
+                        }
+
+                        if (!isEmpty)
                         {
                             continue;
                         }
@@ -222,8 +242,10 @@ namespace Pg.Puzzle.Internal
                                 TileStatusType.Empty,
                                 GetTileStatusAt(slidingGem.Value.From).TileStatusType
                             );
-                            var newGem = new SlidingGems.NewGem(slidingGem.Value.From, GemGenerator.Next());
+                            var newGemColorType = GemGenerator.Next();
+                            var newGem = new SlidingGems.NewGem(slidingGem.Value.From, newGemColorType);
                             builder.AddNewGem(newGem);
+                            AddGem(slidingGem.Value.From, newGemColorType);
                         }
                     }
                 }
@@ -250,8 +272,10 @@ namespace Pg.Puzzle.Internal
             }
 
             var resultBuilder = new SlidingGems.Builder();
+            const int maxLoopCount = 1000;
+            var safetyCounter = 0;
 
-            while (true)
+            while (safetyCounter++ < maxLoopCount)
             {
                 if (!UpdateChanges(resultBuilder))
                 {
