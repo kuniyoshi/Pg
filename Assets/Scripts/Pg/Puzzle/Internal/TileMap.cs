@@ -1,4 +1,5 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Pg.Etc.Puzzle;
@@ -272,11 +273,17 @@ namespace Pg.Puzzle.Internal
             }
 
             var resultBuilder = new SlidingGems.Builder();
-            const int maxLoopCount = 1000;
             var safetyCounter = 0;
 
-            while (safetyCounter++ < maxLoopCount)
+            while (true)
             {
+                const int maxLoopCount = 1000;
+
+                if (safetyCounter++ >= maxLoopCount)
+                {
+                    throw new Exception("Too may loop!");
+                }
+
                 if (!UpdateChanges(resultBuilder))
                 {
                     break;
