@@ -39,13 +39,15 @@ namespace Pg.Scene.Game
             Coordinates!.ApplyTiles(tileStatuses);
 
             UserPlayer!.OnTransaction
-                .Subscribe(tileOperation =>
+                .Subscribe(async tileOperation =>
                 {
                     var resultAfterOperation = gameController.WorkTransaction(tileOperation);
                     Coordinates!.ApplyTiles(resultAfterOperation);
                     var simulationStepData = gameController.ProcessTurn();
                     Debug.Log(simulationStepData);
                     Debug.Log(Dumper.Dump(gameController.DebugGetTileStatuses()));
+                    await Coordinates!.ApplyVanishings(simulationStepData.VanishingClusters);
+                    await Coordinates!.ApplySlides(simulationStepData.SlidingGems);
                     Coordinates!.ApplyTiles(gameController.DebugGetTileStatuses());
                 })
                 .AddTo(gameObject);

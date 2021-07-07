@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using DG.Tweening;
 using Pg.App.Util;
 using Pg.Puzzle;
@@ -53,6 +54,26 @@ namespace Pg.Scene.Game
             rectTransform.localPosition = localPosition;
         }
 
+        public async Task NewGem(GemColorType gemColorType)
+        {
+            Image!.enabled = true;
+            Image!.GetComponentStrictly<RectTransform>().localScale = Vector3.zero;
+            UpdateStatus(new TileStatus(TileStatusType.Contain, gemColorType));
+            await Image!.GetComponentStrictly<RectTransform>()
+                .DOScale(Vector3.one, duration: 0.05f)
+                .AsyncWaitForCompletion();
+        }
+
+        public async Task Popup(GemColorType gemColorType)
+        {
+            Image!.enabled = true;
+            Image!.GetComponentStrictly<RectTransform>().localScale = Vector3.zero;
+            UpdateStatus(new TileStatus(TileStatusType.Contain, gemColorType));
+            await Image!.GetComponentStrictly<RectTransform>()
+                .DOScale(Vector3.one, duration: 0.05f)
+                .AsyncWaitForCompletion();
+        }
+
         public void SetEvents(UserPlayer userPlayer)
         {
             Image!.OnPointerDownAsObservable()
@@ -94,6 +115,19 @@ namespace Pg.Scene.Game
                 .AddTo(gameObject);
         }
 
+        public async Task Slide()
+        {
+            Image!.enabled = true;
+            await Image!.GetComponentStrictly<RectTransform>()
+                .DOScale(Vector3.zero, duration: 0.05f)
+                .OnComplete(() =>
+                {
+                    UpdateStatus(TileStatus.Empty);
+                    Image!.GetComponentStrictly<RectTransform>().localScale = Vector3.one;
+                })
+                .AsyncWaitForCompletion();
+        }
+
         public void UpdateStatus(TileStatus newTileStatus)
         {
             TileData = new TileData(Coordinate, newTileStatus);
@@ -109,6 +143,18 @@ namespace Pg.Scene.Game
                     Image!.enabled = true;
                 }
             );
+        }
+
+        public async Task Vanish()
+        {
+            await Image!.GetComponentStrictly<RectTransform>()
+                .DOScale(Vector3.zero, duration: 0.1f)
+                .OnComplete(() =>
+                {
+                    UpdateStatus(TileStatus.Empty);
+                    Image!.GetComponentStrictly<RectTransform>().localScale = Vector3.one;
+                })
+                .AsyncWaitForCompletion();
         }
 
         void MakeWorking()

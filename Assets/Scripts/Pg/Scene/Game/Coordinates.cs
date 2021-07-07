@@ -1,10 +1,12 @@
 #nullable enable
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Pg.App.Util;
 using Pg.Etc.Puzzle;
 using Pg.Puzzle;
+using Pg.Puzzle.Response;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.EventSystems;
@@ -75,6 +77,38 @@ namespace Pg.Scene.Game
             }
         }
 
+        public async Task ApplySlides(SlidingGems slidingGems)
+        {
+            var slidingEnumerator = slidingGems.Items.GetEnumerator();
+            var newGemEnumerator = slidingGems.NewGems.GetEnumerator();
+
+            foreach (var slidingGemsEventType in slidingGems.EventTypes)
+            {
+                switch (slidingGemsEventType)
+                {
+                    case SlidingGems.EventType.Take:
+                        slidingEnumerator.MoveNext();
+                        var slidingGem = slidingEnumerator.Current;
+                        var (coordinateFrom, coordinateTo) = (slidingGem.From, slidingGem.To);
+                        await _tiles![coordinateFrom.Column, coordinateFrom.Row].Slide();
+                        await _tiles![coordinateTo.Column, coordinateTo.Row].Popup(slidingGem.GemColorType);
+                        break;
+
+                    case SlidingGems.EventType.NewGem:
+                        newGemEnumerator.MoveNext();
+                        var newGem = newGemEnumerator.Current;
+                        await _tiles![newGem.Coordinate.Column, newGem.Coordinate.Row].NewGem(newGem.GemColorType);
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            slidingEnumerator.Dispose();
+            newGemEnumerator.Dispose();
+        }
+
         public void ApplyTiles(TileStatus[,] tiles)
         {
             Assert.AreEqual(_tiles!.GetLength(dimension: 0), tiles.GetLength(dimension: 0));
@@ -85,6 +119,20 @@ namespace Pg.Scene.Game
                 for (var colIndex = 0; colIndex < _tiles.GetLength(dimension: 0); ++colIndex)
                 {
                     _tiles[colIndex, rowIndex].UpdateStatus(tiles[colIndex, rowIndex]);
+                }
+            }
+        }
+
+        public async Task ApplyVanishings(VanishingClusters vanishingClusters)
+        {
+            foreach (var gemColorType in vanishingClusters.NewGemColorTypes)
+            {
+                foreach (var coordinates in vanishingClusters.GetVanishingCoordinatesOf(gemColorType))
+                {
+                    foreach (var coordinate in coordinates)
+                    {
+                        await _tiles![coordinate.Column, coordinate.Row].Vanish();
+                    }
                 }
             }
         }
