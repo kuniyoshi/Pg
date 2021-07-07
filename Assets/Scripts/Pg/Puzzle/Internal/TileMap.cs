@@ -89,6 +89,7 @@ namespace Pg.Puzzle.Internal
                         }
 
                         var cluster = new List<Coordinate>();
+                        specialTest.Clear();
                         GetClusterOfBy(cluster, coordinate, newGemColorType, test, specialTest);
 
                         cluster.Add(coordinate);
