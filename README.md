@@ -8,6 +8,8 @@
   reference DOTween in asmdef
 - UniRx is required
   reference UniRx in asmdef
+- UniTask is required
+  reference UniTask in asmdef
 
 # TERMS
 
