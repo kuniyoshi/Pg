@@ -12,46 +12,30 @@ namespace Pg.Puzzle.Internal
     internal class TileMap
     {
         GemGenerator GemGenerator { get; }
-        Map Map { get; }
 
-        internal TileMap(TileStatus[,] tileStatuses)
+        internal TileMap()
         {
-            var colSize = tileStatuses.GetLength(dimension: 0);
-            var rowSize = tileStatuses.GetLength(dimension: 1);
-            var map = new TileStatus[colSize, rowSize];
-
-            for (var colIndex = 0; colIndex < TileSize.ColSize; ++colIndex)
-            {
-                for (var rowIndex = 0; rowIndex < TileSize.RowSize; ++rowIndex)
-                {
-                    map[colIndex, rowIndex] = tileStatuses[colIndex, rowIndex];
-                }
-            }
-
-            Map = new Map(map);
             GemGenerator = new GemGenerator();
         }
 
-        internal TileStatus[,] CurrentTileStatuses => Map.CurrentTileStatuses;
-
-        internal SimulationStepData ProcessTurn()
+        internal SimulationStepData ProcessTurn(Map map)
         {
-            var vanishingClusters = new VanishingClusters(DetectClusters());
-            MakeClustersVanish(vanishingClusters);
-            var slidingGems = SlideGems();
+            var vanishingClusters = new VanishingClusters(DetectClusters(map));
+            MakeClustersVanish(map, vanishingClusters);
+            var slidingGems = SlideGems(map);
 
             return new SimulationStepData(vanishingClusters, slidingGems);
         }
 
-        internal void WorkTransaction(IEnumerable<TileOperation> operations)
+        internal void WorkTransaction(Map map, IEnumerable<TileOperation> operations)
         {
             foreach (var tileOperation in operations)
             {
-                Map.Swap(tileOperation.A, tileOperation.B);
+                map.Swap(tileOperation.A, tileOperation.B);
             }
         }
 
-        Dictionary<GemColorType, List<List<Coordinate>>> DetectClusters()
+        Dictionary<GemColorType, List<List<Coordinate>>> DetectClusters(Map map)
         {
             var test = new Dictionary<Coordinate, bool>();
             var clusters = new Dictionary<GemColorType, List<List<Coordinate>>>();
@@ -75,14 +59,14 @@ namespace Pg.Puzzle.Internal
 
                         test[coordinate] = true;
 
-                        if (!Map.HasTileStatusContain(coordinate, newGemColorType))
+                        if (!map.HasTileStatusContain(coordinate, newGemColorType))
                         {
                             continue;
                         }
 
                         var cluster = new List<Coordinate>();
                         specialTest.Clear();
-                        GetClusterOfBy(cluster, coordinate, newGemColorType, test, specialTest);
+                        GetClusterOfBy(cluster, coordinate, newGemColorType, test, specialTest, map);
 
                         cluster.Add(coordinate);
 
@@ -103,13 +87,14 @@ namespace Pg.Puzzle.Internal
                             Coordinate coordinate,
                             GemColorType gemColorType,
                             Dictionary<Coordinate, bool> test,
-                            Dictionary<Coordinate, bool> specialTest)
+                            Dictionary<Coordinate, bool> specialTest,
+                            Map map)
         {
             for (var neighborIndex = 0; neighborIndex < DirectionService.NeighborSize; ++neighborIndex)
             {
                 var neighbor = DirectionService.GetNeighborOf(coordinate, neighborIndex);
 
-                if (!Map.IsCoordinateInRange(neighbor))
+                if (!map.IsCoordinateInRange(neighbor))
                 {
                     continue;
                 }
@@ -121,26 +106,26 @@ namespace Pg.Puzzle.Internal
 
                 test[neighbor] = true;
 
-                if (Map.HasTileStatusContain(neighbor, GemColorType.Rainbow) && !specialTest.ContainsKey(neighbor))
+                if (map.HasTileStatusContain(neighbor, GemColorType.Rainbow) && !specialTest.ContainsKey(neighbor))
                 {
                     specialTest[neighbor] = true;
                     outNeighbors.Add(neighbor);
-                    GetClusterOfBy(outNeighbors, neighbor, gemColorType, test, specialTest);
+                    GetClusterOfBy(outNeighbors, neighbor, gemColorType, test, specialTest, map);
 
                     continue;
                 }
 
-                if (!Map.HasTileStatusContain(neighbor, gemColorType))
+                if (!map.HasTileStatusContain(neighbor, gemColorType))
                 {
                     continue;
                 }
 
                 outNeighbors.Add(neighbor);
-                GetClusterOfBy(outNeighbors, neighbor, gemColorType, test, specialTest);
+                GetClusterOfBy(outNeighbors, neighbor, gemColorType, test, specialTest, map);
             }
         }
 
-        void MakeClustersVanish(VanishingClusters vanishingClusters)
+        void MakeClustersVanish(Map map, VanishingClusters vanishingClusters)
         {
             foreach (var gemColorType in vanishingClusters.NewGemColorTypes)
             {
@@ -148,13 +133,13 @@ namespace Pg.Puzzle.Internal
                 {
                     foreach (var coordinate in coordinates)
                     {
-                        Map.SetEmpty(coordinate);
+                        map.SetEmpty(coordinate);
                     }
                 }
             }
         }
 
-        SlidingGems SlideGems()
+        SlidingGems SlideGems(Map map)
         {
             bool UpdateChanges(SlidingGems.Builder builder)
             {
@@ -166,7 +151,7 @@ namespace Pg.Puzzle.Internal
                     {
                         var coordinate = new Coordinate(colIndex, rowIndex);
 
-                        var isEmpty = Map.GetTileStatusAt(coordinate).TileStatusType == TileStatusType.Empty;
+                        var isEmpty = map.GetTileStatusAt(coordinate).TileStatusType == TileStatusType.Empty;
 
                         if (isEmpty && CoordinateService.IsTopRow(coordinate))
                         {
@@ -174,7 +159,7 @@ namespace Pg.Puzzle.Internal
                             var newGemColorType = GemGenerator.Next();
                             var newGem = new SlidingGems.NewGem(coordinate, newGemColorType);
                             builder.AddNewGem(newGem);
-                            Map.AddGem(coordinate, newGemColorType);
+                            map.AddGem(coordinate, newGemColorType);
 
                             continue;
                         }
@@ -186,12 +171,12 @@ namespace Pg.Puzzle.Internal
 
                         var above = DirectionService.GetJustAbove(coordinate);
 
-                        if (!Map.IsCoordinateInRange(above))
+                        if (!map.IsCoordinateInRange(above))
                         {
                             continue;
                         }
 
-                        if (Map.GetTileStatusAt(above).TileStatusType == TileStatusType.Empty)
+                        if (map.GetTileStatusAt(above).TileStatusType == TileStatusType.Empty)
                         {
                             continue;
                         }
@@ -214,17 +199,17 @@ namespace Pg.Puzzle.Internal
                         didChange = true;
 
                         builder.AddSlidingGem(slidingGem.Value);
-                        Map.Swap(slidingGem.Value.From, slidingGem.Value.To);
+                        map.Swap(slidingGem.Value.From, slidingGem.Value.To);
 
                         if (CoordinateService.IsTopRow(slidingGem.Value.From))
                         {
                             Assert.AreEqual(
-                                TileStatusType.Empty, Map.GetTileStatusAt(slidingGem.Value.From).TileStatusType
+                                TileStatusType.Empty, map.GetTileStatusAt(slidingGem.Value.From).TileStatusType
                             );
                             var newGemColorType = GemGenerator.Next();
                             var newGem = new SlidingGems.NewGem(slidingGem.Value.From, newGemColorType);
                             builder.AddNewGem(newGem);
-                            Map.AddGem(slidingGem.Value.From, newGemColorType);
+                            map.AddGem(slidingGem.Value.From, newGemColorType);
                         }
                     }
                 }
@@ -234,15 +219,15 @@ namespace Pg.Puzzle.Internal
 
             SlidingGems.SlidingGem? GetSlidingGem(Coordinate candidate, Coordinate current)
             {
-                var canSwap = Map.IsCoordinateInRange(candidate)
-                              && Map.GetTileStatusAt(candidate).TileStatusType == TileStatusType.Contain;
+                var canSwap = map.IsCoordinateInRange(candidate)
+                              && map.GetTileStatusAt(candidate).TileStatusType == TileStatusType.Contain;
 
                 if (!canSwap)
                 {
                     return null;
                 }
 
-                var slidingGem = new SlidingGems.SlidingGem(Map.GetTileStatusAt(candidate).GemColorType!,
+                var slidingGem = new SlidingGems.SlidingGem(map.GetTileStatusAt(candidate).GemColorType!,
                     candidate,
                     current
                 );

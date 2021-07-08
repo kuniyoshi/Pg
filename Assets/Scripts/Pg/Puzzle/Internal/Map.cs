@@ -1,10 +1,28 @@
 #nullable enable
+using Pg.Etc.Puzzle;
 using UnityEngine.Assertions;
 
 namespace Pg.Puzzle.Internal
 {
     internal class Map
     {
+        internal static Map CreateMap(TileStatus[,] tileStatuses)
+        {
+            var colSize = tileStatuses.GetLength(dimension: 0);
+            var rowSize = tileStatuses.GetLength(dimension: 1);
+            var map = new TileStatus[colSize, rowSize];
+
+            for (var colIndex = 0; colIndex < TileSize.ColSize; ++colIndex)
+            {
+                for (var rowIndex = 0; rowIndex < TileSize.RowSize; ++rowIndex)
+                {
+                    map[colIndex, rowIndex] = tileStatuses[colIndex, rowIndex];
+                }
+            }
+
+            return new Map(map);
+        }
+
         internal TileStatus[,] CurrentTileStatuses { get; }
 
         internal Map(TileStatus[,] currentTileStatuses)
