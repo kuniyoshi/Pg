@@ -151,7 +151,7 @@ namespace Pg.Puzzle.Internal
                     {
                         var coordinate = new Coordinate(colIndex, rowIndex);
 
-                        var isEmpty = map.GetTileStatusAt(coordinate).TileStatusType == TileStatusType.Empty;
+                        var isEmpty = map.IsEmptyAt(coordinate);
 
                         if (isEmpty && CoordinateService.IsTopRow(coordinate))
                         {
@@ -176,7 +176,7 @@ namespace Pg.Puzzle.Internal
                             continue;
                         }
 
-                        if (map.GetTileStatusAt(above).TileStatusType == TileStatusType.Empty)
+                        if (map.IsEmptyAt(above))
                         {
                             continue;
                         }
@@ -203,9 +203,7 @@ namespace Pg.Puzzle.Internal
 
                         if (CoordinateService.IsTopRow(slidingGem.Value.From))
                         {
-                            Assert.AreEqual(
-                                TileStatusType.Empty, map.GetTileStatusAt(slidingGem.Value.From).TileStatusType
-                            );
+                            Assert.IsTrue(map.IsEmptyAt(slidingGem.Value.From), "map.IsEmptyAt(slidingGem.Value.From)");
                             var newGemColorType = GemGenerator.Next();
                             var newGem = new SlidingGems.NewGem(slidingGem.Value.From, newGemColorType);
                             builder.AddNewGem(newGem);
@@ -227,7 +225,8 @@ namespace Pg.Puzzle.Internal
                     return null;
                 }
 
-                var slidingGem = new SlidingGems.SlidingGem(map.GetTileStatusAt(candidate).GemColorType!,
+                var slidingGem = new SlidingGems.SlidingGem(
+                    map.GetTileStatusAt(candidate).GemColorType!,
                     candidate,
                     current
                 );

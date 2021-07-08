@@ -18,7 +18,7 @@ namespace Pg.Puzzle.Internal
             Assert.AreEqual(TileSize.ColSize, tileStatuses.GetLength(dimension: 0));
             Assert.AreEqual(TileSize.RowSize, tileStatuses.GetLength(dimension: 1));
 
-            Map = Map.CreateMap(tileStatuses);
+            Map = new Map(tileStatuses);
             Worker = new Worker();
         }
 

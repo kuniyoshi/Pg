@@ -6,7 +6,9 @@ namespace Pg.Puzzle.Internal
 {
     internal class Map
     {
-        internal static Map CreateMap(TileStatus[,] tileStatuses)
+        internal TileStatus[,] CurrentTileStatuses { get; }
+
+        internal Map(TileStatus[,] tileStatuses)
         {
             var colSize = tileStatuses.GetLength(dimension: 0);
             var rowSize = tileStatuses.GetLength(dimension: 1);
@@ -20,14 +22,12 @@ namespace Pg.Puzzle.Internal
                 }
             }
 
-            return new Map(map);
+            CurrentTileStatuses = map;
         }
 
-        internal TileStatus[,] CurrentTileStatuses { get; }
-
-        internal Map(TileStatus[,] currentTileStatuses)
+        public bool IsEmptyAt(Coordinate coordinate)
         {
-            CurrentTileStatuses = currentTileStatuses;
+            return GetTileStatusAt(coordinate).TileStatusType == TileStatusType.Empty;
         }
 
         internal void AddGem(Coordinate toCoordinate, GemColorType gemColorType)
