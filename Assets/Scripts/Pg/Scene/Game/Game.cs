@@ -41,11 +41,10 @@ namespace Pg.Scene.Game
             UserPlayer!.OnTransaction
                 .Subscribe(async tileOperation =>
                 {
-                    var resultAfterOperation = gameController.WorkTransaction(tileOperation);
-                    Coordinates!.ApplyTiles(resultAfterOperation);
-                    var simulationStepData = gameController.ProcessTurn();
+                    var simulationStepData = gameController.ProcessTurn(tileOperation);
                     Debug.Log(simulationStepData);
                     Debug.Log(Dumper.Dump(gameController.DebugGetTileStatuses()));
+                    Coordinates!.ApplyTiles(simulationStepData.BeginningMap);
                     await Coordinates!.ApplyVanishings(simulationStepData.VanishingClusters);
                     await Coordinates!.ApplySlides(simulationStepData.SlidingGems);
                     Coordinates!.ApplyTiles(gameController.DebugGetTileStatuses());

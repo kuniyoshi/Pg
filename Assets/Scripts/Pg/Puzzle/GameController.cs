@@ -20,20 +20,13 @@ namespace Pg.Puzzle
             return Simulator.CurrentTileStatuses;
         }
 
-        public SimulationStepData ProcessTurn()
+        public SimulationStepData ProcessTurn(IEnumerable<TileOperation> operations)
         {
-            return Simulator.ProcessTurn();
+            return Simulator.ProcessTurn(operations);
         }
 
         public TileStatus[,] StartGame()
         {
-            return Simulator.CurrentTileStatuses;
-        }
-
-        public TileStatus[,] WorkTransaction(IEnumerable<TileOperation> operations)
-        {
-            Simulator.WorkTransaction(operations);
-
             return Simulator.CurrentTileStatuses;
         }
     }

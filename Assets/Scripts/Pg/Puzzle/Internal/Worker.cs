@@ -18,13 +18,15 @@ namespace Pg.Puzzle.Internal
             GemGenerator = new GemGenerator();
         }
 
-        internal SimulationStepData ProcessTurn(Map map)
+        internal SimulationStepData ProcessTurn(Map map, IEnumerable<TileOperation> operations)
         {
+            WorkTransaction(map, operations);
+            var beginning = map.Clone();
             var vanishingClusters = new VanishingClusters(DetectClusters(map));
             MakeClustersVanish(map, vanishingClusters);
             var slidingGems = SlideGems(map);
 
-            return new SimulationStepData(vanishingClusters, slidingGems);
+            return new SimulationStepData(beginning, vanishingClusters, slidingGems);
         }
 
         internal void WorkTransaction(Map map, IEnumerable<TileOperation> operations)

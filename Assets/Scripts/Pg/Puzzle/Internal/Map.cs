@@ -1,4 +1,6 @@
 #nullable enable
+using System.Collections.Generic;
+using System.Linq;
 using Pg.Etc.Puzzle;
 using UnityEngine.Assertions;
 
@@ -6,6 +8,18 @@ namespace Pg.Puzzle.Internal
 {
     internal class Map
     {
+        static IEnumerable<Coordinate> GetCoordinates(TileStatus[,] map)
+        {
+            return Enumerable.Range(start: 0, map.GetLength(dimension: 0))
+                .SelectMany(
+                    colIndex =>
+                    {
+                        return Enumerable.Range(start: 0, map.GetLength(dimension: 1))
+                            .Select(rowIndex => new Coordinate(colIndex, rowIndex));
+                    }
+                );
+        }
+
         internal TileStatus[,] CurrentTileStatuses { get; }
 
         internal Map(TileStatus[,] tileStatuses)
@@ -37,6 +51,19 @@ namespace Pg.Puzzle.Internal
                 TileStatusType.Contain,
                 gemColorType
             );
+        }
+
+        internal TileStatus[,] Clone()
+        {
+            var clone = new TileStatus[CurrentTileStatuses.GetLength(dimension: 0),
+                CurrentTileStatuses.GetLength(dimension: 1)];
+
+            foreach (var coordinate in GetCoordinates(CurrentTileStatuses))
+            {
+                clone[coordinate.Column, coordinate.Row] = CurrentTileStatuses[coordinate.Column, coordinate.Row];
+            }
+
+            return clone;
         }
 
         internal TileStatus GetTileStatusAt(Coordinate atCoordinate)
