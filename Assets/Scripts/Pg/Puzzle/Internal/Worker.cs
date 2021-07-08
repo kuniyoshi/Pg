@@ -9,11 +9,11 @@ using UnityEngine.Assertions;
 
 namespace Pg.Puzzle.Internal
 {
-    internal class TileMap
+    internal class Worker
     {
         GemGenerator GemGenerator { get; }
 
-        internal TileMap()
+        internal Worker()
         {
             GemGenerator = new GemGenerator();
         }

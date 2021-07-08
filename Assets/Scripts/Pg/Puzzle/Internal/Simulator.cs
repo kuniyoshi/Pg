@@ -10,7 +10,7 @@ namespace Pg.Puzzle.Internal
     internal class Simulator
     {
         Map Map { get; }
-        TileMap TileMap { get; }
+        Worker Worker { get; }
 
         internal Simulator(IGameData gameData)
         {
@@ -19,19 +19,19 @@ namespace Pg.Puzzle.Internal
             Assert.AreEqual(TileSize.RowSize, tileStatuses.GetLength(dimension: 1));
 
             Map = Map.CreateMap(tileStatuses);
-            TileMap = new TileMap();
+            Worker = new Worker();
         }
 
         internal TileStatus[,] CurrentTileStatuses => Map.CurrentTileStatuses;
 
         internal SimulationStepData ProcessTurn()
         {
-            return TileMap.ProcessTurn(Map);
+            return Worker.ProcessTurn(Map);
         }
 
         internal void WorkTransaction(IEnumerable<TileOperation> operations)
         {
-            TileMap.WorkTransaction(Map, operations);
+            Worker.WorkTransaction(Map, operations);
         }
     }
 }
