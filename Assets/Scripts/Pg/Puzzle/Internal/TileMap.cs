@@ -11,9 +11,8 @@ namespace Pg.Puzzle.Internal
 {
     internal class TileMap
     {
-        internal TileStatus[,] CurrentTileStatuses { get; }
-
         GemGenerator GemGenerator { get; }
+        Map Map { get; }
 
         internal TileMap(TileStatus[,] tileStatuses)
         {
@@ -29,9 +28,11 @@ namespace Pg.Puzzle.Internal
                 }
             }
 
-            CurrentTileStatuses = map;
+            Map = new Map(map);
             GemGenerator = new GemGenerator();
         }
+
+        internal TileStatus[,] CurrentTileStatuses => Map.CurrentTileStatuses;
 
         internal SimulationStepData ProcessTurn()
         {
@@ -46,17 +47,8 @@ namespace Pg.Puzzle.Internal
         {
             foreach (var tileOperation in operations)
             {
-                Swap(tileOperation.A, tileOperation.B);
+                Map.Swap(tileOperation.A, tileOperation.B);
             }
-        }
-
-        void AddGem(Coordinate toCoordinate, GemColorType gemColorType)
-        {
-            Assert.AreEqual(TileStatus.Empty, GetTileStatusAt(toCoordinate));
-            CurrentTileStatuses[toCoordinate.Column, toCoordinate.Row] = new TileStatus(
-                TileStatusType.Contain,
-                gemColorType
-            );
         }
 
         Dictionary<GemColorType, List<List<Coordinate>>> DetectClusters()
@@ -83,7 +75,7 @@ namespace Pg.Puzzle.Internal
 
                         test[coordinate] = true;
 
-                        if (!HasTileStatusContain(coordinate, newGemColorType))
+                        if (!Map.HasTileStatusContain(coordinate, newGemColorType))
                         {
                             continue;
                         }
@@ -117,7 +109,7 @@ namespace Pg.Puzzle.Internal
             {
                 var neighbor = DirectionService.GetNeighborOf(coordinate, neighborIndex);
 
-                if (!CoordinateService.IsCoordinateInRange(neighbor, CurrentTileStatuses))
+                if (!Map.IsCoordinateInRange(neighbor))
                 {
                     continue;
                 }
@@ -129,7 +121,7 @@ namespace Pg.Puzzle.Internal
 
                 test[neighbor] = true;
 
-                if (HasTileStatusContain(neighbor, GemColorType.Rainbow) && !specialTest.ContainsKey(neighbor))
+                if (Map.HasTileStatusContain(neighbor, GemColorType.Rainbow) && !specialTest.ContainsKey(neighbor))
                 {
                     specialTest[neighbor] = true;
                     outNeighbors.Add(neighbor);
@@ -138,7 +130,7 @@ namespace Pg.Puzzle.Internal
                     continue;
                 }
 
-                if (!HasTileStatusContain(neighbor, gemColorType))
+                if (!Map.HasTileStatusContain(neighbor, gemColorType))
                 {
                     continue;
                 }
@@ -146,20 +138,6 @@ namespace Pg.Puzzle.Internal
                 outNeighbors.Add(neighbor);
                 GetClusterOfBy(outNeighbors, neighbor, gemColorType, test, specialTest);
             }
-        }
-
-        TileStatus GetTileStatusAt(Coordinate atCoordinate)
-        {
-            Assert.IsTrue(
-                CoordinateService.IsCoordinateInRange(atCoordinate, CurrentTileStatuses),
-                "CoordinateService.IsCoordinateInRange(atCoordinate, CurrentTileStatuses)"
-            );
-            return CurrentTileStatuses[atCoordinate.Column, atCoordinate.Row];
-        }
-
-        bool HasTileStatusContain(Coordinate coordinate, GemColorType gemColorType)
-        {
-            return CurrentTileStatuses[coordinate.Column, coordinate.Row].GemColorType == gemColorType;
         }
 
         void MakeClustersVanish(VanishingClusters vanishingClusters)
@@ -170,7 +148,7 @@ namespace Pg.Puzzle.Internal
                 {
                     foreach (var coordinate in coordinates)
                     {
-                        CurrentTileStatuses[coordinate.Column, coordinate.Row] = TileStatus.Empty;
+                        Map.SetEmpty(coordinate);
                     }
                 }
             }
@@ -188,7 +166,7 @@ namespace Pg.Puzzle.Internal
                     {
                         var coordinate = new Coordinate(colIndex, rowIndex);
 
-                        var isEmpty = GetTileStatusAt(coordinate).TileStatusType == TileStatusType.Empty;
+                        var isEmpty = Map.GetTileStatusAt(coordinate).TileStatusType == TileStatusType.Empty;
 
                         if (isEmpty && CoordinateService.IsTopRow(coordinate))
                         {
@@ -196,7 +174,7 @@ namespace Pg.Puzzle.Internal
                             var newGemColorType = GemGenerator.Next();
                             var newGem = new SlidingGems.NewGem(coordinate, newGemColorType);
                             builder.AddNewGem(newGem);
-                            AddGem(coordinate, newGemColorType);
+                            Map.AddGem(coordinate, newGemColorType);
 
                             continue;
                         }
@@ -208,12 +186,12 @@ namespace Pg.Puzzle.Internal
 
                         var above = DirectionService.GetJustAbove(coordinate);
 
-                        if (!CoordinateService.IsCoordinateInRange(above, CurrentTileStatuses))
+                        if (!Map.IsCoordinateInRange(above))
                         {
                             continue;
                         }
 
-                        if (GetTileStatusAt(above).TileStatusType == TileStatusType.Empty)
+                        if (Map.GetTileStatusAt(above).TileStatusType == TileStatusType.Empty)
                         {
                             continue;
                         }
@@ -236,18 +214,17 @@ namespace Pg.Puzzle.Internal
                         didChange = true;
 
                         builder.AddSlidingGem(slidingGem.Value);
-                        Swap(slidingGem.Value.From, slidingGem.Value.To);
+                        Map.Swap(slidingGem.Value.From, slidingGem.Value.To);
 
                         if (CoordinateService.IsTopRow(slidingGem.Value.From))
                         {
                             Assert.AreEqual(
-                                TileStatusType.Empty,
-                                GetTileStatusAt(slidingGem.Value.From).TileStatusType
+                                TileStatusType.Empty, Map.GetTileStatusAt(slidingGem.Value.From).TileStatusType
                             );
                             var newGemColorType = GemGenerator.Next();
                             var newGem = new SlidingGems.NewGem(slidingGem.Value.From, newGemColorType);
                             builder.AddNewGem(newGem);
-                            AddGem(slidingGem.Value.From, newGemColorType);
+                            Map.AddGem(slidingGem.Value.From, newGemColorType);
                         }
                     }
                 }
@@ -257,15 +234,15 @@ namespace Pg.Puzzle.Internal
 
             SlidingGems.SlidingGem? GetSlidingGem(Coordinate candidate, Coordinate current)
             {
-                var canSwap = CoordinateService.IsCoordinateInRange(candidate, CurrentTileStatuses)
-                              && GetTileStatusAt(candidate).TileStatusType == TileStatusType.Contain;
+                var canSwap = Map.IsCoordinateInRange(candidate)
+                              && Map.GetTileStatusAt(candidate).TileStatusType == TileStatusType.Contain;
 
                 if (!canSwap)
                 {
                     return null;
                 }
 
-                var slidingGem = new SlidingGems.SlidingGem(GetTileStatusAt(candidate).GemColorType!,
+                var slidingGem = new SlidingGems.SlidingGem(Map.GetTileStatusAt(candidate).GemColorType!,
                     candidate,
                     current
                 );
@@ -292,12 +269,6 @@ namespace Pg.Puzzle.Internal
             }
 
             return resultBuilder.Build();
-        }
-
-        void Swap(Coordinate a, Coordinate b)
-        {
-            TileStatus[,] map = CurrentTileStatuses;
-            (map[a.Column, a.Row], map[b.Column, b.Row]) = (map[b.Column, b.Row], map[a.Column, a.Row]);
         }
     }
 }
