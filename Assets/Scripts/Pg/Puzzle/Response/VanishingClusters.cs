@@ -17,6 +17,11 @@ namespace Pg.Puzzle.Response
 
         public IEnumerable<GemColorType> NewGemColorTypes => Data.Keys;
 
+        public bool Any()
+        {
+            return Data.Values.Any(listList => listList.Any(list => list.Any()));
+        }
+
         public IEnumerable<IEnumerable<Coordinate>> GetVanishingCoordinatesOf(GemColorType gemColorType)
         {
             Assert.IsTrue(Data.ContainsKey(gemColorType), "Data2.ContainsKey(gemColorType)");

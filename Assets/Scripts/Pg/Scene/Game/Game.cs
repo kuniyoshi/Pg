@@ -41,13 +41,17 @@ namespace Pg.Scene.Game
             UserPlayer!.OnTransaction
                 .Subscribe(async tileOperation =>
                 {
-                    var simulationStepData = gameController.ProcessTurn(tileOperation);
-                    Debug.Log(simulationStepData);
-                    Debug.Log(Dumper.Dump(gameController.DebugGetTileStatuses()));
-                    Coordinates!.ApplyTiles(simulationStepData.BeginningMap);
-                    await Coordinates!.ApplyVanishings(simulationStepData.VanishingClusters);
-                    await Coordinates!.ApplySlides(simulationStepData.SlidingGems);
-                    Coordinates!.ApplyTiles(gameController.DebugGetTileStatuses());
+                    var simulationStepDataList = gameController.ProcessTurn(tileOperation);
+
+                    foreach (var simulationStepData in simulationStepDataList)
+                    {
+                        Debug.Log(simulationStepData);
+                        Debug.Log(Dumper.Dump(gameController.DebugGetTileStatuses()));
+                        Coordinates!.ApplyTiles(simulationStepData.BeginningMap);
+                        await Coordinates!.ApplyVanishings(simulationStepData.VanishingClusters);
+                        await Coordinates!.ApplySlides(simulationStepData.SlidingGems);
+                        Coordinates!.ApplyTiles(gameController.DebugGetTileStatuses());
+                    }
                 })
                 .AddTo(gameObject);
         }

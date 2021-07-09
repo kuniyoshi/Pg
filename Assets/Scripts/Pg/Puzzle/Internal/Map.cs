@@ -39,11 +39,6 @@ namespace Pg.Puzzle.Internal
             CurrentTileStatuses = map;
         }
 
-        public bool IsEmptyAt(Coordinate coordinate)
-        {
-            return GetTileStatusAt(coordinate).TileStatusType == TileStatusType.Empty;
-        }
-
         internal void AddGem(Coordinate toCoordinate, GemColorType gemColorType)
         {
             Assert.AreEqual(TileStatus.Empty, GetTileStatusAt(toCoordinate));
@@ -83,6 +78,11 @@ namespace Pg.Puzzle.Internal
         internal bool IsCoordinateInRange(Coordinate neighbor)
         {
             return CoordinateService.IsCoordinateInRange(neighbor, CurrentTileStatuses);
+        }
+
+        internal bool IsEmptyAt(Coordinate coordinate)
+        {
+            return GetTileStatusAt(coordinate).TileStatusType == TileStatusType.Empty;
         }
 
         internal void SetEmpty(Coordinate coordinate)

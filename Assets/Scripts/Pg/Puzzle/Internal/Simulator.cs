@@ -24,7 +24,7 @@ namespace Pg.Puzzle.Internal
 
         internal TileStatus[,] CurrentTileStatuses => Map.CurrentTileStatuses;
 
-        internal SimulationStepData ProcessTurn(IEnumerable<TileOperation> operations)
+        internal IEnumerable<SimulationStepData> ProcessTurn(IEnumerable<TileOperation> operations)
         {
             return Worker.ProcessTurn(Map, operations);
         }
