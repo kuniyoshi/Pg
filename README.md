@@ -32,6 +32,21 @@ A group where same colored gems neighbored each other.
 
 A phenomenon that gems move to empty tile below.
 
+*VANISH*
+
+A phenomenon that clustered gems disappear.
+
+*TURN*
+
+Is a step of applying a series of gem swaps.
+
+*CHAIN*
+
+A phenomenon that new gem vanished in a turn.
+
+Some new slidden gems make a cluster that will vanish.
+When new a cluster vanish, this is called chain.
+
 # SIMULATOR
 
 ## FLOW
