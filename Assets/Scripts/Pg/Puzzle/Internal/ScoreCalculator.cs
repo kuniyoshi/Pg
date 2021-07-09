@@ -5,16 +5,16 @@ using Pg.Puzzle.Response;
 
 namespace Pg.Puzzle.Internal
 {
-    public class ScoreCalculator
+    internal class ScoreCalculator
     {
         int _lastChained;
 
-        public void Clear()
+        internal void Clear()
         {
             _lastChained = 0;
         }
 
-        public Response.Score StepCalculate(VanishingClusters vanishingClusters)
+        internal Response.Score StepCalculate(VanishingClusters vanishingClusters)
         {
             var grandTotal = PointValue.Zero;
 

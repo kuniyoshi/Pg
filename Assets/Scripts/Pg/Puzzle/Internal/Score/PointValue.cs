@@ -1,7 +1,7 @@
 #nullable enable
 namespace Pg.Puzzle.Internal.Score
 {
-    public readonly struct PointValue
+    internal readonly struct PointValue
     {
         internal static PointValue CreateVanished(int clusterSize, int lastChainCount)
         {
@@ -17,12 +17,12 @@ namespace Pg.Puzzle.Internal.Score
             Value = value;
         }
 
-        public PointValue Add(PointValue other)
+        internal PointValue Add(PointValue other)
         {
             return new PointValue(Value + other.Value);
         }
 
-        public string GetText()
+        internal string GetText()
         {
             return Value.ToString();
         }

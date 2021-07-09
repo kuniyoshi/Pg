@@ -5,7 +5,7 @@ namespace Pg.Puzzle.Response
 {
     public readonly struct Score
     {
-        public Score(PointValue pointValue)
+        internal Score(PointValue pointValue)
         {
             PointValue = pointValue;
         }
