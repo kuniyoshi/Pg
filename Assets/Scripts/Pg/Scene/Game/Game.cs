@@ -22,12 +22,16 @@ namespace Pg.Scene.Game
         [SerializeField]
         UserPlayer? UserPlayer;
 
+        [SerializeField]
+        Score? Score;
+
         void Awake()
         {
             Assert.IsNotNull(Coordinates, "Coordinates != null");
             Assert.IsNotNull(GameData, "GameData != null");
             Assert.IsNotNull(StartDirection, "StartDirection != null");
             Assert.IsNotNull(UserPlayer, "UserPlayer != null");
+            Assert.IsNotNull(Score, "Score != null");
         }
 
         async void Start()
@@ -37,6 +41,7 @@ namespace Pg.Scene.Game
             var tileStatuses = gameController.StartGame();
             await Coordinates!.SetTileEvents(UserPlayer!);
             Coordinates!.ApplyTiles(tileStatuses);
+            Score!.Initialize(Puzzle.Response.Score.Zero);
 
             UserPlayer!.OnTransaction
                 .Subscribe(async tileOperation =>
@@ -49,6 +54,7 @@ namespace Pg.Scene.Game
                         Debug.Log(Dumper.Dump(gameController.DebugGetTileStatuses()));
                         Coordinates!.ApplyTiles(simulationStepData.BeginningMap);
                         await Coordinates!.ApplyVanishings(simulationStepData.VanishingClusters);
+                        Score!.AddScore(simulationStepData.Score);
                         await Coordinates!.ApplySlides(simulationStepData.SlidingGems);
                         Coordinates!.ApplyTiles(gameController.DebugGetTileStatuses());
                     }

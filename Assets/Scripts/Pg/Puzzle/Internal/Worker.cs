@@ -18,20 +18,21 @@ namespace Pg.Puzzle.Internal
             GemGenerator = new GemGenerator();
         }
 
-        internal IEnumerable<SimulationStepData> ProcessTurn(Map map, IEnumerable<TileOperation> operations)
+        internal IEnumerable<(TileStatus[,], VanishingClusters, SlidingGems)> ProcessTurn(
+            Map map, IEnumerable<TileOperation> operations)
         {
             WorkTransaction(map, operations);
 
             while (true)
             {
-                var simulationStepData = ProcessStep(map);
+                var (tileStatus, vanishingClusters, slidingGems) = ProcessStep(map);
 
-                if (!simulationStepData.VanishingClusters.Any())
+                if (!vanishingClusters.Any())
                 {
                     yield break;
                 }
 
-                yield return simulationStepData;
+                yield return (tileStatus, vanishingClusters, slidingGems);
             }
         }
 
@@ -147,14 +148,14 @@ namespace Pg.Puzzle.Internal
             }
         }
 
-        SimulationStepData ProcessStep(Map map)
+        (TileStatus[,], VanishingClusters, SlidingGems) ProcessStep(Map map)
         {
             var beginning = map.Clone();
             var vanishingClusters = new VanishingClusters(DetectClusters(map));
             MakeClustersVanish(map, vanishingClusters);
             var slidingGems = SlideGems(map);
 
-            return new SimulationStepData(beginning, vanishingClusters, slidingGems);
+            return (beginning, vanishingClusters, slidingGems);
         }
 
         SlidingGems SlideGems(Map map)
