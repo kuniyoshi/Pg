@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Linq;
+using Pg.Data;
 
 namespace Pg.Puzzle.Internal
 {

@@ -1,14 +1,14 @@
 #nullable enable
-namespace Pg.Puzzle.Internal.Score
+namespace Pg.Data
 {
-    internal readonly struct PointValue
+    public readonly struct PointValue
     {
-        internal static PointValue CreateVanished(int clusterSize, int lastChainCount)
+        public static PointValue CreateVanished(int clusterSize, int lastChainCount)
         {
             return new PointValue(clusterSize * 10 + lastChainCount * clusterSize * 10);
         }
 
-        internal static PointValue Zero { get; } = new PointValue();
+        public static PointValue Zero { get; } = new PointValue();
 
         int Value { get; }
 
@@ -17,12 +17,12 @@ namespace Pg.Puzzle.Internal.Score
             Value = value;
         }
 
-        internal PointValue Add(PointValue other)
+        public PointValue Add(PointValue other)
         {
             return new PointValue(Value + other.Value);
         }
 
-        internal string GetText()
+        public string GetText()
         {
             return Value.ToString();
         }

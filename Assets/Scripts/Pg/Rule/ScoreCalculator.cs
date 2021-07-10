@@ -1,20 +1,19 @@
 #nullable enable
 using System.Linq;
-using Pg.Puzzle.Internal.Score;
-using Pg.Puzzle.Response;
+using Pg.Data;
 
-namespace Pg.Puzzle.Internal
+namespace Pg.Rule
 {
-    internal class ScoreCalculator
+    public class ScoreCalculator
     {
         int _lastChained;
 
-        internal void Clear()
+        public void Clear()
         {
             _lastChained = 0;
         }
 
-        internal Response.Score StepCalculate(VanishingClusters vanishingClusters)
+        public Score StepCalculate(VanishingClusters vanishingClusters)
         {
             var grandTotal = PointValue.Zero;
 
@@ -28,7 +27,7 @@ namespace Pg.Puzzle.Internal
 
             _lastChained++;
 
-            return new Response.Score(grandTotal);
+            return new Score(grandTotal);
         }
     }
 }

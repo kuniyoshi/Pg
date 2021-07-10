@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using Pg.Data;
 using Pg.Etc.Puzzle;
 using Pg.Puzzle;
 using UnityEngine;

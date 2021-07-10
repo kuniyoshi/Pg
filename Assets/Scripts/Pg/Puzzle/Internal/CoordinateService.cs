@@ -1,4 +1,6 @@
 #nullable enable
+using Pg.Data;
+
 namespace Pg.Puzzle.Internal
 {
     internal static class CoordinateService

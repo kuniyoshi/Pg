@@ -1,4 +1,6 @@
 #nullable enable
+using Pg.Data;
+
 namespace Pg.Puzzle.Response
 {
     public class SimulationStepData

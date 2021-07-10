@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Pg.Etc.Puzzle;
 using Pg.Puzzle.Request;
 using Pg.Puzzle.Response;
+using Pg.Rule;
 using UnityEngine.Assertions;
 
 namespace Pg.Puzzle.Internal

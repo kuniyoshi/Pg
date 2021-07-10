@@ -76,6 +76,10 @@ The simulation response contains,
 4. If tile that was taken gem is the top of rows,
    new gem will be dropped ito the tile.
 
+## MODULE DESIGN
+
+[UML](Documents/component.uml)
+
 # REFERENCE
 
 https://www.redblobgames.com/grids/hexagons/

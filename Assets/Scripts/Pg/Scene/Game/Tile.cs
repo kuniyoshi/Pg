@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DG.Tweening;
 using Pg.App.Util;
+using Pg.Data;
 using Pg.Puzzle;
 using UniRx;
 using UniRx.Triggers;

@@ -1,9 +1,9 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using Pg.Puzzle.Util;
+using Pg.Data.Util;
 
-namespace Pg.Puzzle
+namespace Pg.Data
 {
     public class GemColorType
         : Enumeration

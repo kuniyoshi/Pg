@@ -1,6 +1,7 @@
 #nullable enable
 using System.Collections.Generic;
 using System.Linq;
+using Pg.Data;
 using Pg.Etc.Puzzle;
 using UnityEngine.Assertions;
 

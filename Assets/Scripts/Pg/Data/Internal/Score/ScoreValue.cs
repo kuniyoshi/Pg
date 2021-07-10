@@ -1,5 +1,5 @@
 #nullable enable
-namespace Pg.Puzzle.Internal.Score
+namespace Pg.Data.Internal.Score
 {
     internal readonly struct ScoreValue
     {

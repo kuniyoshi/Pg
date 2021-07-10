@@ -1,11 +1,9 @@
 #nullable enable
-using Pg.Puzzle.Internal.Score;
-
-namespace Pg.Puzzle.Response
+namespace Pg.Data
 {
     public readonly struct Score
     {
-        internal Score(PointValue pointValue)
+        public Score(PointValue pointValue)
         {
             PointValue = pointValue;
         }

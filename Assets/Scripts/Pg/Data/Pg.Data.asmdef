@@ -1,10 +1,8 @@
 {
-    "name": "Pg.Editor",
+    "name": "Pg.Data",
     "rootNamespace": "",
     "references": [
-        "GUID:14f64f66fc741448592e5007f2b5cdef",
-        "GUID:eb0a9b4d5f9864dbcb8b287259e348cc",
-        "GUID:288679b8bbcaa4a31b97b94e59df32dc"
+        "GUID:5e362b2288b6b461d9c102bf54aaa6f7"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,7 +1,7 @@
 #nullable enable
 using System;
 
-namespace Pg.Puzzle.Util
+namespace Pg.Data.Util
 {
     public class Enumeration
         : IComparable

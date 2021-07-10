@@ -41,7 +41,7 @@ namespace Pg.Scene.Game
             var tileStatuses = gameController.StartGame();
             await Coordinates!.SetTileEvents(UserPlayer!);
             Coordinates!.ApplyTiles(tileStatuses);
-            Score!.Initialize(Puzzle.Response.Score.Zero);
+            Score!.Initialize(Data.Score.Zero);
 
             UserPlayer!.OnTransaction
                 .Subscribe(async tileOperation =>
