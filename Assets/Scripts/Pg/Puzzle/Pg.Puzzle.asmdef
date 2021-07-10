@@ -1,8 +1,9 @@
 {
-    "name": "App",
+    "name": "Pg.Puzzle",
     "rootNamespace": "",
     "references": [
-        "GUID:5e362b2288b6b461d9c102bf54aaa6f7"
+        "GUID:5e362b2288b6b461d9c102bf54aaa6f7",
+        "GUID:338b09c212a2346c5b3929a5fba160c1"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

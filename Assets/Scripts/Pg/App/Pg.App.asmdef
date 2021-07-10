@@ -1,0 +1,16 @@
+{
+    "name": "Pg.App",
+    "rootNamespace": "",
+    "references": [
+        "GUID:5e362b2288b6b461d9c102bf54aaa6f7"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

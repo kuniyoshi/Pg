@@ -1,10 +1,7 @@
 {
-    "name": "Scene.Result",
+    "name": "Pg.Etc",
     "rootNamespace": "",
-    "references": [
-        "GUID:5e362b2288b6b461d9c102bf54aaa6f7",
-        "GUID:369d625036d6f4db1b2ffc96998a13d9"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
