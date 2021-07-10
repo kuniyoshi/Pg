@@ -2,6 +2,7 @@
     "name": "Pg.Rule",
     "rootNamespace": "",
     "references": [
+        "GUID:5e362b2288b6b461d9c102bf54aaa6f7",
         "GUID:14f64f66fc741448592e5007f2b5cdef"
     ],
     "includePlatforms": [],

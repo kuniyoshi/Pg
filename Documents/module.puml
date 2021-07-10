@@ -1,49 +1,20 @@
 @startuml
-'https://plantuml.com/component-diagram
 
 package "Pg" {
+    [Etc]
+    [Data]
+    [Rule]
+    [Puzzle]
     [Scene.Game]
     [App]
-    [Etc]
-    [Puzzle]
-    [Rule]
-    [Data]
-    Rule ---> Data
+    Data ---> Etc
     Rule ---> Etc
+    Rule ---> Data
     Puzzle ---> Etc
     Puzzle ---> Data
     Puzzle ---> Rule
     Scene.Game ---> Puzzle
+    App ---> Etc
 }
-
-
-'package "Some Group" {
-'  HTTP - [First Component]
-'  [Another Component]
-'}
-'
-'node "Other Groups" {
-'  FTP - [Second Component]
-'  [First Component] --> FTP
-'}
-'
-'cloud {
-'  [Example 1]
-'}
-'
-'
-'database "MySql" {
-'  folder "This is my folder" {
-'    [Folder 3]
-'  }
-'  frame "Foo" {
-'    [Frame 4]
-'  }
-'}
-'
-'
-'[Another Component] --> [Example 1]
-'[Example 1] --> [Folder 3]
-'[Folder 3] --> [Frame 4]
 
 @enduml

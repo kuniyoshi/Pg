@@ -1,7 +1,7 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using Pg.Data.Util;
+using Pg.Etc.Util;
 
 namespace Pg.Puzzle
 {
