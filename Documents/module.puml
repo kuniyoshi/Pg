@@ -13,7 +13,10 @@ package "Pg" {
     Puzzle ---> Etc
     Puzzle ---> Data
     Puzzle ---> Rule
+    Scene.Game ---> Etc
+    Scene.Game ---> Data
     Scene.Game ---> Puzzle
+    Scene.Game ---> App
     App ---> Etc
 }
 

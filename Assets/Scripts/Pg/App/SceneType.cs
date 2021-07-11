@@ -1,5 +1,5 @@
 #nullable enable
-namespace Pg.Etc
+namespace Pg.App
 {
     public enum SceneType
     {

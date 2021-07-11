@@ -11,7 +11,7 @@ namespace Pg.Puzzle.Internal
     internal class Simulator
     {
         Map Map { get; }
-        ScoreCalculator ScoreCalculator { get; }
+        CalculateScore CalculateScore { get; }
         Worker Worker { get; }
 
         internal Simulator(IGameData gameData)
@@ -22,14 +22,14 @@ namespace Pg.Puzzle.Internal
 
             Map = new Map(tileStatuses);
             Worker = new Worker();
-            ScoreCalculator = new ScoreCalculator();
+            CalculateScore = new CalculateScore();
         }
 
         internal TileStatus[,] CurrentTileStatuses => Map.CurrentTileStatuses;
 
         internal IEnumerable<SimulationStepData> ProcessTurn(IEnumerable<TileOperation> operations)
         {
-            ScoreCalculator.Clear();
+            CalculateScore.Clear();
 
             foreach (var (tileStatuses, vanishingClusters, slidingGems) in Worker.ProcessTurn(Map, operations))
             {
@@ -37,7 +37,7 @@ namespace Pg.Puzzle.Internal
                     tileStatuses,
                     vanishingClusters,
                     slidingGems,
-                    ScoreCalculator.StepCalculate(vanishingClusters)
+                    CalculateScore.StepCalculate(vanishingClusters)
                 );
             }
         }

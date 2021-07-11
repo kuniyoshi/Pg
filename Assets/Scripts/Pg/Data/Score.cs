@@ -3,17 +3,17 @@ namespace Pg.Data
 {
     public readonly struct Score
     {
-        public Score(PointValue pointValue)
+        public Score(VanishPoint vanishPoint)
         {
-            PointValue = pointValue;
+            VanishPoint = vanishPoint;
         }
 
-        PointValue PointValue { get; }
-        public static Score Zero { get; } = new Score(PointValue.Zero);
+        VanishPoint VanishPoint { get; }
+        public static Score Zero { get; } = new Score(VanishPoint.Zero);
 
         public string GetText()
         {
-            return PointValue.GetText();
+            return VanishPoint.GetText();
         }
 
         public override string ToString()
@@ -23,7 +23,7 @@ namespace Pg.Data
 
         public Score Add(Score other)
         {
-            return new Score(PointValue.Add(other.PointValue));
+            return new Score(VanishPoint.Add(other.VanishPoint));
         }
     }
 }
