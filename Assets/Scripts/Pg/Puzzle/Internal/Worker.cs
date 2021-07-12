@@ -19,8 +19,7 @@ namespace Pg.Puzzle.Internal
             GemGenerator = new GemGenerator();
         }
 
-        internal IEnumerable<(TileStatus[,], VanishingClusters, SlidingGems)> ProcessTurn(
-            Map map, IEnumerable<TileOperation> operations)
+        internal IEnumerable<SimulationStepData> ProcessTurn(Map map, IEnumerable<TileOperation> operations)
         {
             WorkTransaction(map, operations);
 
@@ -33,7 +32,7 @@ namespace Pg.Puzzle.Internal
                     yield break;
                 }
 
-                yield return (tileStatus, vanishingClusters, slidingGems);
+                yield return new SimulationStepData(tileStatus, vanishingClusters, slidingGems);
             }
         }
 

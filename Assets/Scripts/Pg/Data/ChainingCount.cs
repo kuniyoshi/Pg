@@ -7,7 +7,8 @@ namespace Pg.Data
 {
     public readonly struct ChainingCount
     {
-        static ChainingCount[] DomainValues { get; } = Enumerable.Range(0, SimulationLimitation.MaxChainingCountExclusive)
+        static ChainingCount[] DomainValues { get; } = Enumerable
+            .Range(start: 0, SimulationLimitation.MaxChainingCountExclusive)
             .Select(index => new ChainingCount(index))
             .ToArray();
 
@@ -23,7 +24,7 @@ namespace Pg.Data
 
         int Value { get; }
 
-        ChainingCount(int value)
+        public ChainingCount(int value)
         {
             Value = value;
         }

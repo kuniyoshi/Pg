@@ -1,6 +1,8 @@
 #nullable enable
+using Pg.Data;
 using Pg.Puzzle;
 using Pg.Puzzle.Util;
+using Pg.Rule;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -48,13 +50,19 @@ namespace Pg.Scene.Game
                 {
                     var simulationStepDataList = gameController.ProcessTurn(tileOperation);
 
+                    var chainingCount = 0;
+
                     foreach (var simulationStepData in simulationStepDataList)
                     {
+                        var score = CalculateScore.StepCalculate(
+                            simulationStepData.VanishingClusters,
+                            new ChainingCount(chainingCount++)
+                        );
                         Debug.Log(simulationStepData);
                         Debug.Log(Dumper.Dump(gameController.DebugGetTileStatuses()));
                         Coordinates!.ApplyTiles(simulationStepData.BeginningMap);
                         await Coordinates!.ApplyVanishings(simulationStepData.VanishingClusters);
-                        Score!.AddScore(simulationStepData.Score);
+                        Score!.AddScore(score);
                         await Coordinates!.ApplySlides(simulationStepData.SlidingGems);
                         Coordinates!.ApplyTiles(gameController.DebugGetTileStatuses());
                     }

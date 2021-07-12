@@ -4,16 +4,9 @@ using Pg.Data;
 
 namespace Pg.Rule
 {
-    public class CalculateScore
+    public static class CalculateScore
     {
-        int _lastChained;
-
-        public void Clear()
-        {
-            _lastChained = 0;
-        }
-
-        public Score StepCalculate(VanishingClusters vanishingClusters)
+        public static Score StepCalculate(VanishingClusters vanishingClusters, ChainingCount chainingCount)
         {
             var grandTotal = VanishPoint.Zero;
 
@@ -21,18 +14,16 @@ namespace Pg.Rule
             {
                 foreach (var cluster in vanishingClusters.GetVanishingCoordinatesOf(gemColorType))
                 {
-                    grandTotal = grandTotal.Add(CreateVanished(cluster.Count(), _lastChained));
+                    grandTotal = grandTotal.Add(CreateVanished(cluster.Count(), chainingCount));
                 }
             }
-
-            _lastChained++;
 
             return new Score(grandTotal);
         }
 
-        static VanishPoint CreateVanished(int clusterSize, int lastChainCount)
+        static VanishPoint CreateVanished(int clusterSize, ChainingCount chainingCount)
         {
-            return new VanishPoint(clusterSize * 10 + lastChainCount * clusterSize * 10);
+            return new VanishPoint(clusterSize * 10, chainingCount);
         }
     }
 }
