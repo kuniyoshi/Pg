@@ -1,6 +1,6 @@
 #nullable enable
 using System.Linq;
-using Pg.Data;
+using Pg.Data.Simulation;
 using Pg.Scene.Game;
 using UnityEditor;
 using UnityEngine;

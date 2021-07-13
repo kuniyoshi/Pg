@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Pg.Data.Simulation;
 using UnityEngine.Assertions;
 
 namespace Pg.Data.Response

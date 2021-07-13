@@ -1,5 +1,5 @@
 #nullable enable
-using Pg.Data;
+using Pg.Data.Simulation;
 
 namespace Pg.Puzzle.Internal
 {

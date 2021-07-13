@@ -1,5 +1,5 @@
 #nullable enable
-using Pg.Data;
+using Pg.Data.Simulation;
 using UnityEngine.Assertions;
 
 namespace Pg.Puzzle.Internal

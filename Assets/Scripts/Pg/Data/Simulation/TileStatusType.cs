@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using Pg.Etc.Util;
 
-namespace Pg.Data
+namespace Pg.Data.Simulation
 {
     public class TileStatusType
         : Enumeration

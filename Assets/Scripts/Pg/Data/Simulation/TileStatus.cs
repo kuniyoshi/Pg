@@ -1,7 +1,7 @@
 #nullable enable
 using UnityEngine.Assertions;
 
-namespace Pg.Data
+namespace Pg.Data.Simulation
 {
     public readonly struct TileStatus
     {

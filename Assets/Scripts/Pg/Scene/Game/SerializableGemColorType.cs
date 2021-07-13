@@ -1,6 +1,6 @@
 #nullable enable
 using System;
-using Pg.Data;
+using Pg.Data.Simulation;
 
 namespace Pg.Scene.Game
 {

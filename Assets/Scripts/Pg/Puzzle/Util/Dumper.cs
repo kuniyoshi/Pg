@@ -1,6 +1,6 @@
 #nullable enable
 using System.Text;
-using Pg.Data;
+using Pg.Data.Simulation;
 
 namespace Pg.Puzzle.Util
 {

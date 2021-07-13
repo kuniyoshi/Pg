@@ -1,8 +1,8 @@
 #nullable enable
 using System.Collections.Generic;
-using Pg.Data;
 using Pg.Data.Request;
 using Pg.Data.Response;
+using Pg.Data.Simulation;
 using Pg.Puzzle.Internal;
 using Pg.Puzzle.Request;
 using Pg.Puzzle.Response;
