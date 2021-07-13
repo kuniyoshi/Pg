@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine.Assertions;
 
-namespace Pg.Data
+namespace Pg.Data.Response
 {
     public class VanishingClusters
     {

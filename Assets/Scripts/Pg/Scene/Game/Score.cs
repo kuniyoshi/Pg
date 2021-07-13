@@ -11,7 +11,7 @@ namespace Pg.Scene.Game
         [SerializeField]
         TextMeshProUGUI? Text;
 
-        Data.Score _score;
+        Data.Response.Score _score;
 
         void Awake()
         {
@@ -19,13 +19,13 @@ namespace Pg.Scene.Game
             Text!.text = "0";
         }
 
-        internal void AddScore(Data.Score newValue)
+        internal void AddScore(Data.Response.Score newValue)
         {
             _score = _score.Add(newValue);
             Text!.text = _score.GetText();
         }
 
-        internal void Initialize(Data.Score score)
+        internal void Initialize(Data.Response.Score score)
         {
             _score = score;
         }

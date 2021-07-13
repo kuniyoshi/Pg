@@ -1,13 +1,13 @@
 #nullable enable
-using Pg.Data;
+using Pg.Data.Response;
 
 namespace Pg.Puzzle.Internal
 {
-    public class Turn
+    internal class Turn
     {
-        public PassedTurn PassedTurn { get; private set; }
+        internal PassedTurn PassedTurn { get; private set; }
 
-        public void Increment()
+        internal void Increment()
         {
             PassedTurn = PassedTurn.Increment();
         }

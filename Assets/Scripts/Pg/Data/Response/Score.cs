@@ -1,5 +1,5 @@
 #nullable enable
-namespace Pg.Data
+namespace Pg.Data.Response
 {
     public readonly struct Score
     {

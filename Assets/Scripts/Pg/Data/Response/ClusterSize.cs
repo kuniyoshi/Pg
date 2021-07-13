@@ -3,7 +3,7 @@ using System.Linq;
 using Pg.Etc.Puzzle;
 using UnityEngine.Assertions;
 
-namespace Pg.Data
+namespace Pg.Data.Response
 {
     public readonly struct ClusterSize
     {

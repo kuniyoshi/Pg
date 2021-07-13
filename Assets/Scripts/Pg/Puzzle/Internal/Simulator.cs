@@ -1,6 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
-using Pg.Data;
+using Pg.Data.Response;
 using Pg.Etc.Puzzle;
 using Pg.Puzzle.Request;
 using Pg.Puzzle.Response;
@@ -25,9 +25,9 @@ namespace Pg.Puzzle.Internal
             Turn = new Turn();
         }
 
-        public PassedTurn PassedTurn => Turn.PassedTurn;
-
         internal TileStatus[,] CurrentTileStatuses => Map.CurrentTileStatuses;
+
+        internal PassedTurn PassedTurn => Turn.PassedTurn;
 
         internal IEnumerable<SimulationStepData> ProcessTurn(IEnumerable<TileOperation> operations)
         {

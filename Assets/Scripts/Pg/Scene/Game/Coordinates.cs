@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Pg.App.Util;
-using Pg.Data;
+using Pg.Data.Response;
 using Pg.Etc.Puzzle;
 using Pg.Puzzle;
 using Pg.Puzzle.Response;

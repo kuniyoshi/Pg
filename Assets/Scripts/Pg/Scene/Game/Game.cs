@@ -1,5 +1,5 @@
 #nullable enable
-using Pg.Data;
+using Pg.Data.Response;
 using Pg.Puzzle;
 using Pg.Puzzle.Util;
 using Pg.Rule;
@@ -43,7 +43,7 @@ namespace Pg.Scene.Game
             var tileStatuses = gameController.StartGame();
             await Coordinates!.SetTileEvents(UserPlayer!);
             Coordinates!.ApplyTiles(tileStatuses);
-            Score!.Initialize(Data.Score.Zero);
+            Score!.Initialize(Data.Response.Score.Zero);
 
             UserPlayer!.OnTransaction
                 .Subscribe(async tileOperation =>
