@@ -30,7 +30,12 @@ namespace Pg.Scene.Game
         [SerializeField]
         TileGemType[]? TileStatusesRow5;
 
-        public TileStatus[,] TileStatuses => CreateTileStatuses();
+        public IStage Stage => CreateStage();
+
+        IStage CreateStage()
+        {
+            return new Stage(CreateTileStatuses());
+        }
 
         TileStatus[,] CreateTileStatuses()
         {

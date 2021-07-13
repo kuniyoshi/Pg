@@ -18,7 +18,7 @@ namespace Pg.Puzzle.Internal
 
         internal Simulator(IGameData gameData)
         {
-            var tileStatuses = gameData.TileStatuses;
+            var tileStatuses = gameData.Stage.TileStatuses;
             Assert.AreEqual(TileSize.ColSize, tileStatuses.GetLength(dimension: 0));
             Assert.AreEqual(TileSize.RowSize, tileStatuses.GetLength(dimension: 1));
 
