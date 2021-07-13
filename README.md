@@ -79,6 +79,26 @@ Consists of,
 - Orange
 - Rainbow
 
+**STAGE**
+
+Consists from,
+
+- Tile Status Data
+- Max Turn Count
+- Target Score
+
+**TILE STATUS DATA**
+
+Specifies each tiles has what type of gem, empty, or closed.
+
+**MAX TURN COUNT**
+
+Specifies how many times process turn.
+
+**TARGET SCORE**
+
+Specifies a score to be reached.
+
 # SIMULATOR
 
 ## FLOW
