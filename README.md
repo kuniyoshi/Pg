@@ -13,39 +13,71 @@
 
 # TERMS
 
-*TILE*
+**TILE**
 
 A hexagon cell.  Tile can contain a gem.
 
-*GEM*
+**GEM**
 
 Is in a tile.
 
 When some gems make a cluster as a result of swap operations,
 then these gems will vanish.
 
-*CLUSTER*
+**CLUSTER**
 
 A group where same colored gems neighbored each other.
 
-*SLIDE*
+**SLIDE**
 
 A phenomenon that gems move to empty tile below.
 
-*VANISH*
+**VANISH**
 
 A phenomenon that clustered gems disappear.
 
-*TURN*
+**TURN**
 
 Is a step of applying a series of gem swaps.
 
-*CHAIN*
+**CHAIN**
 
 A phenomenon that new gem vanished in a turn.
 
-Some new slidden gems make a cluster that will vanish.
+Some new slid gems make a cluster that will vanish.
 When new a cluster vanish, this is called chain.
+
+**TOTAL SCORE**
+
+A result value of summation of all *TURN SCORE*s.
+
+**TURN SCORE**
+
+Is calculated from below.
+
+1. *VANISHING CLUSTER SIZE*
+2. *CHAIN COUNT*
+3. *GEM COLOR TYPE*
+
+**VANISHING CLUSTER SIZE**
+
+A gem count in a cluster.
+
+**CHAIN COUNT**
+
+Explains how much chain is occuring a turn.
+
+**GEM COLOR TYPE**
+
+Consists of,
+
+- Green
+- Red
+- Purple
+- Blue
+- Yellow
+- Orange
+- Rainbow
 
 # SIMULATOR
 
@@ -71,14 +103,14 @@ The simulation response contains,
 2. When empty tile found, test tile above.
 2.1 If the tile has no gem, then no operation.  Go next step.
 2.2 If the tile has gem, then get the gem from the tile.
-3. If the tile stil empty, test upper leftabove, and upper right.
+3. If the tile still empty, test upper left above, and upper right.
    And do same.
 4. If tile that was taken gem is the top of rows,
    new gem will be dropped ito the tile.
 
 ## MODULE DESIGN
 
-[UML](Documents/component.uml)
+![UML](Documents/module.png)
 
 # REFERENCE
 

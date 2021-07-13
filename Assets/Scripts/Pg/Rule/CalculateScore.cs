@@ -6,24 +6,35 @@ namespace Pg.Rule
 {
     public static class CalculateScore
     {
-        public static Score StepCalculate(VanishingClusters vanishingClusters, ChainingCount chainingCount)
+        public static Score StepCalculate(VanishingClusters vanishingClusters,
+                                          ChainingCount chainingCount,
+                                          PassedTurn passedTurn)
         {
-            var grandTotal = VanishPoint.Zero;
+            var grandTotal = 0;
 
             foreach (var gemColorType in vanishingClusters.NewGemColorTypes)
             {
                 foreach (var cluster in vanishingClusters.GetVanishingCoordinatesOf(gemColorType))
                 {
-                    grandTotal = grandTotal.Add(CreateVanished(cluster.Count(), chainingCount));
+                    grandTotal = grandTotal
+                                 + CalculateImpl(
+                                     new ClusterSize(cluster.Count()),
+                                     chainingCount,
+                                     passedTurn
+                                 );
                 }
             }
 
             return new Score(grandTotal);
         }
 
-        static VanishPoint CreateVanished(int clusterSize, ChainingCount chainingCount)
+        static int CalculateImpl(ClusterSize clusterSize,
+                                 ChainingCount chainingCount,
+                                 PassedTurn passedTurn)
         {
-            return new VanishPoint(clusterSize * 10, chainingCount);
+            var baseValue = 10 * clusterSize.Value + 10 * clusterSize.Value * chainingCount.Value;
+
+            return (int) (passedTurn.GetCoef() * baseValue);
         }
     }
 }

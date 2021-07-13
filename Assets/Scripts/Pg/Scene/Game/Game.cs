@@ -49,6 +49,7 @@ namespace Pg.Scene.Game
                 .Subscribe(async tileOperation =>
                 {
                     var simulationStepDataList = gameController.ProcessTurn(tileOperation);
+                    var currentTurn = gameController.PassedTurn;
 
                     var chainingCount = 0;
 
@@ -56,7 +57,8 @@ namespace Pg.Scene.Game
                     {
                         var score = CalculateScore.StepCalculate(
                             simulationStepData.VanishingClusters,
-                            new ChainingCount(chainingCount++)
+                            new ChainingCount(chainingCount++),
+                            currentTurn
                         );
                         Debug.Log(simulationStepData);
                         Debug.Log(Dumper.Dump(gameController.DebugGetTileStatuses()));

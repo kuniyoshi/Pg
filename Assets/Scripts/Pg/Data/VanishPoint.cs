@@ -7,12 +7,12 @@ namespace Pg.Data
     {
         public static VanishPoint Zero { get; } = new VanishPoint();
 
-        int Value { get; }
+        ClusterSize ClusterSize { get; }
         ChainingCount ChainingCount { get; }
 
-        public VanishPoint(int value, ChainingCount chainingCount)
+        public VanishPoint(ClusterSize clusterSize, ChainingCount chainingCount)
         {
-            Value = value;
+            ClusterSize = clusterSize;
             ChainingCount = chainingCount;
         }
 
@@ -23,23 +23,27 @@ namespace Pg.Data
 
         public bool Equals(VanishPoint? other)
         {
-            return Value == other?.Value;
+            return ClusterSize == other?.ClusterSize
+                   && ChainingCount == other?.ChainingCount;
         }
 
         public override int GetHashCode()
         {
-            return Value;
+            var hashCodeA = ClusterSize.GetHashCode();
+            var hashCodeB = ChainingCount.GetHashCode();
+
+            return new {hashCodeA, hashCodeB}.GetHashCode();
         }
 
         public VanishPoint Add(VanishPoint other)
         {
             Assert.AreEqual(ChainingCount, other.ChainingCount);
-            return new VanishPoint(Value + other.Value, ChainingCount);
+            return new VanishPoint(ClusterSize, ChainingCount);
         }
 
         public string GetText()
         {
-            return Value.ToString();
+            return ClusterSize.ToString();
         }
     }
 }

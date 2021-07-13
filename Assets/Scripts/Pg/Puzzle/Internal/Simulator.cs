@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using Pg.Data;
 using Pg.Etc.Puzzle;
 using Pg.Puzzle.Request;
 using Pg.Puzzle.Response;
@@ -10,6 +11,7 @@ namespace Pg.Puzzle.Internal
     internal class Simulator
     {
         Map Map { get; }
+        Turn Turn { get; }
         Worker Worker { get; }
 
         internal Simulator(IGameData gameData)
@@ -20,13 +22,19 @@ namespace Pg.Puzzle.Internal
 
             Map = new Map(tileStatuses);
             Worker = new Worker();
+            Turn = new Turn();
         }
+
+        public PassedTurn PassedTurn => Turn.PassedTurn;
 
         internal TileStatus[,] CurrentTileStatuses => Map.CurrentTileStatuses;
 
         internal IEnumerable<SimulationStepData> ProcessTurn(IEnumerable<TileOperation> operations)
         {
-            return Worker.ProcessTurn(Map, operations);
+            var result = Worker.ProcessTurn(Map, operations);
+            Turn.Increment();
+
+            return result;
         }
     }
 }

@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using Pg.Data;
 using Pg.Puzzle.Internal;
 using Pg.Puzzle.Request;
 using Pg.Puzzle.Response;
@@ -14,6 +15,8 @@ namespace Pg.Puzzle
         {
             Simulator = new Simulator(gameData);
         }
+
+        public PassedTurn PassedTurn => Simulator.PassedTurn;
 
         public TileStatus[,] DebugGetTileStatuses()
         {

@@ -7,7 +7,7 @@ namespace Pg.Data
 {
     public readonly struct ClusterSize
     {
-        static ClusterSize[] DomainValues { get; } = Enumerable.Range(0, TileSize.ColSize * TileSize.RowSize)
+        static ClusterSize[] DomainValues { get; } = Enumerable.Range(start: 0, TileSize.ColSize * TileSize.RowSize)
             .Select(index => new ClusterSize(index))
             .ToArray();
 
@@ -17,9 +17,24 @@ namespace Pg.Data
             return DomainValues[value];
         }
 
-        int Value { get; }
+        public int Value { get; }
 
-        ClusterSize(int value)
+        public static bool operator ==(ClusterSize? a, ClusterSize? b)
+        {
+            if (a is null && b is null)
+            {
+                return true;
+            }
+
+            return a?.Equals(b) ?? false;
+        }
+
+        public static bool operator !=(ClusterSize? a, ClusterSize? b)
+        {
+            return !(a == b);
+        }
+
+        public ClusterSize(int value)
         {
             Value = value;
         }
