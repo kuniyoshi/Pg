@@ -1,4 +1,5 @@
 #nullable enable
+using Pg.Data;
 using Pg.Data.Response;
 
 namespace Pg.Puzzle.Response

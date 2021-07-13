@@ -1,8 +1,7 @@
 #nullable enable
-using Pg.Data;
 using UnityEngine.Assertions;
 
-namespace Pg.Puzzle
+namespace Pg.Data
 {
     public readonly struct TileStatus
     {

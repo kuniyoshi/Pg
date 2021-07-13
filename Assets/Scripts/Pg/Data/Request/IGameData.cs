@@ -1,5 +1,5 @@
 #nullable enable
-namespace Pg.Puzzle
+namespace Pg.Data.Request
 {
     public interface IGameData
     {
