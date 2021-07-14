@@ -53,5 +53,10 @@ namespace Pg.Data.Response
         {
             return new PassedTurn(Value + 1);
         }
+
+        public bool IsGreaterThanEqual(PassedTurn other)
+        {
+            return Value >= other.Value;
+        }
     }
 }

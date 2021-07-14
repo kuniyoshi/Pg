@@ -25,5 +25,10 @@ namespace Pg.Data.Response
         {
             return new Score(Value + other.Value);
         }
+
+        public bool IsGreaterThanEqual(Score other)
+        {
+            return Value >= other.Value;
+        }
     }
 }

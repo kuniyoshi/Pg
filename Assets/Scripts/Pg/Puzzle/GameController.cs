@@ -25,7 +25,7 @@ namespace Pg.Puzzle
             return Simulator.CurrentTileStatuses;
         }
 
-        public IEnumerable<SimulationStepData> ProcessTurn(IEnumerable<TileOperation> operations)
+        public TurnResponse ProcessTurn(IEnumerable<TileOperation> operations)
         {
             return Simulator.ProcessTurn(operations);
         }

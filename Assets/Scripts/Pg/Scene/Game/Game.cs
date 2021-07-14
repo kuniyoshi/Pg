@@ -48,12 +48,12 @@ namespace Pg.Scene.Game
             UserPlayer!.OnTransaction
                 .Subscribe(async tileOperation =>
                 {
-                    var simulationStepDataList = gameController.ProcessTurn(tileOperation);
+                    var turnResponse = gameController.ProcessTurn(tileOperation);
                     var currentTurn = gameController.PassedTurn;
 
                     var chainingCount = 0;
 
-                    foreach (var simulationStepData in simulationStepDataList)
+                    foreach (var simulationStepData in turnResponse.SimulationStepDataItems)
                     {
                         var score = CalculateScore.StepCalculate(
                             simulationStepData.VanishingClusters,
