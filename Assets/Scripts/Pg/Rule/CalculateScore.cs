@@ -6,9 +6,9 @@ namespace Pg.Rule
 {
     public static class CalculateScore
     {
-        public static Score StepCalculate(VanishingClusters vanishingClusters,
-                                          ChainingCount chainingCount,
-                                          PassedTurn passedTurn)
+        public static AcquisitionScore StepCalculate(VanishingClusters vanishingClusters,
+                                                     ChainingCount chainingCount,
+                                                     PassedTurn passedTurn)
         {
             var grandTotal = 0;
 
@@ -25,7 +25,7 @@ namespace Pg.Rule
                 }
             }
 
-            return new Score(grandTotal);
+            return new AcquisitionScore(grandTotal);
         }
 
         static int CalculateImpl(ClusterSize clusterSize,

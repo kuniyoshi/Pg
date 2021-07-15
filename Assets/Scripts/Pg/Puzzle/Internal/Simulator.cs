@@ -13,8 +13,10 @@ namespace Pg.Puzzle.Internal
 {
     internal class Simulator
     {
-        GameEndJudge GameEndJudge { get; }
+        GameEndJudgement GameEndJudgement { get; }
         Map Map { get; }
+
+        ScoreBoard ScoreBoard { get; }
         Turn Turn { get; }
         Worker Worker { get; }
 
@@ -28,7 +30,8 @@ namespace Pg.Puzzle.Internal
             Map = new Map(tileStatuses);
             Worker = new Worker();
             Turn = new Turn();
-            GameEndJudge = new GameEndJudge(stage.MaxTurnCount, stage.TargetScore);
+            ScoreBoard = new ScoreBoard();
+            GameEndJudgement = new GameEndJudgement(stage.MaxTurnCount, stage.TargetScore);
         }
 
         internal TileStatus[,] CurrentTileStatuses => Map.CurrentTileStatuses;
@@ -38,9 +41,30 @@ namespace Pg.Puzzle.Internal
         internal TurnResponse ProcessTurn(IEnumerable<TileOperation> operations)
         {
             var simulationStepDataItems = Worker.ProcessTurn(Map, operations);
+
+            var simulationStepResponses = new List<SimulationStepResponse>();
+            var chainingCount = 0;
+
+            foreach (var data in simulationStepDataItems)
+            {
+                var score = CalculateScore.StepCalculate(
+                    data.VanishingClusters,
+                    new ChainingCount(chainingCount++),
+                    Turn.PassedTurn
+                );
+
+                simulationStepResponses.Add(new SimulationStepResponse(data, score));
+            }
+
+            simulationStepResponses.ForEach(response => ScoreBoard.Add(response.AcquisitionScore));
+
             Turn.Increment();
 
-            return new TurnResponse(simulationStepDataItems, GameEndJudge.Judge(PassedTurn, Score.Zero));
+            return new TurnResponse(
+                simulationStepResponses,
+                ScoreBoard.Current,
+                GameEndJudgement.Judge(PassedTurn, ScoreBoard.Current)
+            );
         }
     }
 }

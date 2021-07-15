@@ -1,8 +1,9 @@
 #nullable enable
 using Pg.Data.Response;
 using Pg.Data.Simulation;
+using Pg.Puzzle.Response;
 
-namespace Pg.Puzzle.Response
+namespace Pg.Puzzle.Internal
 {
     public class SimulationStepData
     {
@@ -16,16 +17,8 @@ namespace Pg.Puzzle.Response
                                   SlidingGems slidingGems)
         {
             BeginningMap = beginningMap;
-            SlidingGems = slidingGems;
             VanishingClusters = vanishingClusters;
-        }
-
-        public override string ToString()
-        {
-            return $"{nameof(SimulationStepData)}{{"
-                   + $"{nameof(VanishingClusters)}: {VanishingClusters}"
-                   + $", {nameof(SlidingGems)}: [{SlidingGems.DebugDescribeHistory()}]"
-                   + "}";
+            SlidingGems = slidingGems;
         }
     }
 }

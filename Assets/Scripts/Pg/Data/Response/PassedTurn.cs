@@ -24,7 +24,7 @@ namespace Pg.Data.Response
 
         public float GetCoef()
         {
-            return 0.1f * Value;
+            return 0.1f * (Value + 1);
         }
 
         int Value { get; }

@@ -1,8 +1,6 @@
 #nullable enable
-using Pg.Data.Response;
 using Pg.Puzzle;
 using Pg.Puzzle.Util;
-using Pg.Rule;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -49,25 +47,22 @@ namespace Pg.Scene.Game
                 .Subscribe(async tileOperation =>
                 {
                     var turnResponse = gameController.ProcessTurn(tileOperation);
-                    var currentTurn = gameController.PassedTurn;
 
-                    var chainingCount = 0;
-
-                    foreach (var simulationStepData in turnResponse.SimulationStepDataItems)
+                    foreach (var stepResponse in turnResponse.SimulationStepResponses)
                     {
-                        var score = CalculateScore.StepCalculate(
-                            simulationStepData.VanishingClusters,
-                            new ChainingCount(chainingCount++),
-                            currentTurn
-                        );
-                        Debug.Log(simulationStepData);
+                        Debug.Log(stepResponse);
                         Debug.Log(Dumper.Dump(gameController.DebugGetTileStatuses()));
-                        Coordinates!.ApplyTiles(simulationStepData.BeginningMap);
-                        await Coordinates!.ApplyVanishings(simulationStepData.VanishingClusters);
-                        Score!.AddScore(score);
-                        await Coordinates!.ApplySlides(simulationStepData.SlidingGems);
+                        Debug.Log($"NEW SCORE: {stepResponse.AcquisitionScore}");
+                        Coordinates!.ApplyTiles(stepResponse.BeginningMap);
+                        await Coordinates!.ApplyVanishings(stepResponse.VanishingClusters);
+                        Score!.AddScore(stepResponse.AcquisitionScore);
+                        await Coordinates!.ApplySlides(stepResponse.SlidingGems);
                         Coordinates!.ApplyTiles(gameController.DebugGetTileStatuses());
                     }
+
+                    Score!.SetScore(turnResponse.Score);
+
+                    Debug.Log($"JUDGE: {turnResponse.JudgeResult}");
                 })
                 .AddTo(gameObject);
         }

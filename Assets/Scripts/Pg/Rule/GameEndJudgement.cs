@@ -3,12 +3,12 @@ using Pg.Data.Response;
 
 namespace Pg.Rule
 {
-    public class GameEndJudge
+    public class GameEndJudgement
     {
         PassedTurn MaxTurnCount { get; }
         Score TargetScore { get; }
 
-        public GameEndJudge(int maxTurnCount, int targetScore)
+        public GameEndJudgement(int maxTurnCount, int targetScore)
         {
             MaxTurnCount = new PassedTurn(maxTurnCount);
             TargetScore = new Score(targetScore);

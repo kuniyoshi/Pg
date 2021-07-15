@@ -21,9 +21,9 @@ namespace Pg.Data.Response
             return GetText();
         }
 
-        public Score Add(Score other)
+        public Score Add(AcquisitionScore acquisitionScore)
         {
-            return new Score(Value + other.Value);
+            return new Score(Value + acquisitionScore.Value);
         }
 
         public bool IsGreaterThanEqual(Score other)
