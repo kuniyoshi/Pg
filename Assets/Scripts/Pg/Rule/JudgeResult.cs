@@ -1,7 +1,10 @@
 #nullable enable
+using System;
+using Cysharp.Threading.Tasks;
+
 namespace Pg.Rule
 {
-    public struct JudgeResult
+    public readonly struct JudgeResult
     {
         public static JudgeResult Continuation { get; } = new JudgeResult(Impl.Continuation);
         public static JudgeResult Failure { get; } = new JudgeResult(Impl.Failure);
@@ -31,6 +34,29 @@ namespace Pg.Rule
         public override string ToString()
         {
             return Value.ToString();
+        }
+
+        public async UniTask Switch(UniTask ifContinuation,
+                                    UniTask ifFailure,
+                                    UniTask ifSucceed)
+        {
+            switch (Value)
+            {
+                case Impl.Continuation:
+                    await ifContinuation;
+                    return;
+
+                case Impl.Failure:
+                    await ifFailure;
+                    return;
+
+                case Impl.Succeed:
+                    await ifSucceed;
+                    return;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         enum Impl

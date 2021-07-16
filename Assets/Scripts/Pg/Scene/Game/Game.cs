@@ -1,6 +1,9 @@
 #nullable enable
+using Cysharp.Threading.Tasks;
 using Pg.Puzzle;
 using Pg.Puzzle.Util;
+using Pg.Rule;
+using Pg.Scene.Game.Internal;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -25,6 +28,9 @@ namespace Pg.Scene.Game
         [SerializeField]
         Score? Score;
 
+        [SerializeField]
+        GameEndDirection? GameEndDirection;
+
         void Awake()
         {
             Assert.IsNotNull(Coordinates, "Coordinates != null");
@@ -32,6 +38,7 @@ namespace Pg.Scene.Game
             Assert.IsNotNull(StartDirection, "StartDirection != null");
             Assert.IsNotNull(UserPlayer, "UserPlayer != null");
             Assert.IsNotNull(Score, "Score != null");
+            Assert.IsNotNull(GameEndDirection, "GameEndDirection != null");
         }
 
         async void Start()
@@ -63,6 +70,12 @@ namespace Pg.Scene.Game
                     Score!.SetScore(turnResponse.Score);
 
                     Debug.Log($"JUDGE: {turnResponse.JudgeResult}");
+
+                    await turnResponse.JudgeResult.Switch(
+                        UniTask.CompletedTask,
+                        GameEndDirection!.Play(JudgeResult.Failure),
+                        GameEndDirection!.Play(JudgeResult.Succeed)
+                    );
                 })
                 .AddTo(gameObject);
         }
