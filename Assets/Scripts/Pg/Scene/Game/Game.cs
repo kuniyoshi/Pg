@@ -2,7 +2,6 @@
 using Cysharp.Threading.Tasks;
 using Pg.Puzzle;
 using Pg.Puzzle.Util;
-using Pg.Rule;
 using Pg.Scene.Game.Internal;
 using UniRx;
 using UnityEngine;
@@ -43,6 +42,8 @@ namespace Pg.Scene.Game
 
         async void Start()
         {
+            await GameEndDirection!.PlaySucceed();
+
             await StartDirection!.Play();
             var gameController = new GameController(GameData!);
             var tileStatuses = gameController.StartGame();
@@ -72,9 +73,9 @@ namespace Pg.Scene.Game
                     Debug.Log($"JUDGE: {turnResponse.JudgeResult}");
 
                     await turnResponse.JudgeResult.Switch(
-                        UniTask.CompletedTask,
-                        GameEndDirection!.Play(JudgeResult.Failure),
-                        GameEndDirection!.Play(JudgeResult.Succeed)
+                        () => UniTask.CompletedTask,
+                        GameEndDirection!.PlayFailure,
+                        GameEndDirection!.PlaySucceed
                     );
                 })
                 .AddTo(gameObject);

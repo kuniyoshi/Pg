@@ -36,22 +36,22 @@ namespace Pg.Rule
             return Value.ToString();
         }
 
-        public async UniTask Switch(UniTask ifContinuation,
-                                    UniTask ifFailure,
-                                    UniTask ifSucceed)
+        public async UniTask Switch(Func<UniTask> ifContinuation,
+                                    Func<UniTask> ifFailure,
+                                    Func<UniTask> ifSucceed)
         {
             switch (Value)
             {
                 case Impl.Continuation:
-                    await ifContinuation;
+                    await ifContinuation.Invoke();
                     return;
 
                 case Impl.Failure:
-                    await ifFailure;
+                    await ifFailure.Invoke();
                     return;
 
                 case Impl.Succeed:
-                    await ifSucceed;
+                    await ifSucceed.Invoke();
                     return;
 
                 default:
