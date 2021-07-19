@@ -1,5 +1,6 @@
 #nullable enable
 using Cysharp.Threading.Tasks;
+using Pg.App;
 using Pg.Puzzle;
 using Pg.Puzzle.Util;
 using Pg.Scene.Game.Internal;
@@ -30,6 +31,9 @@ namespace Pg.Scene.Game
         [SerializeField]
         GameEndDirection? GameEndDirection;
 
+        [SerializeField]
+        NextScreen? NextScreen;
+
         void Awake()
         {
             Assert.IsNotNull(Coordinates, "Coordinates != null");
@@ -38,6 +42,7 @@ namespace Pg.Scene.Game
             Assert.IsNotNull(UserPlayer, "UserPlayer != null");
             Assert.IsNotNull(Score, "Score != null");
             Assert.IsNotNull(GameEndDirection, "GameEndDirection != null");
+            Assert.IsNotNull(NextScreen, "NextScreen != null");
         }
 
         async void Start()
@@ -72,11 +77,25 @@ namespace Pg.Scene.Game
 
                     await turnResponse.JudgeResult.Switch(
                         () => UniTask.CompletedTask,
-                        GameEndDirection!.PlayFailure,
-                        GameEndDirection!.PlaySucceed
+                        PlayFailure,
+                        PlaySucceed
                     );
                 })
                 .AddTo(gameObject);
+        }
+
+        async UniTask PlayFailure()
+        {
+            await GameEndDirection!.PlayFailure();
+            await NextScreen!.BlockUntilTap();
+            SceneManager.MoveToResultScene();
+        }
+
+        async UniTask PlaySucceed()
+        {
+            await GameEndDirection!.PlaySucceed();
+            await NextScreen!.BlockUntilTap();
+            SceneManager.MoveToResultScene();
         }
     }
 }
