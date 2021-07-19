@@ -42,8 +42,6 @@ namespace Pg.Scene.Game
 
         async void Start()
         {
-            await GameEndDirection!.PlaySucceed();
-
             await StartDirection!.Play();
             var gameController = new GameController(GameData!);
             var tileStatuses = gameController.StartGame();

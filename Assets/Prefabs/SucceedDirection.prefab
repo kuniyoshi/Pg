@@ -90,6 +90,7 @@ GameObject:
   - component: {fileID: 7284506449952120388}
   - component: {fileID: 6662743939091867407}
   - component: {fileID: 980067524218080241}
+  - component: {fileID: 2298572312882001218}
   m_Layer: 5
   m_Name: SucceedDirection
   m_TagString: Untagged
@@ -155,6 +156,50 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2298572312882001218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100638076152332089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2d9d79d2cf3452bbd40cee784dbf4d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SucceedLetters:
+  - {fileID: 1736622094104791380}
+  - {fileID: 7308146581721135454}
+  - {fileID: 2530816115920659721}
+  - {fileID: 1358365240036138639}
+  - {fileID: 1854149575891482942}
+  - {fileID: 7377369557354496588}
+  - {fileID: 8962013850728823054}
+  SucceedDurations:
+  - 0.8
+  - 0.7
+  - 0.6
+  - 0.5
+  - 0.4
+  - 0.3
+  - 0.2
+  SucceedDelays:
+  - 0.1
+  - 0.2
+  - 0.3
+  - 0.4
+  - 0.5
+  - 0.6
+  - 0.7
+  SucceedInitialVectors:
+  - {x: 500, y: 500, z: 0}
+  - {x: -500, y: -500, z: 0}
+  - {x: 100, y: 1000, z: 0}
+  - {x: 100, y: -1000, z: 0}
+  - {x: 100, y: 300, z: 0}
+  - {x: 50, y: -300, z: 0}
+  - {x: 50, y: 400, z: 0}
 --- !u!1 &1405667491726801341
 GameObject:
   m_ObjectHideFlags: 0
