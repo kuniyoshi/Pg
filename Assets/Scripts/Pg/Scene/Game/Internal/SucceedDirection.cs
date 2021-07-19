@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
@@ -65,6 +66,9 @@ namespace Pg.Scene.Game.Internal
         [SerializeField]
         Vector3[]? SucceedInitialVectors;
 
+        [SerializeField]
+        Image? Background;
+
         void Awake()
         {
             Assert.IsNotNull(SucceedLetters, "SucceedLetters != null");
@@ -77,14 +81,22 @@ namespace Pg.Scene.Game.Internal
             Assert.IsNotNull(SucceedDelays, "SucceedDelays != null");
             Assert.IsNotNull(SucceedInitialVectors, "SucceedInitialVectors != null");
 
+            Assert.IsNotNull(Background, "Background != null");
+
             foreach (var letter in SucceedLetters!)
             {
                 letter.gameObject.SetActive(value: false);
             }
+
+            Background!.enabled = false;
+            Background!.DOFade(endValue: 0f, duration: 0f);
         }
 
         internal UniTask PlaySucceed()
         {
+            Background!.enabled = true;
+            Background!.DOFade(endValue: 0.5f, duration: 0.2f);
+
             Text[] succeedLetters = SucceedLetters!;
             var tasks = new List<UniTask>();
 

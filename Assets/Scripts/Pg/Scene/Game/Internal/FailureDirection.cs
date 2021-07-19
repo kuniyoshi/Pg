@@ -33,6 +33,9 @@ namespace Pg.Scene.Game.Internal
         [SerializeField]
         Text[]? FailureLetters;
 
+        [SerializeField]
+        Image? Background;
+
         void Awake()
         {
             Assert.IsNotNull(FailureLetters, "FailureLetters != null");
@@ -41,14 +44,22 @@ namespace Pg.Scene.Game.Internal
                 "FailureLetters!.Any() && FailureLetters!.All(text => text != null)"
             );
 
+            Assert.IsNotNull(Background, "Background != null");
+
             foreach (var letter in FailureLetters!)
             {
                 letter.gameObject.SetActive(value: false);
             }
+
+            Background!.enabled = false;
+            Background!.DOFade(endValue: 0f, duration: 0f);
         }
 
         internal UniTask PlayFailure()
         {
+            Background!.enabled = true;
+            Background!.DOFade(endValue: 0.5f, duration: 0.2f);
+
             Text[] failureLetters = FailureLetters!;
             var token = this.GetCancellationTokenOnDestroy();
 

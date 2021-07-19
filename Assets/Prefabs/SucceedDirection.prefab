@@ -200,6 +200,7 @@ MonoBehaviour:
   - {x: 100, y: 300, z: 0}
   - {x: 50, y: -300, z: 0}
   - {x: 50, y: 400, z: 0}
+  Background: {fileID: 980067524218080241}
 --- !u!1 &1405667491726801341
 GameObject:
   m_ObjectHideFlags: 0
