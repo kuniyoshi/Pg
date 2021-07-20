@@ -2,7 +2,8 @@
     "name": "Pg.App",
     "rootNamespace": "",
     "references": [
-        "GUID:5e362b2288b6b461d9c102bf54aaa6f7"
+        "GUID:5e362b2288b6b461d9c102bf54aaa6f7",
+        "GUID:88b2e7f7f765c4e7793f5434086e518d"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,5 +1,5 @@
 #nullable enable
-using Pg.Etc;
+using Pg.SceneData;
 
 namespace Pg.App
 {
@@ -15,8 +15,9 @@ namespace Pg.App
             LoadScene(SceneType.GameScene);
         }
 
-        public static void MoveToResultScene()
+        public static void MoveToResultScene(ResultData resultData)
         {
+            TheSceneData.SetResultData(resultData);
             LoadScene(SceneType.ResultScene);
         }
 

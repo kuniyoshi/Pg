@@ -6,6 +6,7 @@ package "Pg" {
     [Rule]
     [Puzzle]
     [Scene.Game]
+    [SceneData]
     [App]
     Data ---> Etc
     Rule ---> Etc
@@ -13,11 +14,15 @@ package "Pg" {
     Puzzle ---> Etc
     Puzzle ---> Data
     Puzzle ---> Rule
+    SceneData ---> Data
+    SceneData ---> Etc
     Scene.Game ---> Etc
     Scene.Game ---> Data
     Scene.Game ---> Puzzle
     Scene.Game ---> App
+    Scene.Game ---> SceneData
     App ---> Etc
+    App ---> SceneData
 }
 
 @enduml

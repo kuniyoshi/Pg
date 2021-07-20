@@ -4,6 +4,7 @@ using Pg.App;
 using Pg.Puzzle;
 using Pg.Puzzle.Util;
 using Pg.Scene.Game.Internal;
+using Pg.SceneData;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -88,14 +89,14 @@ namespace Pg.Scene.Game
         {
             await GameEndDirection!.PlayFailure();
             await NextScreen!.BlockUntilTap();
-            SceneManager.MoveToResultScene();
+            SceneManager.MoveToResultScene(new ResultData());
         }
 
         async UniTask PlaySucceed()
         {
             await GameEndDirection!.PlaySucceed();
             await NextScreen!.BlockUntilTap();
-            SceneManager.MoveToResultScene();
+            SceneManager.MoveToResultScene(new ResultData());
         }
     }
 }
