@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace Pg.Scene.Game.Internal
 {
-    public class NextScreen
+    internal class NextScreen
         : MonoBehaviour
     {
         [SerializeField]

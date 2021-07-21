@@ -6,7 +6,7 @@ namespace Pg.Puzzle.Internal
     internal class ScoreBoard
     {
         Score _currentScore = Score.Zero;
-        public Score Current => _currentScore;
+        internal Score Current => _currentScore;
 
         internal void Add(AcquisitionScore acquisitionScore)
         {

@@ -30,5 +30,10 @@ namespace Pg.Data.Response
         {
             return Value >= other.Value;
         }
+
+        public int GetValue()
+        {
+            return Value;
+        }
     }
 }

@@ -1,9 +1,8 @@
 #nullable enable
 using Pg.Data.Response;
 using Pg.Data.Simulation;
-using Pg.Puzzle.Response;
 
-namespace Pg.Puzzle.Internal
+namespace Pg.Puzzle.Response
 {
     public class SimulationStepData
     {
