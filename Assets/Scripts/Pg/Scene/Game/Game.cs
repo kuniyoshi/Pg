@@ -80,7 +80,8 @@ namespace Pg.Scene.Game
 
                         // TODO: useless iteration 😭, should be improved it.
                         _record!.AddVanishedGemCount(stepResponse.VanishingClusters.NewGemColorTypes.Sum(newGemColorType
-                            => stepResponse.VanishingClusters.GetVanishingCoordinatesOf(newGemColorType).Count()));
+                            => stepResponse.VanishingClusters.GetVanishingCoordinatesOf(newGemColorType)
+                                .Sum(cluster => cluster.Count())));
 
                         Debug.Log(stepResponse);
                         Debug.Log(Dumper.Dump(gameController.DebugGetTileStatuses()));

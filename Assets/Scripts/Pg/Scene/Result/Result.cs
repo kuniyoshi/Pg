@@ -1,5 +1,5 @@
 #nullable enable
-using Pg.App;
+using Pg.SceneData;
 using UnityEngine;
 
 namespace Pg.Scene.Result
@@ -9,7 +9,9 @@ namespace Pg.Scene.Result
     {
         public void MoveToTitle()
         {
-            SceneManager.MoveBackToTitleScene();
+            var data = TheSceneData.GetResultData();
+            Debug.Log(data);
+            // SceneManager.MoveBackToTitleScene();
         }
     }
 }

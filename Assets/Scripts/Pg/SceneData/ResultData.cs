@@ -48,5 +48,18 @@ namespace Pg.SceneData
             TotalScore = totalScore;
             TargetScore = targetScore;
         }
+
+        public override string ToString()
+        {
+            return $"{nameof(ResultData)}{{"
+                   + $"{nameof(GameResult)}: {GameResult}"
+                   + $", {nameof(TotalTurn)}: {TotalTurn}"
+                   + $", {nameof(TurnLimit)}: {TurnLimit}"
+                   + $", {nameof(TotalChain)}: {TotalChain}"
+                   + $", {nameof(TotalVanishedGem)}: {TotalVanishedGem}"
+                   + $", {nameof(TotalScore)}: {TotalScore}"
+                   + $", {nameof(TargetScore)}: {TargetScore}"
+                   + "}";
+        }
     }
 }

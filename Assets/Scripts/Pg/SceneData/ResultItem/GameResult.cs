@@ -29,6 +29,11 @@ namespace Pg.SceneData.ResultItem
             return (int) Value;
         }
 
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
+
         enum Domain
         {
             Succeed,
