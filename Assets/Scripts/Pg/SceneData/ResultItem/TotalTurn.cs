@@ -30,6 +30,11 @@ namespace Pg.SceneData.ResultItem
             return Value;
         }
 
+        public int GetValue()
+        {
+            return Value;
+        }
+
         public override string ToString()
         {
             return Value.ToString();

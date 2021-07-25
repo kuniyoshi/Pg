@@ -12,12 +12,12 @@ namespace Pg.Scene.Game.Internal
         FailureDirection? FailureDirection;
 
         [SerializeField]
-        SucceedDirection? SucceedDirection;
+        SuccessDirection? SuccessDirection;
 
         void Awake()
         {
             Assert.IsNotNull(FailureDirection, "FailureDirection != null");
-            Assert.IsNotNull(SucceedDirection, "SucceedDirection != null");
+            Assert.IsNotNull(SuccessDirection, "SuccessDirection != null");
         }
 
         internal UniTask PlayFailure()
@@ -25,9 +25,9 @@ namespace Pg.Scene.Game.Internal
             return FailureDirection!.PlayFailure();
         }
 
-        internal UniTask PlaySucceed()
+        internal UniTask PlaySuccess()
         {
-            return SucceedDirection!.PlaySucceed();
+            return SuccessDirection!.PlaySuccess();
         }
     }
 }

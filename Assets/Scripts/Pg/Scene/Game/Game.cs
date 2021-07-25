@@ -63,48 +63,52 @@ namespace Pg.Scene.Game
 
             UserPlayer!.OnTransaction
                 .Subscribe(async tileOperation =>
-                {
-                    var turnResponse = gameController.ProcessTurn(tileOperation);
-
-                    _record.IncreaseTurn();
-                    var isInChain = false;
-
-                    foreach (var stepResponse in turnResponse.SimulationStepResponses)
                     {
-                        if (isInChain)
+                        var turnResponse = gameController.ProcessTurn(tileOperation);
+
+                        _record.IncreaseTurn();
+                        var isInChain = false;
+
+                        foreach (var stepResponse in turnResponse.SimulationStepResponses)
                         {
-                            _record!.IncreaseChainCount();
+                            if (isInChain)
+                            {
+                                _record!.IncreaseChainCount();
+                            }
+
+                            isInChain = true;
+
+                            // TODO: useless iteration 😭, should be improved it.
+                            _record!.AddVanishedGemCount(stepResponse.VanishingClusters.NewGemColorTypes.Sum(
+                                    newGemColorType
+                                        => stepResponse.VanishingClusters.GetVanishingCoordinatesOf(newGemColorType)
+                                            .Sum(cluster => cluster.Count())
+                                )
+                            );
+
+                            Debug.Log(stepResponse);
+                            Debug.Log(Dumper.Dump(gameController.DebugGetTileStatuses()));
+                            Debug.Log($"NEW SCORE: {stepResponse.AcquisitionScore}");
+                            Coordinates!.ApplyTiles(stepResponse.BeginningMap);
+                            await Coordinates!.ApplyVanishings(stepResponse.VanishingClusters);
+                            Score!.AddScore(stepResponse.AcquisitionScore);
+                            await Coordinates!.ApplySlides(stepResponse.SlidingGems);
+                            Coordinates!.ApplyTiles(gameController.DebugGetTileStatuses());
                         }
 
-                        isInChain = true;
+                        _record.SetScore(turnResponse.Score);
 
-                        // TODO: useless iteration 😭, should be improved it.
-                        _record!.AddVanishedGemCount(stepResponse.VanishingClusters.NewGemColorTypes.Sum(newGemColorType
-                            => stepResponse.VanishingClusters.GetVanishingCoordinatesOf(newGemColorType)
-                                .Sum(cluster => cluster.Count())));
+                        Score!.SetScore(turnResponse.Score);
 
-                        Debug.Log(stepResponse);
-                        Debug.Log(Dumper.Dump(gameController.DebugGetTileStatuses()));
-                        Debug.Log($"NEW SCORE: {stepResponse.AcquisitionScore}");
-                        Coordinates!.ApplyTiles(stepResponse.BeginningMap);
-                        await Coordinates!.ApplyVanishings(stepResponse.VanishingClusters);
-                        Score!.AddScore(stepResponse.AcquisitionScore);
-                        await Coordinates!.ApplySlides(stepResponse.SlidingGems);
-                        Coordinates!.ApplyTiles(gameController.DebugGetTileStatuses());
+                        Debug.Log($"JUDGE: {turnResponse.JudgeResult}");
+
+                        await turnResponse.JudgeResult.Switch(
+                            () => UniTask.CompletedTask,
+                            PlayFailure,
+                            PlaySuccess
+                        );
                     }
-
-                    _record.SetScore(turnResponse.Score);
-
-                    Score!.SetScore(turnResponse.Score);
-
-                    Debug.Log($"JUDGE: {turnResponse.JudgeResult}");
-
-                    await turnResponse.JudgeResult.Switch(
-                        () => UniTask.CompletedTask,
-                        PlayFailure,
-                        PlaySucceed
-                    );
-                })
+                )
                 .AddTo(gameObject);
         }
 
@@ -115,11 +119,11 @@ namespace Pg.Scene.Game
             SceneManager.MoveToResultScene(_record!.CreateFailure());
         }
 
-        async UniTask PlaySucceed()
+        async UniTask PlaySuccess()
         {
-            await GameEndDirection!.PlaySucceed();
+            await GameEndDirection!.PlaySuccess();
             await NextScreen!.BlockUntilTap();
-            SceneManager.MoveToResultScene(_record!.CreateSucceed());
+            SceneManager.MoveToResultScene(_record!.CreateSuccess());
         }
 
         class Record
@@ -158,10 +162,10 @@ namespace Pg.Scene.Game
                 );
             }
 
-            public ResultData CreateSucceed()
+            public ResultData CreateSuccess()
             {
                 return ResultData.Create(
-                    GameResult.Succeed,
+                    GameResult.Success,
                     _passedTurn,
                     TurnLimit,
                     _totalChainCount,

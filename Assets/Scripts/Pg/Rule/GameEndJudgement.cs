@@ -18,7 +18,7 @@ namespace Pg.Rule
         {
             if (currentScore.IsGreaterThanEqual(TargetScore))
             {
-                return JudgeResult.Succeed;
+                return JudgeResult.Success;
             }
 
             if (passedTurn.IsGreaterThanEqual(MaxTurnCount))

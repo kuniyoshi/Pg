@@ -1,3 +1,5 @@
+using UnityEngine;
+
 #nullable enable
 namespace Pg.SceneData
 {
@@ -5,7 +7,7 @@ namespace Pg.SceneData
     {
         static Impl Instance { get; } = new Impl();
 
-        public static ResultData GetResultData()
+        public static ResultData? GetResultData()
         {
             return Instance.ResultData;
         }
@@ -15,9 +17,15 @@ namespace Pg.SceneData
             return Instance.ResultData = resultData;
         }
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void Initialize()
+        {
+            Instance.ResultData = null;
+        }
+
         class Impl
         {
-            public ResultData ResultData { get; internal set; }
+            public ResultData? ResultData { get; internal set; }
         }
     }
 }

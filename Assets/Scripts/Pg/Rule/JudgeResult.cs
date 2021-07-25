@@ -8,7 +8,7 @@ namespace Pg.Rule
     {
         public static JudgeResult Continuation { get; } = new JudgeResult(Impl.Continuation);
         public static JudgeResult Failure { get; } = new JudgeResult(Impl.Failure);
-        public static JudgeResult Succeed { get; } = new JudgeResult(Impl.Succeed);
+        public static JudgeResult Success { get; } = new JudgeResult(Impl.Success);
         Impl Value { get; }
 
         JudgeResult(Impl value)
@@ -38,7 +38,7 @@ namespace Pg.Rule
 
         public async UniTask Switch(Func<UniTask> ifContinuation,
                                     Func<UniTask> ifFailure,
-                                    Func<UniTask> ifSucceed)
+                                    Func<UniTask> ifSuccess)
         {
             switch (Value)
             {
@@ -50,8 +50,8 @@ namespace Pg.Rule
                     await ifFailure.Invoke();
                     return;
 
-                case Impl.Succeed:
-                    await ifSucceed.Invoke();
+                case Impl.Success:
+                    await ifSuccess.Invoke();
                     return;
 
                 default:
@@ -63,7 +63,7 @@ namespace Pg.Rule
         {
             Continuation,
             Failure,
-            Succeed,
+            Success,
         }
     }
 }

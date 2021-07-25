@@ -490,7 +490,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 100638076152332089, guid: 82c82dc020dfc4941bf4a6f3a19157bc, type: 3}
       propertyPath: m_Name
-      value: SucceedDirection
+      value: SuccessDirection
       objectReference: {fileID: 0}
     - target: {fileID: 7284506449952120388, guid: 82c82dc020dfc4941bf4a6f3a19157bc, type: 3}
       propertyPath: m_Pivot.x
@@ -776,7 +776,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FailureDirection: {fileID: 2112329491}
-  SucceedDirection: {fileID: 1997924437}
+  SuccessDirection: {fileID: 1997924437}
 --- !u!1 &1145174079
 GameObject:
   m_ObjectHideFlags: 0

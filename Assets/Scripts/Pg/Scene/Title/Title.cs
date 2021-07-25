@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace Pg.Scene.Title
 {
-    public class Title
+    internal class Title
         : MonoBehaviour
     {
-        public void MoveToGameScene()
+        internal void MoveToGameScene()
         {
             SceneManager.MoveToGameScene();
         }

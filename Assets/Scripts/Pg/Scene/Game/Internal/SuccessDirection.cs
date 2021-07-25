@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 namespace Pg.Scene.Game.Internal
 {
-    internal class SucceedDirection
+    internal class SuccessDirection
         : MonoBehaviour
     {
         static async UniTask DoHoming(Text letter,
@@ -55,35 +55,35 @@ namespace Pg.Scene.Game.Internal
         }
 
         [SerializeField]
-        Text[]? SucceedLetters;
+        Text[]? SuccessLetters;
 
         [SerializeField]
-        float[]? SucceedDurations;
+        float[]? SuccessDurations;
 
         [SerializeField]
-        float[]? SucceedDelays;
+        float[]? SuccessDelays;
 
         [SerializeField]
-        Vector3[]? SucceedInitialVectors;
+        Vector3[]? SuccessInitialVectors;
 
         [SerializeField]
         Image? Background;
 
         void Awake()
         {
-            Assert.IsNotNull(SucceedLetters, "SucceedLetters != null");
+            Assert.IsNotNull(SuccessLetters, "SuccessLetters != null");
             Assert.IsTrue(
-                SucceedLetters!.Any() && SucceedLetters!.All(text => text != null),
-                "SucceedLetters!.Any() && SucceedLetters!.All(text => text != null)"
+                SuccessLetters!.Any() && SuccessLetters!.All(text => text != null),
+                "SuccessLetters!.Any() && SuccessLetters!.All(text => text != null)"
             );
 
-            Assert.IsNotNull(SucceedDurations, "SucceedDurations != null");
-            Assert.IsNotNull(SucceedDelays, "SucceedDelays != null");
-            Assert.IsNotNull(SucceedInitialVectors, "SucceedInitialVectors != null");
+            Assert.IsNotNull(SuccessDurations, "SuccessDurations != null");
+            Assert.IsNotNull(SuccessDelays, "SuccessDelays != null");
+            Assert.IsNotNull(SuccessInitialVectors, "SuccessInitialVectors != null");
 
             Assert.IsNotNull(Background, "Background != null");
 
-            foreach (var letter in SucceedLetters!)
+            foreach (var letter in SuccessLetters!)
             {
                 letter.gameObject.SetActive(value: false);
             }
@@ -92,20 +92,20 @@ namespace Pg.Scene.Game.Internal
             Background!.DOFade(endValue: 0f, duration: 0f);
         }
 
-        internal UniTask PlaySucceed()
+        internal UniTask PlaySuccess()
         {
             Background!.enabled = true;
             Background!.DOFade(endValue: 0.5f, duration: 0.2f);
 
-            Text[] succeedLetters = SucceedLetters!;
+            Text[] successLetters = SuccessLetters!;
             var tasks = new List<UniTask>();
 
-            for (var letterIndex = 0; letterIndex < succeedLetters.Length; ++letterIndex)
+            for (var letterIndex = 0; letterIndex < successLetters.Length; ++letterIndex)
             {
-                var letter = succeedLetters[letterIndex];
-                var duration = SucceedDurations![letterIndex];
-                var delay = SucceedDelays![letterIndex];
-                var initialVector = SucceedInitialVectors![letterIndex];
+                var letter = successLetters[letterIndex];
+                var duration = SuccessDurations![letterIndex];
+                var delay = SuccessDelays![letterIndex];
+                var initialVector = SuccessInitialVectors![letterIndex];
 
                 tasks.Add(DoHoming(letter, duration, initialVector, delay));
             }

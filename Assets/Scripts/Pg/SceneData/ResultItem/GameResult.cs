@@ -1,18 +1,31 @@
 #nullable enable
+using System;
+
 namespace Pg.SceneData.ResultItem
 {
+    [Serializable]
     public readonly struct GameResult
     {
-        public static GameResult Failure { get; } = new GameResult(Domain.Failure);
+        public static bool operator ==(GameResult a, GameResult b)
+        {
+            return a.Value == b.Value;
+        }
 
-        public static GameResult Succeed { get; } = new GameResult(Domain.Succeed);
-
-        Domain Value { get; }
+        public static bool operator !=(GameResult a, GameResult b)
+        {
+            return !(a == b);
+        }
 
         GameResult(Domain value)
         {
             Value = value;
         }
+
+        public static GameResult Failure { get; } = new GameResult(Domain.Failure);
+
+        public static GameResult Success { get; } = new GameResult(Domain.Success);
+
+        Domain Value { get; }
 
         public override bool Equals(object obj)
         {
@@ -36,7 +49,7 @@ namespace Pg.SceneData.ResultItem
 
         enum Domain
         {
-            Succeed,
+            Success,
             Failure,
         }
     }
