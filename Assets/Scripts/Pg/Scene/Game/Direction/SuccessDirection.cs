@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
 
-namespace Pg.Scene.Game.Internal
+namespace Pg.Scene.Game.Direction
 {
     internal class SuccessDirection
         : MonoBehaviour

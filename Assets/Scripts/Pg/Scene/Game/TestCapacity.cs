@@ -6,7 +6,7 @@ using UnityEngine.Profiling;
 
 namespace Pg.Scene.Game
 {
-    public class TestCapacity
+    internal class TestCapacity
         : MonoBehaviour
     {
         [SerializeField]

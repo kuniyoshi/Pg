@@ -11,7 +11,7 @@ using UnityEngine.Assertions;
 
 namespace Pg.Scene.Game
 {
-    public class UserPlayer
+    internal class UserPlayer
         : MonoBehaviour
     {
         [SerializeField]
@@ -21,14 +21,14 @@ namespace Pg.Scene.Game
 
         Subject<TileOperation[]> TransactionSubject { get; } = new Subject<TileOperation[]>();
 
-        public IObservable<TileOperation[]> OnTransaction => TransactionSubject;
+        internal IObservable<TileOperation[]> OnTransaction => TransactionSubject;
 
         void Awake()
         {
             Assert.IsNotNull(Coordinates, "Coordinates != null");
         }
 
-        public void CompleteTransaction()
+        internal void CompleteTransaction()
         {
             Assert.IsNotNull(_sequence, "_sequence != null");
             Coordinates!.ClearSelections();
@@ -38,12 +38,12 @@ namespace Pg.Scene.Game
             TransactionSubject.OnNext(operations);
         }
 
-        public bool IsSelected(Tile tile)
+        internal bool IsSelected(Tile tile)
         {
             return _sequence?.IsSelected(tile.Coordinate) ?? false;
         }
 
-        public bool StartTransactionIfNotAlready(Tile tile)
+        internal bool StartTransactionIfNotAlready(Tile tile)
         {
             if (_sequence != null)
             {
@@ -55,7 +55,7 @@ namespace Pg.Scene.Game
             return true;
         }
 
-        public bool TryAddTransaction(Tile tile)
+        internal bool TryAddTransaction(Tile tile)
         {
             if (_sequence?.IsSelected(tile.Coordinate) ?? false)
             {
@@ -75,13 +75,13 @@ namespace Pg.Scene.Game
             Queue<Operation> Histories { get; }
             Tile? _lastSelection;
 
-            public Sequence(Tile tile)
+            internal Sequence(Tile tile)
             {
                 _lastSelection = tile;
                 Histories = new Queue<Operation>();
             }
 
-            public bool CanSwap(Tile tile)
+            internal bool CanSwap(Tile tile)
             {
                 if (_lastSelection == null)
                 {
@@ -91,19 +91,19 @@ namespace Pg.Scene.Game
                 return GameRule.CanSwap(tile.TileData, _lastSelection!.TileData);
             }
 
-            public TileOperation[] DumpOperations()
+            internal TileOperation[] DumpOperations()
             {
                 return Histories.Select(operation => operation.CreateTileOperation())
                     .ToArray();
             }
 
-            public bool IsSelected(Coordinate coordinate)
+            internal bool IsSelected(Coordinate coordinate)
             {
                 return _lastSelection != null
                        && coordinate.Equals(_lastSelection.Coordinate);
             }
 
-            public bool Swap(Tile tile)
+            internal bool Swap(Tile tile)
             {
                 Assert.IsNotNull(_lastSelection, "_lastSelection != null");
                 var operation = new Operation(_lastSelection!, tile);
@@ -119,18 +119,18 @@ namespace Pg.Scene.Game
                 Tile TileA { get; }
                 Tile TileB { get; }
 
-                public Operation(Tile tileA, Tile tileB)
+                internal Operation(Tile tileA, Tile tileB)
                 {
                     TileA = tileA;
                     TileB = tileB;
                 }
 
-                public TileOperation CreateTileOperation()
+                internal TileOperation CreateTileOperation()
                 {
                     return new TileOperation(TileA.Coordinate, TileB.Coordinate);
                 }
 
-                public void DoSwap()
+                internal void DoSwap()
                 {
                     var (currentA, currentB) = (TileA.TileStatus, TileB.TileStatus);
                     var (nextA, nextB) = (currentB, currentA);

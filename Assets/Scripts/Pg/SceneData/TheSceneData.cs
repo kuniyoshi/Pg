@@ -1,6 +1,6 @@
+#nullable enable
 using UnityEngine;
 
-#nullable enable
 namespace Pg.SceneData
 {
     public static class TheSceneData

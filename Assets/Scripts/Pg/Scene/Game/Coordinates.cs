@@ -15,7 +15,7 @@ using UnityEngine.UI;
 
 namespace Pg.Scene.Game
 {
-    public class Coordinates
+    internal class Coordinates
         : MonoBehaviour
     {
         const int Size = 30;
@@ -78,7 +78,7 @@ namespace Pg.Scene.Game
             }
         }
 
-        public async Task ApplySlides(SlidingGems slidingGems)
+        internal async Task ApplySlides(SlidingGems slidingGems)
         {
             var slidingEnumerator = slidingGems.Items.GetEnumerator();
             var newGemEnumerator = slidingGems.NewGems.GetEnumerator();
@@ -110,7 +110,7 @@ namespace Pg.Scene.Game
             newGemEnumerator.Dispose();
         }
 
-        public void ApplyTiles(TileStatus[,] tiles)
+        internal void ApplyTiles(TileStatus[,] tiles)
         {
             Assert.AreEqual(_tiles!.GetLength(dimension: 0), tiles.GetLength(dimension: 0));
             Assert.AreEqual(_tiles!.GetLength(dimension: 1), tiles.GetLength(dimension: 1));
@@ -124,7 +124,7 @@ namespace Pg.Scene.Game
             }
         }
 
-        public async Task ApplyVanishings(VanishingClusters vanishingClusters)
+        internal async Task ApplyVanishings(VanishingClusters vanishingClusters)
         {
             foreach (var gemColorType in vanishingClusters.NewGemColorTypes)
             {
@@ -138,7 +138,7 @@ namespace Pg.Scene.Game
             }
         }
 
-        public void ClearSelections()
+        internal void ClearSelections()
         {
             foreach (var tile in _tiles!)
             {
@@ -146,7 +146,7 @@ namespace Pg.Scene.Game
             }
         }
 
-        public Tile? InterSectWith(Vector2 screenPoint)
+        internal Tile? InterSectWith(Vector2 screenPoint)
         {
             var raycastResults = new List<RaycastResult>();
             var pointerEventData = new PointerEventData(EventSystem.current)
@@ -174,7 +174,7 @@ namespace Pg.Scene.Game
             return null;
         }
 
-        public Task SetTileEvents(UserPlayer userPlayer)
+        internal Task SetTileEvents(UserPlayer userPlayer)
         {
             foreach (var tile in _tiles!)
             {

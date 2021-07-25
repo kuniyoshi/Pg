@@ -16,7 +16,7 @@ using UnityEngine.UI;
 
 namespace Pg.Scene.Game
 {
-    public class Tile
+    internal class Tile
         : MonoBehaviour
     {
         [SerializeField]
@@ -27,11 +27,11 @@ namespace Pg.Scene.Game
 
         Sequence? _sequence;
 
-        public TileStatus TileStatus => TileData.TileStatus;
+        internal TileStatus TileStatus => TileData.TileStatus;
 
-        public Coordinate Coordinate { get; private set; }
+        internal Coordinate Coordinate { get; private set; }
 
-        public TileData TileData { get; private set; }
+        internal TileData TileData { get; private set; }
 
         void Awake()
         {
@@ -40,12 +40,12 @@ namespace Pg.Scene.Game
             ZzDebugAssertMapValue();
         }
 
-        public void ClearSelection()
+        internal void ClearSelection()
         {
             QuitWorking();
         }
 
-        public void Initialize(int colIndex, int rowIndex, Vector2 localPosition)
+        internal void Initialize(int colIndex, int rowIndex, Vector2 localPosition)
         {
             Coordinate = new Coordinate(colIndex, rowIndex);
             TileData = new TileData(Coordinate, TileStatus.Empty);
@@ -55,7 +55,7 @@ namespace Pg.Scene.Game
             rectTransform.localPosition = localPosition;
         }
 
-        public async Task NewGem(GemColorType gemColorType)
+        internal async Task NewGem(GemColorType gemColorType)
         {
             Image!.enabled = true;
             Image!.GetComponentStrictly<RectTransform>().localScale = Vector3.zero;
@@ -65,7 +65,7 @@ namespace Pg.Scene.Game
                 .AsyncWaitForCompletion();
         }
 
-        public async Task Popup(GemColorType gemColorType)
+        internal async Task Popup(GemColorType gemColorType)
         {
             Image!.enabled = true;
             Image!.GetComponentStrictly<RectTransform>().localScale = Vector3.zero;
@@ -75,61 +75,65 @@ namespace Pg.Scene.Game
                 .AsyncWaitForCompletion();
         }
 
-        public void SetEvents(UserPlayer userPlayer)
+        internal void SetEvents(UserPlayer userPlayer)
         {
             Image!.OnPointerDownAsObservable()
                 .Subscribe(data =>
-                {
-                    var didStart = userPlayer.StartTransactionIfNotAlready(this);
-
-                    if (didStart)
                     {
-                        SelectFirstTime();
-                        MakeWorking();
+                        var didStart = userPlayer.StartTransactionIfNotAlready(this);
+
+                        if (didStart)
+                        {
+                            SelectFirstTime();
+                            MakeWorking();
+                        }
                     }
-                })
+                )
                 .AddTo(gameObject);
             Image!.OnPointerExitAsObservable()
                 .Subscribe(data =>
-                {
-                    var isSelected = userPlayer.IsSelected(this);
-
-                    if (!isSelected)
                     {
-                        QuitWorking();
+                        var isSelected = userPlayer.IsSelected(this);
+
+                        if (!isSelected)
+                        {
+                            QuitWorking();
+                        }
                     }
-                })
+                )
                 .AddTo(gameObject);
             Image!.OnPointerEnterAsObservable()
                 .Subscribe(data =>
-                {
-                    var didAdd = userPlayer.TryAddTransaction(this);
-
-                    if (didAdd)
                     {
-                        MakeWorking();
+                        var didAdd = userPlayer.TryAddTransaction(this);
+
+                        if (didAdd)
+                        {
+                            MakeWorking();
+                        }
                     }
-                })
+                )
                 .AddTo(gameObject);
             Image!.OnPointerUpAsObservable()
                 .Subscribe(data => userPlayer.CompleteTransaction())
                 .AddTo(gameObject);
         }
 
-        public async Task Slide()
+        internal async Task Slide()
         {
             Image!.enabled = true;
             await Image!.GetComponentStrictly<RectTransform>()
                 .DOScale(Vector3.zero, duration: 0.05f)
                 .OnComplete(() =>
-                {
-                    UpdateStatus(TileStatus.Empty);
-                    Image!.GetComponentStrictly<RectTransform>().localScale = Vector3.one;
-                })
+                    {
+                        UpdateStatus(TileStatus.Empty);
+                        Image!.GetComponentStrictly<RectTransform>().localScale = Vector3.one;
+                    }
+                )
                 .AsyncWaitForCompletion();
         }
 
-        public void UpdateStatus(TileStatus newTileStatus)
+        internal void UpdateStatus(TileStatus newTileStatus)
         {
             TileData = new TileData(Coordinate, newTileStatus);
 
@@ -146,15 +150,16 @@ namespace Pg.Scene.Game
             );
         }
 
-        public async Task Vanish()
+        internal async Task Vanish()
         {
             await Image!.GetComponentStrictly<RectTransform>()
                 .DOScale(Vector3.zero, duration: 0.1f)
                 .OnComplete(() =>
-                {
-                    UpdateStatus(TileStatus.Empty);
-                    Image!.GetComponentStrictly<RectTransform>().localScale = Vector3.one;
-                })
+                    {
+                        UpdateStatus(TileStatus.Empty);
+                        Image!.GetComponentStrictly<RectTransform>().localScale = Vector3.one;
+                    }
+                )
                 .AsyncWaitForCompletion();
         }
 
@@ -207,10 +212,10 @@ namespace Pg.Scene.Game
         }
 
         [Serializable]
-        public class NewGemColorTypeVsSprite
+        internal class NewGemColorTypeVsSprite
             : Pair<SerializableGemColorType, Sprite>
         {
-            public NewGemColorTypeVsSprite(SerializableGemColorType first, Sprite second)
+            internal NewGemColorTypeVsSprite(SerializableGemColorType first, Sprite second)
                 : base(first, second)
             {
             }

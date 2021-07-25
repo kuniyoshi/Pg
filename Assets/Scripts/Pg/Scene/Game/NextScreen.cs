@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
 
-namespace Pg.Scene.Game.Internal
+namespace Pg.Scene.Game
 {
     internal class NextScreen
         : MonoBehaviour

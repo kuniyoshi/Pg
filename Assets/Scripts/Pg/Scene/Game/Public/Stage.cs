@@ -2,7 +2,7 @@
 using Pg.Data.Request;
 using Pg.Data.Simulation;
 
-namespace Pg.Scene.Game
+namespace Pg.Scene.Game.Public
 {
     public class Stage
         : IStage

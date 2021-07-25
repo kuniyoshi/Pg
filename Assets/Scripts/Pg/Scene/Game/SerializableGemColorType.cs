@@ -1,15 +1,17 @@
 #nullable enable
 using System;
 using Pg.Data.Simulation;
+using UnityEngine;
 
 namespace Pg.Scene.Game
 {
     [Serializable]
-    public class SerializableGemColorType
+    internal class SerializableGemColorType
     {
-        public int Id;
+        [SerializeField]
+        internal int Id;
 
-        public GemColorType Convert()
+        internal GemColorType Convert()
         {
             return GemColorType.Convert(Id);
         }

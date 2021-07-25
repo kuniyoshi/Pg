@@ -1,14 +1,13 @@
 #nullable enable
 using System.Linq;
 using Pg.Data.Simulation;
-using Pg.Scene.Game;
 using UnityEditor;
 using UnityEngine;
 
-namespace Pg.Editor
+namespace Pg.Scene.Game.Editor
 {
     [CustomPropertyDrawer(typeof(SerializableGemColorType))]
-    public class GemColorTypePropertyDrawer
+    internal class GemColorTypePropertyDrawer
         : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)

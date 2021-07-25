@@ -1,7 +1,7 @@
 #nullable enable
 namespace Pg.Scene.Game
 {
-    public enum TileGemType
+    internal enum TileGemType
     {
         Closed,
         Empty,

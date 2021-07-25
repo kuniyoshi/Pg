@@ -26,7 +26,7 @@ namespace Pg.Scene.Result.Animation
             Hide();
         }
 
-        public void Play(GameResult gameResult)
+        internal void Play(GameResult gameResult)
         {
             if (gameResult != GameResult.Failure)
             {

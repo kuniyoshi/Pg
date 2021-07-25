@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace Pg.Scene.Game
 {
-    public class StartDirection
+    internal class StartDirection
         : MonoBehaviour
     {
         [SerializeField]
@@ -18,7 +18,7 @@ namespace Pg.Scene.Game
             Assert.IsNotNull(Cover, "Cover != null");
         }
 
-        public async Task Play()
+        internal async Task Play()
         {
             Cover!.raycastTarget = true;
             await Cover.DOFade(endValue: 0f, duration: 1f).AsyncWaitForStart();

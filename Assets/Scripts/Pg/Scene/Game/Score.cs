@@ -6,7 +6,7 @@ using UnityEngine.Assertions;
 
 namespace Pg.Scene.Game
 {
-    public class Score
+    internal class Score
         : MonoBehaviour
     {
         [SerializeField]
@@ -20,12 +20,6 @@ namespace Pg.Scene.Game
             Text!.text = "0";
         }
 
-        public void SetScore(Data.Response.Score newValue)
-        {
-            _score = newValue;
-            UpdateView();
-        }
-
         internal void AddScore(AcquisitionScore acquisitionScore)
         {
             _score = _score.Add(acquisitionScore);
@@ -35,6 +29,12 @@ namespace Pg.Scene.Game
         internal void Initialize(Data.Response.Score score)
         {
             _score = score;
+            UpdateView();
+        }
+
+        internal void SetScore(Data.Response.Score newValue)
+        {
+            _score = newValue;
             UpdateView();
         }
 

@@ -6,7 +6,7 @@ using Pg.Etc.Puzzle;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace Pg.Scene.Game
+namespace Pg.Scene.Game.Public
 {
     [CreateAssetMenu(fileName = "GameData", menuName = "Pg/GameData", order = 0)]
     public class GameData
@@ -100,7 +100,8 @@ namespace Pg.Scene.Game
                     var tileGemType = rows[rowIndex][colIndex];
 
                     result[colIndex, rowIndex] = new TileStatus(ConvertToTileStatusType(tileGemType),
-                        ConvertToGemColorType(tileGemType));
+                        ConvertToGemColorType(tileGemType)
+                    );
                 }
             }
 

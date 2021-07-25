@@ -3,7 +3,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace Pg.Scene.Game.Internal
+namespace Pg.Scene.Game.Direction
 {
     internal class GameEndDirection
         : MonoBehaviour

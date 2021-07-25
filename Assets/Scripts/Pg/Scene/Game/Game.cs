@@ -4,7 +4,8 @@ using Cysharp.Threading.Tasks;
 using Pg.App;
 using Pg.Puzzle;
 using Pg.Puzzle.Util;
-using Pg.Scene.Game.Internal;
+using Pg.Scene.Game.Direction;
+using Pg.Scene.Game.Public;
 using Pg.SceneData;
 using Pg.SceneData.ResultItem;
 using UniRx;
@@ -13,7 +14,7 @@ using UnityEngine.Assertions;
 
 namespace Pg.Scene.Game
 {
-    public class Game
+    internal class Game
         : MonoBehaviour
     {
         [SerializeField]
@@ -138,18 +139,18 @@ namespace Pg.Scene.Game
 
             int _totalVanishedGemCount;
 
-            public Record(int turnLimit, int targetScore)
+            internal Record(int turnLimit, int targetScore)
             {
                 TurnLimit = turnLimit;
                 TargetScore = targetScore;
             }
 
-            public void AddVanishedGemCount(int amount)
+            internal void AddVanishedGemCount(int amount)
             {
                 _totalVanishedGemCount = _totalVanishedGemCount + amount;
             }
 
-            public ResultData CreateFailure()
+            internal ResultData CreateFailure()
             {
                 return ResultData.Create(
                     GameResult.Failure,
@@ -162,7 +163,7 @@ namespace Pg.Scene.Game
                 );
             }
 
-            public ResultData CreateSuccess()
+            internal ResultData CreateSuccess()
             {
                 return ResultData.Create(
                     GameResult.Success,
@@ -175,17 +176,17 @@ namespace Pg.Scene.Game
                 );
             }
 
-            public void IncreaseChainCount()
+            internal void IncreaseChainCount()
             {
                 _totalChainCount++;
             }
 
-            public void IncreaseTurn()
+            internal void IncreaseTurn()
             {
                 _passedTurn++;
             }
 
-            public void SetScore(Data.Response.Score newValue)
+            internal void SetScore(Data.Response.Score newValue)
             {
                 _lastScore = newValue;
             }
