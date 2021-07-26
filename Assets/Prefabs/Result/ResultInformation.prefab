@@ -490,6 +490,7 @@ GameObject:
   - component: {fileID: 7608980034940268782}
   - component: {fileID: 7608980034940268776}
   - component: {fileID: 7608980034940268777}
+  - component: {fileID: 6607035317745133522}
   m_Layer: 5
   m_Name: TotalScoreText
   m_TagString: Untagged
@@ -558,6 +559,21 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: 999999
+--- !u!114 &6607035317745133522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7608980034940268783}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d2e1636a1404cddb525573daa371bf9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScoreText: {fileID: 7608980034940268777}
+  Duration: 0.6
+  StepCoef: 1
 --- !u!1 &7608980035093784075
 GameObject:
   m_ObjectHideFlags: 0
@@ -787,7 +803,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb8980838b4948e9af837bddb4e7a87c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TotalScore: {fileID: 7608980034940268777}
+  TotalScore: {fileID: 6607035317745133522}
   TargetScore: {fileID: 7608980036325310935}
   SuccessAnimation: {fileID: 6949343819820632666}
   FailureAnimation: {fileID: 5362034150215456641}

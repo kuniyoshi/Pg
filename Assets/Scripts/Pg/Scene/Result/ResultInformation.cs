@@ -11,7 +11,7 @@ namespace Pg.Scene.Result
     internal class ResultInformation : MonoBehaviour
     {
         [SerializeField]
-        Text? TotalScore;
+        ScoreAnimation? TotalScore;
 
         [SerializeField]
         Text? TargetScore;
@@ -57,7 +57,6 @@ namespace Pg.Scene.Result
                 TotalVanishedGem!
             );
 
-            TotalScore!.text = "00000000";
             TargetScore!.text = "00000000";
             TotalTurn!.text = "000";
             TurnLimit!.text = "000";
@@ -72,7 +71,7 @@ namespace Pg.Scene.Result
 
         class Player
         {
-            internal static Player Create(Text totalScore,
+            internal static Player Create(ScoreAnimation totalScore,
                                           Text targetScore,
                                           SuccessAnimation successAnimation,
                                           FailureAnimation failureAnimation,
@@ -82,7 +81,7 @@ namespace Pg.Scene.Result
                                           Text gemCount)
             {
                 return new Player(
-                    new Animation(totalScore),
+                    totalScore,
                     new Animation(targetScore),
                     successAnimation,
                     failureAnimation,
@@ -97,12 +96,12 @@ namespace Pg.Scene.Result
             SuccessAnimation SuccessAnimation { get; }
             Animation TargetScore { get; }
             Animation TotalChain { get; }
-            Animation TotalScore { get; }
+            ScoreAnimation TotalScore { get; }
             Animation TotalTurn { get; }
             Animation TotalVanishedGem { get; }
             Animation TurnLimit { get; }
 
-            Player(Animation totalScore,
+            Player(ScoreAnimation totalScore,
                    Animation targetScore,
                    SuccessAnimation successAnimation,
                    FailureAnimation failureAnimation,
@@ -123,17 +122,17 @@ namespace Pg.Scene.Result
 
             internal async UniTask Play(ResultData resultData)
             {
-                await UniTask.WhenAll(
-                    SuccessAnimation.Play(resultData.GameResult),
-                    FailureAnimation.Play(resultData.GameResult)
-                );
-
-                TotalScore.Play(resultData.TotalScore.GetValue());
                 TargetScore.Play(resultData.TargetScore.GetValue());
                 TotalTurn.Play(resultData.TotalTurn.GetValue());
                 TurnLimit.Play(resultData.TurnLimit.GetValue());
                 TotalChain.Play(resultData.TotalChain.GetValue());
                 TotalVanishedGem.Play(resultData.TotalVanishedGem.GetValue());
+
+                await (
+                    SuccessAnimation.Play(resultData.GameResult),
+                    FailureAnimation.Play(resultData.GameResult),
+                    TotalScore.Play(resultData.TotalScore.GetValue())
+                );
             }
         }
 

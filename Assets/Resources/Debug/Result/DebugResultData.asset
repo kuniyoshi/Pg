@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d78b27afc45744f597fbc4592b4f094a, type: 3}
   m_Name: DebugResultData
   m_EditorClassIdentifier: 
-  DidSucceed: 0
+  DidSucceed: 1
   TotalTurn: 1
   TurnLimit: 7
   TotalChain: 8
   TotalVanishedGem: 128
-  TotalScore: 255
+  TotalScore: 3990761
   TargetScore: 38
