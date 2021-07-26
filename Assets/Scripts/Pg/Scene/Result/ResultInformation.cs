@@ -1,4 +1,5 @@
 #nullable enable
+using Cysharp.Threading.Tasks;
 using Pg.Scene.Result.Animation;
 using Pg.SceneData;
 using UnityEngine;
@@ -64,9 +65,9 @@ namespace Pg.Scene.Result
             TotalVanishedGem!.text = "0000";
         }
 
-        internal void Play(ResultData resultData)
+        internal async UniTask Play(ResultData resultData)
         {
-            _player!.Play(resultData);
+            await _player!.Play(resultData);
         }
 
         class Player
@@ -120,10 +121,12 @@ namespace Pg.Scene.Result
                 TotalVanishedGem = totalVanishedGem;
             }
 
-            internal void Play(ResultData resultData)
+            internal async UniTask Play(ResultData resultData)
             {
-                SuccessAnimation.Play(resultData.GameResult);
-                FailureAnimation.Play(resultData.GameResult);
+                await UniTask.WhenAll(
+                    SuccessAnimation.Play(resultData.GameResult),
+                    FailureAnimation.Play(resultData.GameResult)
+                );
 
                 TotalScore.Play(resultData.TotalScore.GetValue());
                 TargetScore.Play(resultData.TargetScore.GetValue());

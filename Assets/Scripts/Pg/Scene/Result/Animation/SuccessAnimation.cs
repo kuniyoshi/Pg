@@ -1,4 +1,5 @@
 #nullable enable
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Pg.SceneData.ResultItem;
 using UnityEngine;
@@ -17,9 +18,6 @@ namespace Pg.Scene.Result.Animation
         Text? Text;
 
         [Header("Animation Setting")]
-        [SerializeField]
-        Vector3 JumpEndValue;
-
         [SerializeField]
         float JumpPower;
 
@@ -41,40 +39,48 @@ namespace Pg.Scene.Result.Animation
             Assert.IsNotNull(Text, "Text != null");
         }
 
-        void Start()
+        async void Start()
         {
-            Hide();
+            await Hide();
         }
 
-        internal void Play(GameResult gameResult)
+        internal async UniTask Play(GameResult gameResult)
         {
             if (gameResult != GameResult.Success)
             {
-                Hide();
+                await Hide();
 
                 return;
             }
 
-            Appear();
+            await Appear();
         }
 
-        void Appear()
+        async UniTask Appear()
         {
             Text!.enabled = true;
             Background!.enabled = true;
 
-            Text!.rectTransform.DOJump(Vector3.zero, JumpPower, JumpCount, JumpDuration)
-                .SetRelative();
-            Background!.rectTransform.DOMoveX(-BackgroundX, duration: 0f)
-                .SetRelative();
-            Background!.rectTransform.DOMoveX(BackgroundX, BackgroundDuration)
-                .SetRelative();
+            await UniTask.WhenAll(
+                Text!.rectTransform.DOJump(Vector3.zero, JumpPower, JumpCount, JumpDuration)
+                    .SetRelative()
+                    .ToUniTask(),
+                UniTask.WhenAll(
+                    Background!.rectTransform.DOMoveX(-BackgroundX, duration: 0f)
+                        .SetRelative()
+                        .ToUniTask(),
+                    Background!.rectTransform.DOMoveX(BackgroundX, BackgroundDuration)
+                        .SetRelative()
+                        .ToUniTask()
+                )
+            );
         }
 
-        void Hide()
+        async UniTask Hide()
         {
             Background!.enabled = false;
             Text!.enabled = false;
+            await UniTask.CompletedTask;
         }
     }
 }

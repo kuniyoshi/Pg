@@ -42,11 +42,11 @@ namespace Pg.Scene.Result
             Assert.IsNotNull(ResultInformation, "ResultInformation != null");
         }
 
-        void Start()
+        async void Start()
         {
             DebugSetResultData();
             UnityEngine.Debug.Log(GetResultData());
-            ResultInformation!.Play(GetResultData()!);
+            await ResultInformation!.Play(GetResultData()!);
         }
 
         internal void MoveToTitle()

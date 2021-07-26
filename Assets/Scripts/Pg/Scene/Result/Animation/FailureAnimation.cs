@@ -1,4 +1,6 @@
 #nullable enable
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using Pg.SceneData.ResultItem;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -10,44 +12,94 @@ namespace Pg.Scene.Result.Animation
         : MonoBehaviour
     {
         [SerializeField]
-        Image? Background;
+        Image? BackgroundLeft;
+
+        [SerializeField]
+        Image? BackgroundRight;
 
         [SerializeField]
         Text? Text;
 
+        [Header("Animation Setting")]
+        [SerializeField]
+        float JumpPower;
+
+        [SerializeField]
+        int JumpCount;
+
+        [SerializeField]
+        float JumpDuration;
+
+        [SerializeField]
+        float BackgroundX;
+
+        [SerializeField]
+        float BackgroundDuration;
+
+        [SerializeField]
+        float FadeDuration;
+
         void Awake()
         {
-            Assert.IsNotNull(Background, "Background != null");
+            Assert.IsNotNull(BackgroundLeft, "BackgroundLeft != null");
+            Assert.IsNotNull(BackgroundRight, "BackgroundRight != null");
             Assert.IsNotNull(Text, "Text != null");
         }
 
-        void Start()
+        async void Start()
         {
-            Hide();
+            await Hide();
         }
 
-        internal void Play(GameResult gameResult)
+        internal async UniTask Play(GameResult gameResult)
         {
             if (gameResult != GameResult.Failure)
             {
-                Hide();
+                await Hide();
 
                 return;
             }
 
-            Appear();
+            await Appear();
         }
 
-        void Appear()
+        async UniTask Appear()
         {
             Text!.enabled = true;
-            Background!.enabled = true;
+            BackgroundLeft!.enabled = true;
+            BackgroundRight!.enabled = true;
+
+            BackgroundLeft!.rectTransform.DOMoveX(-BackgroundX, duration: 0f)
+                .SetRelative();
+            BackgroundRight!.rectTransform.DOMoveX(BackgroundX, duration: 0f)
+                .SetRelative();
+
+            await (
+                Text!.rectTransform.DOJump(Vector3.zero, JumpPower, JumpCount, JumpDuration)
+                    .SetRelative()
+                    .ToUniTask(),
+                BackgroundLeft!.rectTransform.DOMoveX(BackgroundX, BackgroundDuration)
+                    .SetRelative()
+                    .ToUniTask(),
+                BackgroundRight!.rectTransform.DOMoveX(-BackgroundX, BackgroundDuration)
+                    .SetRelative()
+                    .ToUniTask()
+            );
+
+            await (
+                BackgroundLeft!.DOFade(endValue: 0f, FadeDuration)
+                    .ToUniTask(),
+                BackgroundRight!.DOFade(endValue: 0f, FadeDuration)
+                    .ToUniTask()
+            );
         }
 
-        void Hide()
+        async UniTask Hide()
         {
-            Background!.enabled = false;
+            BackgroundLeft!.enabled = false;
+            BackgroundRight!.enabled = false;
             Text!.enabled = false;
+            await UniTask.CompletedTask;
         }
     }
 }
