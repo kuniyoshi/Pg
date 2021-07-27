@@ -16,6 +16,9 @@ namespace Pg.Scene.Result.Animation
         [SerializeField]
         float Duration;
 
+        [SerializeField]
+        int TargetFps;
+
         void Awake()
         {
             Assert.IsNotNull(ScoreText, "ScoreText != null");
@@ -29,6 +32,7 @@ namespace Pg.Scene.Result.Animation
         internal async UniTask Play(int toValue)
         {
             ScoreText!.text = "0";
+            var secondsPerFrame = 1f / TargetFps;
 
             var asyncEnumerable = UniTaskAsyncEnumerable.Create<float>(async (writer, token) =>
                 {
@@ -37,15 +41,16 @@ namespace Pg.Scene.Result.Animation
                     while (!token.IsCancellationRequested && elapsed < Duration)
                     {
                         await writer.YieldAsync(Mathf.Lerp(a: 0, Mathf.Log(toValue), elapsed / Duration));
-                        elapsed = elapsed + Time.deltaTime;
-                        await UniTask.Yield(token);
-                        elapsed = elapsed + Time.deltaTime;
-                        await UniTask.Yield(token);
-                        elapsed = elapsed + Time.deltaTime;
-                        await UniTask.Yield(token);
-                        elapsed = elapsed + Time.deltaTime;
-                        await UniTask.Yield(token);
-                        elapsed = elapsed + Time.deltaTime;
+
+                        var step = 0f;
+
+                        while (!token.IsCancellationRequested && step + Time.deltaTime < secondsPerFrame)
+                        {
+                            await UniTask.Yield(token);
+                            step = step + Time.deltaTime;
+                        }
+
+                        elapsed = elapsed + step;
                     }
                 }
             );

@@ -573,7 +573,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ScoreText: {fileID: 7608980034940268777}
   Duration: 0.6
-  StepCoef: 1
+  TargetFps: 8
 --- !u!1 &7608980035093784075
 GameObject:
   m_ObjectHideFlags: 0
