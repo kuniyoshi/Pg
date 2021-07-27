@@ -144,13 +144,6 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
-    "com.unity.nuget.mono-cecil": {
-      "version": "1.10.1",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://packages.unity.com"
-    },
     "com.unity.nuget.newtonsoft-json": {
       "version": "2.0.0",
       "depth": 1,
@@ -213,15 +206,6 @@
         "com.unity.modules.physics2d": "1.0.0"
       },
       "url": "https://packages.unity.com"
-    },
-    "jp.hadashikick.vcontainer": {
-      "version": "https://github.com/hadashiA/VContainer.git?path=VContainer/Assets/VContainer#1.8.4",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {
-        "com.unity.nuget.mono-cecil": "1.10.1"
-      },
-      "hash": "797b79120adb2df847ecd4501a410d7115b77aba"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",
