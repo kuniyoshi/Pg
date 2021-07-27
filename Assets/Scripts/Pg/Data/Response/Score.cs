@@ -3,22 +3,13 @@ namespace Pg.Data.Response
 {
     public readonly struct Score
     {
+        public static Score Zero { get; } = new Score(value: 0);
+
+        int Value { get; }
+
         public Score(int value)
         {
             Value = value;
-        }
-
-        int Value { get; }
-        public static Score Zero { get; } = new Score(value: 0);
-
-        public string GetText()
-        {
-            return Value.ToString();
-        }
-
-        public override string ToString()
-        {
-            return GetText();
         }
 
         public Score Add(AcquisitionScore acquisitionScore)
@@ -26,14 +17,24 @@ namespace Pg.Data.Response
             return new Score(Value + acquisitionScore.Value);
         }
 
-        public bool IsGreaterThanEqual(Score other)
+        public string GetText()
         {
-            return Value >= other.Value;
+            return Value.ToString();
         }
 
         public int GetValue()
         {
             return Value;
+        }
+
+        public bool IsGreaterThanEqual(Score other)
+        {
+            return Value >= other.Value;
+        }
+
+        public override string ToString()
+        {
+            return GetText();
         }
     }
 }

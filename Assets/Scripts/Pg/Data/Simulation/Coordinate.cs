@@ -3,17 +3,14 @@ namespace Pg.Data.Simulation
 {
     public readonly struct Coordinate
     {
-        public override bool Equals(object? obj)
+        public static bool operator ==(Coordinate a, Coordinate b)
         {
-            return obj is Coordinate other && Equals(other);
+            return a.Column == b.Column && a.Row == b.Row;
         }
 
-        public override int GetHashCode()
+        public static bool operator !=(Coordinate a, Coordinate b)
         {
-            unchecked
-            {
-                return (Column * 397) ^ Row;
-            }
+            return a.Column != b.Column || a.Row != b.Row;
         }
 
         public int Column { get; }
@@ -25,20 +22,23 @@ namespace Pg.Data.Simulation
             Row = row;
         }
 
+        public override bool Equals(object? obj)
+        {
+            return obj is Coordinate other && Equals(other);
+        }
+
         public bool Equals(Coordinate other)
         {
             return Column == other.Column
                    && Row == other.Row;
         }
 
-        public static bool operator ==(Coordinate a, Coordinate b)
+        public override int GetHashCode()
         {
-            return a.Column == b.Column && a.Row == b.Row;
-        }
-
-        public static bool operator !=(Coordinate a, Coordinate b)
-        {
-            return a.Column != b.Column || a.Row != b.Row;
+            unchecked
+            {
+                return (Column * 397) ^ Row;
+            }
         }
 
         public override string ToString()

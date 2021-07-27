@@ -92,9 +92,9 @@ namespace Pg.Puzzle.Response
         {
             public Coordinate From { get; }
 
-            public Coordinate To { get; }
-
             public GemColorType GemColorType { get; }
+
+            public Coordinate To { get; }
 
             public SlidingGem(GemColorType gemColorType, Coordinate from, Coordinate to)
             {

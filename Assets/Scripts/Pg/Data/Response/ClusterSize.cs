@@ -17,8 +17,6 @@ namespace Pg.Data.Response
             return DomainValues[value];
         }
 
-        public int Value { get; }
-
         public static bool operator ==(ClusterSize? a, ClusterSize? b)
         {
             if (a is null && b is null)
@@ -33,6 +31,8 @@ namespace Pg.Data.Response
         {
             return !(a == b);
         }
+
+        public int Value { get; }
 
         public ClusterSize(int value)
         {

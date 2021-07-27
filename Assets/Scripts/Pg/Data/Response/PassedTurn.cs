@@ -22,11 +22,6 @@ namespace Pg.Data.Response
             return DomainValues[value];
         }
 
-        public float GetCoef()
-        {
-            return 0.1f * (Value + 1);
-        }
-
         int Value { get; }
 
         public PassedTurn(int value)
@@ -42,6 +37,11 @@ namespace Pg.Data.Response
         public bool Equals(PassedTurn? other)
         {
             return Value == other?.Value;
+        }
+
+        public float GetCoef()
+        {
+            return 0.1f * (Value + 1);
         }
 
         public override int GetHashCode()

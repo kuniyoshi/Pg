@@ -1,7 +1,6 @@
 #nullable enable
 using Pg.Data.Response;
 using Pg.Data.Simulation;
-using Pg.Puzzle.Internal;
 
 namespace Pg.Puzzle.Response
 {

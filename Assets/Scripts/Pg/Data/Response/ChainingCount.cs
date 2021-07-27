@@ -22,6 +22,21 @@ namespace Pg.Data.Response
             return DomainValues[value];
         }
 
+        public static bool operator ==(ChainingCount? a, ChainingCount? b)
+        {
+            if (a is null && b is null)
+            {
+                return true;
+            }
+
+            return a?.Equals(b) ?? false;
+        }
+
+        public static bool operator !=(ChainingCount? a, ChainingCount? b)
+        {
+            return !(a == b);
+        }
+
         public int Value { get; }
 
         public ChainingCount(int value)
@@ -37,21 +52,6 @@ namespace Pg.Data.Response
         public bool Equals(ChainingCount? other)
         {
             return Value == other?.Value;
-        }
-
-        public static bool operator ==(ChainingCount? a, ChainingCount? b)
-        {
-            if (a is null && b is null)
-            {
-                return true;
-            }
-
-            return a?.Equals(b) ?? false;
-        }
-
-        public static bool operator !=(ChainingCount? a, ChainingCount? b)
-        {
-            return !(a == b);
         }
 
         public override int GetHashCode()

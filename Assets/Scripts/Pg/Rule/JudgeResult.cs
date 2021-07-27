@@ -31,11 +31,6 @@ namespace Pg.Rule
             return Value.GetHashCode();
         }
 
-        public override string ToString()
-        {
-            return Value.ToString();
-        }
-
         public async UniTask Switch(Func<UniTask> ifContinuation,
                                     Func<UniTask> ifFailure,
                                     Func<UniTask> ifSuccess)
@@ -57,6 +52,11 @@ namespace Pg.Rule
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        public override string ToString()
+        {
+            return Value.ToString();
         }
 
         enum Impl
