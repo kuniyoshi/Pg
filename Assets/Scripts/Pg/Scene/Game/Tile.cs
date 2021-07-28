@@ -1,8 +1,4 @@
 #nullable enable
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using Pg.App.Util;
 using Pg.Data.Simulation;
@@ -17,9 +13,6 @@ namespace Pg.Scene.Game
         : MonoBehaviour
     {
         [SerializeField]
-        List<NewGemColorTypeVsSprite>? Map;
-
-        [SerializeField]
         Gem? Gem;
 
         internal TileStatus TileStatus => TileData.TileStatus;
@@ -30,9 +23,7 @@ namespace Pg.Scene.Game
 
         void Awake()
         {
-            Assert.IsNotNull(Map, "Map != null");
             Assert.IsNotNull(Gem, "Gem != null");
-            ZzDebugAssertMapValue();
         }
 
         internal void ClearSelection()
@@ -82,8 +73,7 @@ namespace Pg.Scene.Game
                 () =>
                 {
                     Assert.IsNotNull(newTileStatus.GemColorType, "newTileStatus.NewGemColorType != null");
-                    var statusVsSprite = Map!.First(pair => pair.First.Convert() == newTileStatus.GemColorType);
-                    Gem!.UpdateStatus(statusVsSprite.Second);
+                    Gem!.UpdateStatus(newTileStatus);
                 }
             );
         }
@@ -91,33 +81,6 @@ namespace Pg.Scene.Game
         internal async Task Vanish()
         {
             await Gem!.Vanish(UpdateStatus);
-        }
-
-        [Conditional("DEBUG")]
-        void ZzDebugAssertMapValue()
-        {
-            foreach (var newGemColorType in GemColorType.Values)
-            {
-                Assert.IsTrue(
-                    Map!.Any(item => item.First.Convert() == newGemColorType),
-                    "Map!.Any(item => item.First.Convert() == newGemColorType)"
-                );
-            }
-
-            Assert.IsTrue(
-                Map!.All(pair => pair.Second != null),
-                "Map.All(pair => pair.Second != null)"
-            );
-        }
-
-        [Serializable]
-        internal class NewGemColorTypeVsSprite
-            : Pair<SerializableGemColorType, Sprite>
-        {
-            internal NewGemColorTypeVsSprite(SerializableGemColorType first, Sprite second)
-                : base(first, second)
-            {
-            }
         }
     }
 }

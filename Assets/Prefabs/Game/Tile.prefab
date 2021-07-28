@@ -245,6 +245,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3f7232d39be4ab5be94ca3269ab2382, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Gem: {fileID: 9123802071733290861}
+--- !u!114 &9123802071733290861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8873521160865775134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfe58d94c3524dc5acdd1eb57c74d18f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Image: {fileID: 6228304307083841429}
   Map:
   - First:
       Id: 1
@@ -267,17 +281,3 @@ MonoBehaviour:
   - First:
       Id: 7
     Second: {fileID: 21300000, guid: 76f55d12f6b2846ab9a15974972797bc, type: 3}
-  Gem: {fileID: 9123802071733290861}
---- !u!114 &9123802071733290861
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8873521160865775134}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfe58d94c3524dc5acdd1eb57c74d18f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Image: {fileID: 6228304307083841429}
