@@ -2,15 +2,14 @@
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Pg.Scene.Game
 {
     internal static class TemporaryGemTile
     {
-        internal static void SetEvents(UserPlayer userPlayer, Image image, Gem gem, GameObject o, Tile tile)
+        internal static void SetEvents(UserPlayer userPlayer, Tile tile, Gem gem, GameObject o)
         {
-            image.OnPointerDownAsObservable()
+            gem.Image!.OnPointerDownAsObservable()
                 .Subscribe(data =>
                     {
                         var didStart = userPlayer.StartTransactionIfNotAlready(tile);
@@ -23,7 +22,7 @@ namespace Pg.Scene.Game
                     }
                 )
                 .AddTo(o);
-            image.OnPointerExitAsObservable()
+            gem.Image!.OnPointerExitAsObservable()
                 .Subscribe(data =>
                     {
                         var isSelected = userPlayer.IsSelected(tile);
@@ -35,7 +34,7 @@ namespace Pg.Scene.Game
                     }
                 )
                 .AddTo(o);
-            image.OnPointerEnterAsObservable()
+            gem.Image!.OnPointerEnterAsObservable()
                 .Subscribe(data =>
                     {
                         var didAdd = userPlayer.TryAddTransaction(tile);
@@ -47,7 +46,7 @@ namespace Pg.Scene.Game
                     }
                 )
                 .AddTo(o);
-            image.OnPointerUpAsObservable()
+            gem.Image!.OnPointerUpAsObservable()
                 .Subscribe(data => userPlayer.CompleteTransaction())
                 .AddTo(o);
         }

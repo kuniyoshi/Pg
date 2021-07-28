@@ -91,8 +91,10 @@ namespace Pg.Scene.Game
                         slidingEnumerator.MoveNext();
                         var slidingGem = slidingEnumerator.Current;
                         var (coordinateFrom, coordinateTo) = (slidingGem.From, slidingGem.To);
-                        await _tiles![coordinateFrom.Column, coordinateFrom.Row].Slide();
-                        await _tiles![coordinateTo.Column, coordinateTo.Row].Popup(slidingGem.GemColorType);
+                        Tile tempQualifier = _tiles![coordinateFrom.Column, coordinateFrom.Row];
+                        await tempQualifier.Gem!.Slide(tempQualifier.UpdateStatus);
+                        _tiles![coordinateTo.Column, coordinateTo.Row].Popup(slidingGem.GemColorType);
+                        await _tiles![coordinateTo.Column, coordinateTo.Row].Gem!.Popup();
                         break;
 
                     case SlidingGems.EventType.NewGem:
@@ -132,7 +134,8 @@ namespace Pg.Scene.Game
                 {
                     foreach (var coordinate in coordinates)
                     {
-                        await _tiles![coordinate.Column, coordinate.Row].Vanish();
+                        Tile tempQualifier = _tiles![coordinate.Column, coordinate.Row];
+                        await tempQualifier.Gem!.Vanish(tempQualifier.UpdateStatus);
                     }
                 }
             }
@@ -142,7 +145,7 @@ namespace Pg.Scene.Game
         {
             foreach (var tile in _tiles!)
             {
-                tile.ClearSelection();
+                tile.Gem!.QuitWorking();
             }
         }
 

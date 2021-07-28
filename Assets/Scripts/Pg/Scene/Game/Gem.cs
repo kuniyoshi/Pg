@@ -31,6 +31,11 @@ namespace Pg.Scene.Game
             ZzDebugAssertMapValue();
         }
 
+        internal void MakeEmpty()
+        {
+            Image!.enabled = false;
+        }
+
         internal void MakeWorking()
         {
             if (_sequence != null)

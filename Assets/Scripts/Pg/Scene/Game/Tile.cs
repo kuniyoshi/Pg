@@ -13,7 +13,7 @@ namespace Pg.Scene.Game
         : MonoBehaviour
     {
         [SerializeField]
-        Gem? Gem;
+        internal Gem? Gem;
 
         internal TileStatus TileStatus => TileData.TileStatus;
 
@@ -24,11 +24,6 @@ namespace Pg.Scene.Game
         void Awake()
         {
             Assert.IsNotNull(Gem, "Gem != null");
-        }
-
-        internal void ClearSelection()
-        {
-            Gem!.QuitWorking();
         }
 
         internal void Initialize(int colIndex, int rowIndex, Vector2 localPosition)
@@ -47,29 +42,14 @@ namespace Pg.Scene.Game
             await Gem!.NewGem();
         }
 
-        internal async Task Popup(GemColorType gemColorType)
+        internal void Popup(GemColorType gemColorType)
         {
-            UpdateStatus(new TileStatus(TileStatusType.Contain, gemColorType));
-            await Gem!.Popup();
-        }
-
-        internal void SetEvents(UserPlayer userPlayer)
-        {
-            TemporaryGemTile.SetEvents(userPlayer, Gem!.Image!, Gem!, gameObject, this);
-        }
-
-        internal async Task Slide()
-        {
-            await Gem!.Slide(UpdateStatus);
-        }
-
-        internal void UpdateStatus(TileStatus newTileStatus)
-        {
+            var newTileStatus = new TileStatus(TileStatusType.Contain, gemColorType);
             TileData = new TileData(Coordinate, newTileStatus);
 
             newTileStatus.TileStatusType.Switch(
                 () => { gameObject.SetActive(value: false); },
-                () => { Gem!.Image!.enabled = false; },
+                () => Gem!.MakeEmpty(),
                 () =>
                 {
                     Assert.IsNotNull(newTileStatus.GemColorType, "newTileStatus.NewGemColorType != null");
@@ -78,9 +58,24 @@ namespace Pg.Scene.Game
             );
         }
 
-        internal async Task Vanish()
+        internal void SetEvents(UserPlayer userPlayer)
         {
-            await Gem!.Vanish(UpdateStatus);
+            TemporaryGemTile.SetEvents(userPlayer, this, Gem!, gameObject);
+        }
+
+        internal void UpdateStatus(TileStatus newTileStatus)
+        {
+            TileData = new TileData(Coordinate, newTileStatus);
+
+            newTileStatus.TileStatusType.Switch(
+                () => { gameObject.SetActive(value: false); },
+                () => Gem!.MakeEmpty(),
+                () =>
+                {
+                    Assert.IsNotNull(newTileStatus.GemColorType, "newTileStatus.NewGemColorType != null");
+                    Gem!.UpdateStatus(newTileStatus);
+                }
+            );
         }
     }
 }
