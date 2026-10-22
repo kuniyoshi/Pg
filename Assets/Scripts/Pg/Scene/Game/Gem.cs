@@ -17,10 +17,10 @@ namespace Pg.Scene.Game
         : MonoBehaviour
     {
         [SerializeField]
-        internal Image? Image;
+        internal Image Image = null!;
 
         [SerializeField]
-        List<GemColorTypeVsSprite>? Map;
+        List<GemColorTypeVsSprite> Map = null!;
 
         Sequence? _sequence;
 
@@ -33,7 +33,7 @@ namespace Pg.Scene.Game
 
         internal void MakeEmpty()
         {
-            Image!.enabled = false;
+            Image.enabled = false;
         }
 
         internal void MakeWorking()
@@ -45,7 +45,7 @@ namespace Pg.Scene.Game
 
             _sequence = DOTween.Sequence()
                 .Append(
-                    Image!
+                    Image
                         .GetComponentStrictly<RectTransform>()
                         .DOShakePosition(duration: 0.5f, 10f * Vector3.left, vibrato: 100, randomness: 0)
                         .SetRelative()
@@ -56,18 +56,18 @@ namespace Pg.Scene.Game
 
         internal async Task NewGem()
         {
-            Image!.enabled = true;
-            Image!.GetComponentStrictly<RectTransform>().localScale = Vector3.zero;
-            await Image!.GetComponentStrictly<RectTransform>()
+            Image.enabled = true;
+            Image.GetComponentStrictly<RectTransform>().localScale = Vector3.zero;
+            await Image.GetComponentStrictly<RectTransform>()
                 .DOScale(Vector3.one, duration: 0.05f)
                 .AsyncWaitForCompletion();
         }
 
         internal async Task Popup()
         {
-            Image!.enabled = true;
-            Image!.GetComponentStrictly<RectTransform>().localScale = Vector3.zero;
-            await Image!.GetComponentStrictly<RectTransform>()
+            Image.enabled = true;
+            Image.GetComponentStrictly<RectTransform>().localScale = Vector3.zero;
+            await Image.GetComponentStrictly<RectTransform>()
                 .DOScale(Vector3.one, duration: 0.05f)
                 .AsyncWaitForCompletion();
         }
@@ -75,25 +75,25 @@ namespace Pg.Scene.Game
         internal void QuitWorking()
         {
             _sequence?.Kill(complete: false);
-            Image!.GetComponentStrictly<RectTransform>().localPosition = Vector3.zero;
+            Image.GetComponentStrictly<RectTransform>().localPosition = Vector3.zero;
         }
 
         internal void SelectFirstTime()
         {
-            Image!.GetComponentStrictly<RectTransform>()
+            Image.GetComponentStrictly<RectTransform>()
                 .DOScale(1.1f * Vector3.one, duration: 0.5f)
                 .SetLoops(loops: 2, LoopType.Yoyo);
         }
 
         internal async Task Slide(Action<TileStatus> updateStatus)
         {
-            Image!.enabled = true;
-            await Image!.GetComponentStrictly<RectTransform>()
+            Image.enabled = true;
+            await Image.GetComponentStrictly<RectTransform>()
                 .DOScale(Vector3.zero, duration: 0.05f)
                 .OnComplete(() =>
                     {
                         updateStatus(TileStatus.Empty);
-                        Image!.GetComponentStrictly<RectTransform>().localScale = Vector3.one;
+                        Image.GetComponentStrictly<RectTransform>().localScale = Vector3.one;
                     }
                 )
                 .AsyncWaitForCompletion();
@@ -101,19 +101,19 @@ namespace Pg.Scene.Game
 
         internal void UpdateStatus(TileStatus newTileStatus)
         {
-            Image!.sprite = Map!.First(pair => pair.First.Convert() == newTileStatus.GemColorType)
+            Image.sprite = Map.First(pair => pair.First.Convert() == newTileStatus.GemColorType)
                 .Second;
-            Image!.enabled = true;
+            Image.enabled = true;
         }
 
         internal async Task Vanish(Action<TileStatus> updateStatus)
         {
-            await Image!.GetComponentStrictly<RectTransform>()
+            await Image.GetComponentStrictly<RectTransform>()
                 .DOScale(Vector3.zero, duration: 0.1f)
                 .OnComplete(() =>
                     {
                         updateStatus(TileStatus.Empty);
-                        Image!.GetComponentStrictly<RectTransform>().localScale = Vector3.one;
+                        Image.GetComponentStrictly<RectTransform>().localScale = Vector3.one;
                     }
                 )
                 .AsyncWaitForCompletion();
@@ -125,13 +125,13 @@ namespace Pg.Scene.Game
             foreach (var newGemColorType in GemColorType.Values)
             {
                 Assert.IsTrue(
-                    Map!.Any(item => item.First.Convert() == newGemColorType),
+                    Map.Any(item => item.First.Convert() == newGemColorType),
                     "Map!.Any(item => item.First.Convert() == newGemColorType)"
                 );
             }
 
             Assert.IsTrue(
-                Map!.All(pair => pair.Second != null),
+                Map.All(pair => pair.Second != null),
                 "Map.All(pair => pair.Second != null)"
             );
         }

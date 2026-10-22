@@ -13,28 +13,38 @@ namespace Pg.Scene.Game.Public
         : ScriptableObject, IGameData
     {
         [SerializeField]
-        TileGemType[]? TileStatusesRow0;
+        TileGemType[] TileStatusesRow0 = null!;
 
         [SerializeField]
-        TileGemType[]? TileStatusesRow1;
+        TileGemType[] TileStatusesRow1 = null!;
 
         [SerializeField]
-        TileGemType[]? TileStatusesRow2;
+        TileGemType[] TileStatusesRow2 = null!;
 
         [SerializeField]
-        TileGemType[]? TileStatusesRow3;
+        TileGemType[] TileStatusesRow3 = null!;
 
         [SerializeField]
-        TileGemType[]? TileStatusesRow4;
+        TileGemType[] TileStatusesRow4 = null!;
 
         [SerializeField]
-        TileGemType[]? TileStatusesRow5;
+        TileGemType[] TileStatusesRow5 = null!;
 
         [SerializeField]
         int MaxTurnCount;
 
         [SerializeField]
         int TargetScore;
+
+        void Awake()
+        {
+            Assert.IsNotNull(TileStatusesRow0, "TileStatusesRow0 != null");
+            Assert.IsNotNull(TileStatusesRow1, "TileStatusesRow1 != null");
+            Assert.IsNotNull(TileStatusesRow2, "TileStatusesRow2 != null");
+            Assert.IsNotNull(TileStatusesRow3, "TileStatusesRow3 != null");
+            Assert.IsNotNull(TileStatusesRow4, "TileStatusesRow4 != null");
+            Assert.IsNotNull(TileStatusesRow5, "TileStatusesRow5 != null");
+        }
 
         public IStage Stage => CreateStage();
 
@@ -83,12 +93,12 @@ namespace Pg.Scene.Game.Public
 
             var rows = new[]
             {
-                TileStatusesRow0!,
-                TileStatusesRow1!,
-                TileStatusesRow2!,
-                TileStatusesRow3!,
-                TileStatusesRow4!,
-                TileStatusesRow5!,
+                TileStatusesRow0,
+                TileStatusesRow1,
+                TileStatusesRow2,
+                TileStatusesRow3,
+                TileStatusesRow4,
+                TileStatusesRow5,
             };
 
             Assert.AreEqual(TileSize.RowSize, rows.Length);
@@ -115,12 +125,12 @@ namespace Pg.Scene.Game.Public
         {
             var rows = new[]
             {
-                TileStatusesRow0!,
-                TileStatusesRow1!,
-                TileStatusesRow2!,
-                TileStatusesRow3!,
-                TileStatusesRow4!,
-                TileStatusesRow5!,
+                TileStatusesRow0,
+                TileStatusesRow1,
+                TileStatusesRow2,
+                TileStatusesRow3,
+                TileStatusesRow4,
+                TileStatusesRow5,
             };
 
             Assert.AreEqual(TileSize.RowSize, rows.Length);

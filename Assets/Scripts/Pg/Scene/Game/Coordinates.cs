@@ -23,19 +23,19 @@ namespace Pg.Scene.Game
         const int Size = 30;
 
         [SerializeField]
-        GameObject? HexagonPrefab;
+        GameObject HexagonPrefab = null!;
 
         [SerializeField]
-        GameObject? GemPrefab;
+        GameObject GemPrefab = null!;
 
         [SerializeField]
-        RectTransform? TileCanvas;
+        RectTransform TileCanvas = null!;
 
         [SerializeField]
-        RectTransform? GemCanvas;
+        RectTransform GemCanvas = null!;
 
         [SerializeField]
-        GraphicRaycaster? GraphicRaycaster;
+        GraphicRaycaster GraphicRaycaster = null!;
 
         Tile[,]? _tiles;
         Dictionary<Coordinate, Gem2>? _gems;
@@ -81,7 +81,7 @@ namespace Pg.Scene.Game
                 for (var rowIndex = 0; rowIndex < TileSize.RowSize; ++rowIndex)
                 {
                     var position = positions[colIndex, rowIndex];
-                    var hexagon = Instantiate(HexagonPrefab!, TileCanvas);
+                    var hexagon = Instantiate(HexagonPrefab, TileCanvas);
                     hexagon.name = $"{HexagonPrefab!.name}({colIndex}, {rowIndex})";
                     var tile = hexagon.GetComponentStrictly<Tile>();
                     tile.Initialize(colIndex, rowIndex, position);
@@ -92,7 +92,7 @@ namespace Pg.Scene.Game
 
             _gems = new Dictionary<Coordinate, Gem2>();
 
-            _gemFactory = new GemFactory(GemPrefab!);
+            _gemFactory = new GemFactory(GemPrefab);
         }
 
         internal async Task ApplySlides(SlidingGems slidingGems)
@@ -118,7 +118,7 @@ namespace Pg.Scene.Game
                         newGemEnumerator.MoveNext();
                         var newGem = newGemEnumerator.Current;
                         Assert.IsTrue(!_gems!.ContainsKey(newGem.Coordinate), "!_gems!.ContainsKey(newGem.Coordinate)");
-                        var gem = _gemFactory!.InstantiateNewGem(GemCanvas!);
+                        var gem = _gemFactory!.InstantiateNewGem(GemCanvas);
                         gem.Initialize(_tiles![newGem.Coordinate.Column, newGem.Coordinate.Row], newGem.GemColorType);
                             // await _tiles![newGem.Coordinate.Column, newGem.Coordinate.Row].NewGem(newGem.GemColorType);
                         await gem.Popup();
@@ -157,7 +157,7 @@ namespace Pg.Scene.Game
                     {
                         if (!_gems!.ContainsKey(new Coordinate(colIndex, rowIndex)))
                         {
-                            var gem = _gemFactory!.InstantiateNewGem(GemCanvas!);
+                            var gem = _gemFactory!.InstantiateNewGem(GemCanvas);
                             gem.Initialize(_tiles[colIndex, rowIndex], tiles[colIndex, rowIndex].GemColorType!);
                             gem.Bind(userPlayer);
                             _gems!.Add(new Coordinate(colIndex, rowIndex), gem);
@@ -224,7 +224,7 @@ namespace Pg.Scene.Game
             {
                 delta = screenPoint,
             };
-            GraphicRaycaster!.Raycast(pointerEventData, raycastResults);
+            GraphicRaycaster.Raycast(pointerEventData, raycastResults);
 
             if (!raycastResults.Any())
             {

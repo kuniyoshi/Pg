@@ -22,10 +22,10 @@ namespace Pg.Scene.Game
         : MonoBehaviour
     {
         [SerializeField]
-        Image? Image;
+        Image Image = null!;
 
         [SerializeField]
-        List<GemColorTypeVsSprite>? Map;
+        List<GemColorTypeVsSprite> Map = null!;
 
         TileBuffer Tile { get; } = new TileBuffer();
 
@@ -41,14 +41,14 @@ namespace Pg.Scene.Game
 
         void Start()
         {
-            Image!.DOFade(DebugAlpha, 0f);
+            Image.DOFade(DebugAlpha, 0f);
         }
 
         internal void Initialize(Tile tile, GemColorType gemColorType)
         {
             Tile.Initialize(tile);
             SetPosition(Tile.Current!);
-            Image!.sprite = new GemColor(gemColorType).SelectSprite(Map!);
+            Image.sprite = new GemColor(gemColorType).SelectSprite(Map);
         }
 
         void SetPosition(Tile tile)
@@ -68,13 +68,13 @@ namespace Pg.Scene.Game
             foreach (var newGemColorType in GemColorType.Values)
             {
                 Assert.IsTrue(
-                    Map!.Any(item => item.First.Convert() == newGemColorType),
+                    Map.Any(item => item.First.Convert() == newGemColorType),
                     "Map!.Any(item => item.First.Convert() == newGemColorType)"
                 );
             }
 
             Assert.IsTrue(
-                Map!.All(pair => pair.Second != null),
+                Map.All(pair => pair.Second != null),
                 "Map.All(pair => pair.Second != null)"
             );
         }
@@ -105,12 +105,12 @@ namespace Pg.Scene.Game
         {
             Move.Finish(withCallbacks: false);
             SetPosition(Tile.Current!);
-            // Image!.GetComponentStrictly<RectTransform>().localPosition = Vector3.zero;
+            // Image.GetComponentStrictly<RectTransform>().localPosition = Vector3.zero;
         }
 
         public void Bind(UserPlayer userPlayer)
         {
-            Image!.OnPointerDownAsObservable()
+            Image.OnPointerDownAsObservable()
                 .Subscribe(data =>
                     {
                         // UnityEngine.Debug.Log($"### on pointer DOWN: {gameObject.name}");
@@ -124,7 +124,7 @@ namespace Pg.Scene.Game
                     }
                 )
                 .AddTo(gameObject);
-            Image!.OnPointerExitAsObservable()
+            Image.OnPointerExitAsObservable()
                 .Subscribe(data =>
                     {
                         if (Move.IsInMove)
@@ -143,7 +143,7 @@ namespace Pg.Scene.Game
                     }
                 )
                 .AddTo(gameObject);
-            Image!.OnPointerEnterAsObservable()
+            Image.OnPointerEnterAsObservable()
                 .Subscribe(data =>
                     {
                         if (Move.IsInMove)
@@ -162,7 +162,7 @@ namespace Pg.Scene.Game
                     }
                 )
                 .AddTo(gameObject);
-            Image!.OnPointerUpAsObservable()
+            Image.OnPointerUpAsObservable()
                 .Subscribe(data =>
                     {
                         // UnityEngine.Debug.Log($"### on pointer UP: {gameObject.name}");
@@ -175,7 +175,7 @@ namespace Pg.Scene.Game
 
         void SelectFirstTime()
         {
-            Image!.GetComponentStrictly<RectTransform>()
+            Image.GetComponentStrictly<RectTransform>()
                 .DOScale(1.1f * Vector3.one, duration: 0.5f)
                 .SetLoops(loops: 2, LoopType.Yoyo);
         }
@@ -190,7 +190,7 @@ namespace Pg.Scene.Game
             // Move.SetShake(
             //     DOTween.Sequence()
             //         .Append(
-            //             Image!
+            //             Image
             //                 .GetComponentStrictly<RectTransform>()
             //                 .DOShakePosition(duration: 0.5f, 10f * Vector3.left, vibrato: 100, randomness: 0)
             //                 .SetRelative()
@@ -269,7 +269,7 @@ namespace Pg.Scene.Game
         public UniTask Vanish()
         {
             return Move.SetVanish(
-                Image!.GetComponentStrictly<RectTransform>()
+                Image.GetComponentStrictly<RectTransform>()
                     .DOScale(Vector3.zero, VanishDuration)
             );
         }
@@ -283,8 +283,8 @@ namespace Pg.Scene.Game
         public async UniTask Popup()
         {
 
-            Image!.GetComponentStrictly<RectTransform>().localScale = Vector3.zero;
-            await Image!.GetComponentStrictly<RectTransform>()
+            Image.GetComponentStrictly<RectTransform>().localScale = Vector3.zero;
+            await Image.GetComponentStrictly<RectTransform>()
                 .DOScale(Vector3.one, PopupDuration)
                 .SetEase(Ease.OutBounce)
                 .ToUniTask();

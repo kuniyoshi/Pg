@@ -31,36 +31,36 @@ namespace Pg.Scene.Game.Direction
         }
 
         [SerializeField]
-        Text[]? FailureLetters;
+        Text[] FailureLetters = null!;
 
         [SerializeField]
-        Image? Background;
+        Image Background = null!;
 
         void Awake()
         {
             Assert.IsNotNull(FailureLetters, "FailureLetters != null");
             Assert.IsTrue(
-                FailureLetters!.Any() && FailureLetters!.All(text => text != null),
+                FailureLetters.Any() && FailureLetters.All(text => text != null),
                 "FailureLetters!.Any() && FailureLetters!.All(text => text != null)"
             );
 
             Assert.IsNotNull(Background, "Background != null");
 
-            foreach (var letter in FailureLetters!)
+            foreach (var letter in FailureLetters)
             {
                 letter.gameObject.SetActive(value: false);
             }
 
-            Background!.enabled = false;
-            Background!.DOFade(endValue: 0f, duration: 0f);
+            Background.enabled = false;
+            Background.DOFade(endValue: 0f, duration: 0f);
         }
 
         internal UniTask PlayFailure()
         {
-            Background!.enabled = true;
-            Background!.DOFade(endValue: 0.5f, duration: 0.2f);
+            Background.enabled = true;
+            Background.DOFade(endValue: 0.5f, duration: 0.2f);
 
-            Text[] failureLetters = FailureLetters!;
+            Text[] failureLetters = FailureLetters;
             var token = this.GetCancellationTokenOnDestroy();
 
             var delays = new[] {0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f};

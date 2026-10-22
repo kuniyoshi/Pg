@@ -18,25 +18,25 @@ namespace Pg.Scene.Game
         : MonoBehaviour
     {
         [SerializeField]
-        Coordinates? Coordinates;
+        Coordinates Coordinates = null!;
 
         [SerializeField]
-        GameData? GameData;
+        GameData GameData = null!;
 
         [SerializeField]
-        StartDirection? StartDirection;
+        StartDirection StartDirection = null!;
 
         [SerializeField]
-        UserPlayer? UserPlayer;
+        UserPlayer UserPlayer = null!;
 
         [SerializeField]
-        Score? Score;
+        Score Score = null!;
 
         [SerializeField]
-        GameEndDirection? GameEndDirection;
+        GameEndDirection GameEndDirection = null!;
 
         [SerializeField]
-        NextScreen? NextScreen;
+        NextScreen NextScreen = null!;
 
         Record? _record;
 
@@ -53,16 +53,16 @@ namespace Pg.Scene.Game
 
         async void Start()
         {
-            _record = new Record(GameData!.Stage.MaxTurnCount, GameData!.Stage.TargetScore);
+            _record = new Record(GameData.Stage.MaxTurnCount, GameData.Stage.TargetScore);
 
-            await StartDirection!.Play();
-            var gameController = new GameController(GameData!);
+            await StartDirection.Play();
+            var gameController = new GameController(GameData);
             var tileStatuses = gameController.StartGame();
-            await Coordinates!.SetTileEvents(UserPlayer!);
-            Coordinates!.ApplyTiles(tileStatuses, UserPlayer!);
-            Score!.Initialize(Data.Response.Score.Zero);
+            await Coordinates.SetTileEvents(UserPlayer);
+            Coordinates.ApplyTiles(tileStatuses, UserPlayer);
+            Score.Initialize(Data.Response.Score.Zero);
 
-            UserPlayer!.OnTransaction
+            UserPlayer.OnTransaction
                 .Subscribe(async tileOperation =>
                     {
                         var turnResponse = gameController.ProcessTurn(tileOperation);
@@ -90,17 +90,17 @@ namespace Pg.Scene.Game
                             Debug.Log(stepResponse);
                             Debug.Log(Dumper.Dump(gameController.DebugGetTileStatuses()));
                             Debug.Log($"NEW SCORE: {stepResponse.AcquisitionScore}");
-                            // Coordinates!.AssertTiles(stepResponse.BeginningMap, UserPlayer!);
-                            Coordinates!.ApplyTiles(stepResponse.BeginningMap, UserPlayer!);
-                            await Coordinates!.ApplyVanishings(stepResponse.VanishingClusters);
-                            Score!.AddScore(stepResponse.AcquisitionScore);
-                            await Coordinates!.ApplySlides(stepResponse.SlidingGems);
-                            Coordinates!.ApplyTiles(gameController.DebugGetTileStatuses(), UserPlayer!);
+                            // Coordinates.AssertTiles(stepResponse.BeginningMap, UserPlayer);
+                            Coordinates.ApplyTiles(stepResponse.BeginningMap, UserPlayer);
+                            await Coordinates.ApplyVanishings(stepResponse.VanishingClusters);
+                            Score.AddScore(stepResponse.AcquisitionScore);
+                            await Coordinates.ApplySlides(stepResponse.SlidingGems);
+                            Coordinates.ApplyTiles(gameController.DebugGetTileStatuses(), UserPlayer);
                         }
 
                         _record.SetScore(turnResponse.Score);
 
-                        Score!.SetScore(turnResponse.Score);
+                        Score.SetScore(turnResponse.Score);
 
                         Debug.Log($"JUDGE: {turnResponse.JudgeResult}");
 
@@ -116,15 +116,15 @@ namespace Pg.Scene.Game
 
         async UniTask PlayFailure()
         {
-            await GameEndDirection!.PlayFailure();
-            await NextScreen!.BlockUntilTap();
+            await GameEndDirection.PlayFailure();
+            await NextScreen.BlockUntilTap();
             SceneManager.MoveToResultScene(_record!.CreateFailure());
         }
 
         async UniTask PlaySuccess()
         {
-            await GameEndDirection!.PlaySuccess();
-            await NextScreen!.BlockUntilTap();
+            await GameEndDirection.PlaySuccess();
+            await NextScreen.BlockUntilTap();
             SceneManager.MoveToResultScene(_record!.CreateSuccess());
         }
 

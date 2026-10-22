@@ -11,28 +11,28 @@ namespace Pg.Scene.Result
     internal class ResultInformation : MonoBehaviour
     {
         [SerializeField]
-        ScoreAnimation? TotalScore;
+        ScoreAnimation TotalScore = null!;
 
         [SerializeField]
-        Text? TargetScore;
+        Text TargetScore = null!;
 
         [SerializeField]
-        SuccessAnimation? SuccessAnimation;
+        SuccessAnimation SuccessAnimation = null!;
 
         [SerializeField]
-        FailureAnimation? FailureAnimation;
+        FailureAnimation FailureAnimation = null!;
 
         [SerializeField]
-        Text? TotalTurn;
+        Text TotalTurn = null!;
 
         [SerializeField]
-        Text? TurnLimit;
+        Text TurnLimit = null!;
 
         [SerializeField]
-        Text? TotalChain;
+        Text TotalChain = null!;
 
         [SerializeField]
-        Text? TotalVanishedGem;
+        Text TotalVanishedGem = null!;
 
         Player? _player;
 
@@ -47,21 +47,21 @@ namespace Pg.Scene.Result
             Assert.IsNotNull(TotalChain, "TotalChain != null");
             Assert.IsNotNull(TotalVanishedGem, "TotalVanishedGem != null");
             _player = Player.Create(
-                TotalScore!,
-                TargetScore!,
-                SuccessAnimation!,
-                FailureAnimation!,
-                TotalTurn!,
-                TurnLimit!,
-                TotalChain!,
-                TotalVanishedGem!
+                TotalScore,
+                TargetScore,
+                SuccessAnimation,
+                FailureAnimation,
+                TotalTurn,
+                TurnLimit,
+                TotalChain,
+                TotalVanishedGem
             );
 
-            TargetScore!.text = "00000000";
-            TotalTurn!.text = "000";
-            TurnLimit!.text = "000";
-            TotalChain!.text = "000";
-            TotalVanishedGem!.text = "0000";
+            TargetScore.text = "00000000";
+            TotalTurn.text = "000";
+            TurnLimit.text = "000";
+            TotalChain.text = "000";
+            TotalVanishedGem.text = "0000";
         }
 
         internal async UniTask Play(ResultData resultData)

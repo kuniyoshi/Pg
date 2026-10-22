@@ -15,7 +15,7 @@ namespace Pg.Scene.Game
         : MonoBehaviour
     {
         [SerializeField]
-        Coordinates? Coordinates;
+        Coordinates Coordinates = null!;
 
         Sequence? _sequence;
 
@@ -31,7 +31,7 @@ namespace Pg.Scene.Game
         internal void CompleteTransaction()
         {
             Assert.IsNotNull(_sequence, "_sequence != null");
-            Coordinates!.ClearSelections();
+            Coordinates.ClearSelections();
             var operations = _sequence!.DumpOperations();
             _sequence = null;
 
@@ -72,7 +72,7 @@ namespace Pg.Scene.Game
                 return false;
             }
 
-            Coordinates!.Swap(_sequence.Swap(gem));
+            Coordinates.Swap(_sequence.Swap(gem));
 
             return true;
         }

@@ -11,7 +11,7 @@ namespace Pg.Scene.Game
         : MonoBehaviour
     {
         [SerializeField]
-        Image? Cover;
+        Image Cover = null!;
 
         void Awake()
         {
@@ -20,9 +20,9 @@ namespace Pg.Scene.Game
 
         internal async Task Play()
         {
-            Cover!.raycastTarget = true;
+            Cover.raycastTarget = true;
             await Cover.DOFade(endValue: 0f, duration: 1f).AsyncWaitForStart();
-            Cover!.raycastTarget = false;
+            Cover.raycastTarget = false;
         }
     }
 }

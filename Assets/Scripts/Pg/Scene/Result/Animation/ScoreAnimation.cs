@@ -11,7 +11,7 @@ namespace Pg.Scene.Result.Animation
         : MonoBehaviour
     {
         [SerializeField]
-        Text? ScoreText;
+        Text ScoreText = null!;
 
         [SerializeField]
         float Duration;
@@ -26,12 +26,12 @@ namespace Pg.Scene.Result.Animation
 
         void Start()
         {
-            ScoreText!.text = "00000000";
+            ScoreText.text = "00000000";
         }
 
         internal async UniTask Play(int toValue)
         {
-            ScoreText!.text = "0";
+            ScoreText.text = "0";
             var secondsPerFrame = 1f / TargetFps;
 
             var asyncEnumerable = UniTaskAsyncEnumerable.Create<float>(async (writer, token) =>
@@ -57,10 +57,10 @@ namespace Pg.Scene.Result.Animation
 
             await foreach (var value in asyncEnumerable)
             {
-                ScoreText!.text = ((int) Mathf.Exp(value)).ToString();
+                ScoreText.text = ((int) Mathf.Exp(value)).ToString();
             }
 
-            ScoreText!.text = toValue.ToString();
+            ScoreText.text = toValue.ToString();
         }
     }
 }

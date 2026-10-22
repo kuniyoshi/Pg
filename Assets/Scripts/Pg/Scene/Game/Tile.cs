@@ -30,9 +30,10 @@ namespace Pg.Scene.Game
             rectTransform.localPosition = localPosition;
         }
 
-        internal async Task NewGem(GemColorType gemColorType)
+        internal Task NewGem(GemColorType gemColorType)
         {
             UpdateStatus(new TileStatus(TileStatusType.Contain, gemColorType));
+            return Task.CompletedTask;
         }
 
         internal void Popup(GemColorType gemColorType)

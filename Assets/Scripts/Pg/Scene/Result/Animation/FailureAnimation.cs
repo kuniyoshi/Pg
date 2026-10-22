@@ -12,13 +12,13 @@ namespace Pg.Scene.Result.Animation
         : MonoBehaviour
     {
         [SerializeField]
-        Image? BackgroundLeft;
+        Image BackgroundLeft = null!;
 
         [SerializeField]
-        Image? BackgroundRight;
+        Image BackgroundRight = null!;
 
         [SerializeField]
-        Text? Text;
+        Text Text = null!;
 
         [Header("Animation Setting")]
         [SerializeField]
@@ -65,40 +65,42 @@ namespace Pg.Scene.Result.Animation
 
         async UniTask Appear()
         {
-            Text!.enabled = true;
-            BackgroundLeft!.enabled = true;
-            BackgroundRight!.enabled = true;
+            Text.enabled = true;
+            BackgroundLeft.enabled = true;
+            BackgroundRight.enabled = true;
 
-            BackgroundLeft!.rectTransform.DOMoveX(-BackgroundX, duration: 0f)
-                .SetRelative();
-            BackgroundRight!.rectTransform.DOMoveX(BackgroundX, duration: 0f)
-                .SetRelative();
+            BackgroundLeft.rectTransform.DOMoveX(-BackgroundX, duration: 0f)
+                .SetRelative()
+                .Complete();
+            BackgroundRight.rectTransform.DOMoveX(BackgroundX, duration: 0f)
+                .SetRelative()
+                .Complete();
 
             await (
-                Text!.rectTransform.DOJump(Vector3.zero, JumpPower, JumpCount, JumpDuration)
+                Text.rectTransform.DOJump(Vector3.zero, JumpPower, JumpCount, JumpDuration)
                     .SetRelative()
                     .ToUniTask(),
-                BackgroundLeft!.rectTransform.DOMoveX(BackgroundX, BackgroundDuration)
+                BackgroundLeft.rectTransform.DOMoveX(BackgroundX, BackgroundDuration)
                     .SetRelative()
                     .ToUniTask(),
-                BackgroundRight!.rectTransform.DOMoveX(-BackgroundX, BackgroundDuration)
+                BackgroundRight.rectTransform.DOMoveX(-BackgroundX, BackgroundDuration)
                     .SetRelative()
                     .ToUniTask()
             );
 
             await (
-                BackgroundLeft!.DOFade(endValue: 0f, FadeDuration)
+                BackgroundLeft.DOFade(endValue: 0f, FadeDuration)
                     .ToUniTask(),
-                BackgroundRight!.DOFade(endValue: 0f, FadeDuration)
+                BackgroundRight.DOFade(endValue: 0f, FadeDuration)
                     .ToUniTask()
             );
         }
 
         async UniTask Hide()
         {
-            BackgroundLeft!.enabled = false;
-            BackgroundRight!.enabled = false;
-            Text!.enabled = false;
+            BackgroundLeft.enabled = false;
+            BackgroundRight.enabled = false;
+            Text.enabled = false;
             await UniTask.CompletedTask;
         }
     }

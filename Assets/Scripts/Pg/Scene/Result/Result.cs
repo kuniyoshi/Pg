@@ -35,7 +35,7 @@ namespace Pg.Scene.Result
         }
 
         [SerializeField]
-        ResultInformation? ResultInformation;
+        ResultInformation ResultInformation = null!;
 
         void Awake()
         {
@@ -46,7 +46,7 @@ namespace Pg.Scene.Result
         {
             DebugSetResultData();
             UnityEngine.Debug.Log(GetResultData());
-            await ResultInformation!.Play(GetResultData()!);
+            await ResultInformation.Play(GetResultData()!);
         }
 
         internal void MoveToTitle()
