@@ -1,7 +1,9 @@
 #nullable enable
+using System;
+
 namespace Pg.SceneData.ResultItem
 {
-    public readonly struct TargetScore
+    public readonly struct TargetScore : IEquatable<TargetScore>
     {
         public static TargetScore Get(int value)
         {
@@ -17,12 +19,12 @@ namespace Pg.SceneData.ResultItem
 
         public override bool Equals(object? obj)
         {
-            if (obj is TargetScore other)
-            {
-                return other.Value == Value;
-            }
+            return obj is TargetScore other && Equals(other);
+        }
 
-            return false;
+        public bool Equals(TargetScore other)
+        {
+            return Value == other.Value;
         }
 
         public override int GetHashCode()

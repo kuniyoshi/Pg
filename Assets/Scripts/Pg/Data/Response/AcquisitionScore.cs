@@ -1,7 +1,9 @@
 #nullable enable
+using System;
+
 namespace Pg.Data.Response
 {
-    public readonly struct AcquisitionScore
+    public readonly struct AcquisitionScore : IEquatable<AcquisitionScore>
     {
         public int Value { get; }
 
@@ -17,7 +19,12 @@ namespace Pg.Data.Response
 
         public bool Equals(AcquisitionScore? other)
         {
-            return Value == other?.Value;
+            return other.HasValue && Equals(other.Value);
+        }
+
+        public bool Equals(AcquisitionScore other)
+        {
+            return Value == other.Value;
         }
 
         public override int GetHashCode()

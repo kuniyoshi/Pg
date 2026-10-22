@@ -1,11 +1,12 @@
 #nullable enable
+using System;
 using System.Linq;
 using Pg.Etc.Puzzle;
 using UnityEngine.Assertions;
 
 namespace Pg.Data.Response
 {
-    public readonly struct PassedTurn
+    public readonly struct PassedTurn : IEquatable<PassedTurn>
     {
         static PassedTurn[] DomainValues { get; } = Enumerable
             .Range(start: 0, SimulationLimitation.MaxProcessedTurnExclusive)
@@ -36,12 +37,17 @@ namespace Pg.Data.Response
 
         public bool Equals(PassedTurn? other)
         {
-            return Value == other?.Value;
+            return other.HasValue && Equals(other.Value);
         }
 
         public float GetCoef()
         {
             return 0.1f * (Value + 1);
+        }
+
+        public bool Equals(PassedTurn other)
+        {
+            return Value == other.Value;
         }
 
         public override int GetHashCode()
