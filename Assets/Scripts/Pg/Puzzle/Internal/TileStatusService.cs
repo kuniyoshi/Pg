@@ -12,6 +12,12 @@ namespace Pg.Puzzle.Internal
                    && IsTileStatusSwappable(b);
         }
 
+        internal static bool CanBothBeSwappable(TileStatusType a, TileStatusType b)
+        {
+            return IsTileStatusSwappable(a)
+                   && IsTileStatusSwappable(b);
+        }
+
         static bool IsTileStatusSwappable(TileStatus tileStatus)
         {
             var can = tileStatus.TileStatusType != TileStatusType.Closed
@@ -19,6 +25,12 @@ namespace Pg.Puzzle.Internal
             Assert.IsTrue(!(can ^ (tileStatus.GemColorType != null)), "!(can ^ tileStatus.NewGemColorType != null)");
 
             return can;
+        }
+
+        static bool IsTileStatusSwappable(TileStatusType tileStatusType)
+        {
+            return tileStatusType != TileStatusType.Closed
+                   && tileStatusType != TileStatusType.Empty;
         }
     }
 }

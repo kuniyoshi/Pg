@@ -38,7 +38,7 @@ namespace Pg.Puzzle.Internal
 
         internal PassedTurn PassedTurn => Turn.PassedTurn;
 
-        internal TurnResponse ProcessTurn(IEnumerable<TileOperation> operations)
+        internal TurnResponse ProcessTurn(IEnumerable<GemOperation> operations)
         {
             var simulationStepDataItems = Worker.ProcessTurn(Map, operations);
 

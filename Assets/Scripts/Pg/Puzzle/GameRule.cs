@@ -1,14 +1,14 @@
 #nullable enable
+using Pg.Data.Simulation;
 using Pg.Puzzle.Internal;
 
 namespace Pg.Puzzle
 {
     public static class GameRule
     {
-        public static bool CanSwap(TileData a, TileData b)
+        public static bool CanSwap(Coordinate a, Coordinate b)
         {
-            return TileStatusService.CanBothBeSwappable(a.TileStatus, b.TileStatus)
-                   && DirectionService.IsNeighborEachOther(a.Coordinate, b.Coordinate);
+            return DirectionService.IsNeighborEachOther(a, b);
         }
     }
 }

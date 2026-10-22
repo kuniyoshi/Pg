@@ -19,9 +19,9 @@ namespace Pg.Scene.Game
 
         Sequence? _sequence;
 
-        Subject<TileOperation[]> TransactionSubject { get; } = new Subject<TileOperation[]>();
+        Subject<GemOperation[]> TransactionSubject { get; } = new Subject<GemOperation[]>();
 
-        internal IObservable<TileOperation[]> OnTransaction => TransactionSubject;
+        internal IObservable<GemOperation[]> OnTransaction => TransactionSubject;
 
         void Awake()
         {
@@ -38,105 +38,78 @@ namespace Pg.Scene.Game
             TransactionSubject.OnNext(operations);
         }
 
-        internal bool IsSelected(Tile tile)
+        internal bool IsSelected(Gem2 gem)
         {
-            return _sequence?.IsSelected(tile.Coordinate) ?? false;
+            return _sequence?.IsSelected(gem.GetStableCoordinate()) ?? false;
         }
 
-        internal bool StartTransactionIfNotAlready(Tile tile)
+        internal bool StartTransactionIfNotAlready(Gem2 gem)
         {
             if (_sequence != null)
             {
                 return false;
             }
 
-            _sequence = new Sequence(tile);
+            _sequence = new Sequence(gem);
 
             return true;
         }
 
-        internal bool TryAddTransaction(Tile tile)
+        internal bool TryAddTransaction(Gem2 gem)
         {
-            if (_sequence?.IsSelected(tile.Coordinate) ?? false)
+            if (_sequence is null)
             {
                 return false;
             }
 
-            if (!_sequence?.CanSwap(tile) ?? false)
+            if (_sequence.IsSelected(gem.GetStableCoordinate()))
             {
                 return false;
             }
 
-            return _sequence?.Swap(tile) ?? false;
+            if (!_sequence.CanSwap(gem))
+            {
+                return false;
+            }
+
+            Coordinates!.Swap(_sequence.Swap(gem));
+
+            return true;
         }
 
         class Sequence
         {
-            Queue<Operation> Histories { get; }
-            Tile? _lastSelection;
+            Queue<GemOperation> Histories { get; }
+            Gem2 FirstSelection { get; }
 
-            internal Sequence(Tile tile)
+            internal Sequence(Gem2 gem)
             {
-                _lastSelection = tile;
-                Histories = new Queue<Operation>();
+                FirstSelection = gem;
+                Histories = new Queue<GemOperation>();
             }
 
-            internal bool CanSwap(Tile tile)
+            internal bool CanSwap(Gem2 gem)
             {
-                if (_lastSelection == null)
-                {
-                    return false;
-                }
-
-                return GameRule.CanSwap(tile.TileData, _lastSelection!.TileData);
+                return GameRule.CanSwap(FirstSelection.GetStableCoordinate(), gem.GetStableCoordinate());
             }
 
-            internal TileOperation[] DumpOperations()
+            internal GemOperation[] DumpOperations()
             {
-                return Histories.Select(operation => operation.CreateTileOperation())
-                    .ToArray();
+                return Histories.ToArray();
             }
 
             internal bool IsSelected(Coordinate coordinate)
             {
-                return _lastSelection != null
-                       && coordinate.Equals(_lastSelection.Coordinate);
+                return coordinate.Equals(FirstSelection.GetStableCoordinate());
             }
 
-            internal bool Swap(Tile tile)
+            internal GemOperation Swap(Gem2 gem)
             {
-                Assert.IsNotNull(_lastSelection, "_lastSelection != null");
-                var operation = new Operation(_lastSelection!, tile);
-                operation.DoSwap();
+                var operation = new GemOperation(FirstSelection.GetStableCoordinate(), gem.GetStableCoordinate());
                 Histories.Enqueue(operation);
-                _lastSelection = tile;
+                FirstSelection.Swap(gem);
 
-                return true;
-            }
-
-            class Operation
-            {
-                Tile TileA { get; }
-                Tile TileB { get; }
-
-                internal Operation(Tile tileA, Tile tileB)
-                {
-                    TileA = tileA;
-                    TileB = tileB;
-                }
-
-                internal TileOperation CreateTileOperation()
-                {
-                    return new TileOperation(TileA.Coordinate, TileB.Coordinate);
-                }
-
-                internal void DoSwap()
-                {
-                    var (currentA, currentB) = (TileA.TileStatus, TileB.TileStatus);
-                    var (nextA, nextB) = (currentB, currentA);
-                    TileA.UpdateStatus(nextA);
-                    TileB.UpdateStatus(nextB);
-                }
+                return operation;
             }
         }
     }

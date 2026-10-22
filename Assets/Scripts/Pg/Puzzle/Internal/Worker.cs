@@ -20,7 +20,7 @@ namespace Pg.Puzzle.Internal
             GemGenerator = new GemGenerator();
         }
 
-        internal IEnumerable<SimulationStepData> ProcessTurn(Map map, IEnumerable<TileOperation> operations)
+        internal IEnumerable<SimulationStepData> ProcessTurn(Map map, IEnumerable<GemOperation> operations)
         {
             WorkTransaction(map, operations);
 
@@ -37,7 +37,7 @@ namespace Pg.Puzzle.Internal
             }
         }
 
-        internal void WorkTransaction(Map map, IEnumerable<TileOperation> operations)
+        internal void WorkTransaction(Map map, IEnumerable<GemOperation> operations)
         {
             foreach (var tileOperation in operations)
             {

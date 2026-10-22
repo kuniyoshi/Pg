@@ -20,7 +20,7 @@ namespace Pg.Scene.Game
         internal Image? Image;
 
         [SerializeField]
-        List<NewGemColorTypeVsSprite>? Map;
+        List<GemColorTypeVsSprite>? Map;
 
         Sequence? _sequence;
 
@@ -138,10 +138,10 @@ namespace Pg.Scene.Game
     }
 
     [Serializable]
-    internal class NewGemColorTypeVsSprite
+    internal class GemColorTypeVsSprite
         : Pair<SerializableGemColorType, Sprite>
     {
-        internal NewGemColorTypeVsSprite(SerializableGemColorType first, Sprite second)
+        internal GemColorTypeVsSprite(SerializableGemColorType first, Sprite second)
             : base(first, second)
         {
         }

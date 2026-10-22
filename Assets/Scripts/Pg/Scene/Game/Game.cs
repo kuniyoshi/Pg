@@ -59,7 +59,7 @@ namespace Pg.Scene.Game
             var gameController = new GameController(GameData!);
             var tileStatuses = gameController.StartGame();
             await Coordinates!.SetTileEvents(UserPlayer!);
-            Coordinates!.ApplyTiles(tileStatuses);
+            Coordinates!.ApplyTiles(tileStatuses, UserPlayer!);
             Score!.Initialize(Data.Response.Score.Zero);
 
             UserPlayer!.OnTransaction
@@ -90,11 +90,12 @@ namespace Pg.Scene.Game
                             Debug.Log(stepResponse);
                             Debug.Log(Dumper.Dump(gameController.DebugGetTileStatuses()));
                             Debug.Log($"NEW SCORE: {stepResponse.AcquisitionScore}");
-                            Coordinates!.ApplyTiles(stepResponse.BeginningMap);
+                            // Coordinates!.AssertTiles(stepResponse.BeginningMap, UserPlayer!);
+                            Coordinates!.ApplyTiles(stepResponse.BeginningMap, UserPlayer!);
                             await Coordinates!.ApplyVanishings(stepResponse.VanishingClusters);
                             Score!.AddScore(stepResponse.AcquisitionScore);
                             await Coordinates!.ApplySlides(stepResponse.SlidingGems);
-                            Coordinates!.ApplyTiles(gameController.DebugGetTileStatuses());
+                            Coordinates!.ApplyTiles(gameController.DebugGetTileStatuses(), UserPlayer!);
                         }
 
                         _record.SetScore(turnResponse.Score);
