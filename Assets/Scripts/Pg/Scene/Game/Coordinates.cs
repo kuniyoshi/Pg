@@ -12,8 +12,6 @@ using Pg.Puzzle.Request;
 using Pg.Puzzle.Response;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace Pg.Scene.Game
 {
@@ -34,13 +32,11 @@ namespace Pg.Scene.Game
         [SerializeField]
         RectTransform GemCanvas = null!;
 
-        [SerializeField]
-        GraphicRaycaster GraphicRaycaster = null!;
-
         Tile[,]? _tiles;
-        Dictionary<Coordinate, Gem2>? _gems;
+        Dictionary<Coordinate, Gem>? _gems;
 
         GemFactory? _gemFactory;
+        UserPlayer? _userPlayer;
         static Vector2Int DeltaTopLeft { get; } = new Vector2Int(x: -3, y: -2);
 
         static Vector2 TopLeftOffset { get; } = new Vector2(
@@ -54,10 +50,9 @@ namespace Pg.Scene.Game
             Assert.IsNotNull(GemPrefab, "GemPrefab != null");
             Assert.IsNotNull(TileCanvas, "TileCanvas != null");
             Assert.IsNotNull(GemCanvas, "GemCanvas != null");
-            Assert.IsNotNull(GraphicRaycaster, "GraphicRaycaster != null");
         }
 
-        void Start()
+        void CreateTiles()
         {
             var positions = new Vector2[TileSize.ColSize, TileSize.RowSize];
             var offsetY = Mathf.Sqrt(f: 3f) * Size * 0.5f;
@@ -82,7 +77,7 @@ namespace Pg.Scene.Game
                 {
                     var position = positions[colIndex, rowIndex];
                     var hexagon = Instantiate(HexagonPrefab, TileCanvas);
-                    hexagon.name = $"{HexagonPrefab!.name}({colIndex}, {rowIndex})";
+                    hexagon.name = $"{HexagonPrefab.name}({colIndex}, {rowIndex})";
                     var tile = hexagon.GetComponentStrictly<Tile>();
                     tile.Initialize(colIndex, rowIndex, position);
 
@@ -90,88 +85,97 @@ namespace Pg.Scene.Game
                 }
             }
 
-            _gems = new Dictionary<Coordinate, Gem2>();
+            _gems = new Dictionary<Coordinate, Gem>();
 
             _gemFactory = new GemFactory(GemPrefab);
         }
 
+        Gem CreateGem(Coordinate coordinate, GemColorType color)
+        {
+            var gem = _gemFactory!.InstantiateNewGem(GemCanvas);
+            gem.Initialize(_tiles![coordinate.Column, coordinate.Row], color, _userPlayer!);
+            _gems!.Add(coordinate, gem);
+            return gem;
+        }
+
         internal async Task ApplySlides(SlidingGems slidingGems)
         {
-            var slidingEnumerator = slidingGems.Items.GetEnumerator();
-            var newGemEnumerator = slidingGems.NewGems.GetEnumerator();
+            using var slidingEnumerator = slidingGems.Items.GetEnumerator();
+            using var newGemEnumerator = slidingGems.NewGems.GetEnumerator();
 
-
-            foreach (var slidingGemsEventType in slidingGems.EventTypes)
+            foreach (var eventType in slidingGems.EventTypes)
             {
-                switch (slidingGemsEventType)
+                switch (eventType)
                 {
                     case SlidingGems.EventType.Take:
-                        slidingEnumerator.MoveNext();
-                        var slidingGem = slidingEnumerator.Current;
-                        var (coordinateFrom, coordinateTo) = (slidingGem.From, slidingGem.To);
-                        Assert.IsTrue(_gems!.ContainsKey(coordinateFrom), "_gems!.ContainsKey(coordinateFrom)");
-                        await _gems![coordinateFrom].SlideTo(_tiles![coordinateTo.Column, coordinateTo.Row]);
-                        Slide(coordinateFrom, coordinateTo);
+                        if (!slidingEnumerator.MoveNext()) throw new InvalidOperationException("Missing sliding gem event");
+                        var slide = slidingEnumerator.Current;
+                        Assert.IsTrue(_gems!.ContainsKey(slide.From));
+                        Assert.IsFalse(_gems!.ContainsKey(slide.To));
+                        var gem = _gems[slide.From];
+                        _gems.Remove(slide.From);
+                        _gems.Add(slide.To, gem);
+                        await gem.SlideTo(_tiles![slide.To.Column, slide.To.Row]);
                         break;
-
                     case SlidingGems.EventType.NewGem:
-                        newGemEnumerator.MoveNext();
+                        if (!newGemEnumerator.MoveNext()) throw new InvalidOperationException("Missing new gem event");
                         var newGem = newGemEnumerator.Current;
-                        Assert.IsTrue(!_gems!.ContainsKey(newGem.Coordinate), "!_gems!.ContainsKey(newGem.Coordinate)");
-                        var gem = _gemFactory!.InstantiateNewGem(GemCanvas);
-                        gem.Initialize(_tiles![newGem.Coordinate.Column, newGem.Coordinate.Row], newGem.GemColorType);
-                            // await _tiles![newGem.Coordinate.Column, newGem.Coordinate.Row].NewGem(newGem.GemColorType);
-                        await gem.Popup();
-                        _gems!.Add(newGem.Coordinate, gem);
+                        Assert.IsFalse(_gems!.ContainsKey(newGem.Coordinate));
+                        await CreateGem(newGem.Coordinate, newGem.GemColorType).Popup();
                         break;
-
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
             }
-
-            slidingEnumerator.Dispose();
-            newGemEnumerator.Dispose();
         }
 
-        void Slide(Coordinate from, Coordinate to)
+        internal void Initialize(TileStatus[,] tiles, UserPlayer userPlayer)
         {
-            Assert.IsTrue(_gems!.ContainsKey(from), "_gems!.ContainsKey(from)");
-            Assert.IsTrue(!_gems!.ContainsKey(to), "!_gems!.ContainsKey(to)");
-            _gems!.Add(to, _gems![from]);
-            _gems!.Remove(from);
-        }
-
-        internal void ApplyTiles(TileStatus[,] tiles, UserPlayer userPlayer)
-        {
-            Assert.AreEqual(_tiles!.GetLength(dimension: 0), tiles.GetLength(dimension: 0));
-            Assert.AreEqual(_tiles!.GetLength(dimension: 1), tiles.GetLength(dimension: 1));
-
-            for (var rowIndex = 0; rowIndex < _tiles.GetLength(dimension: 1); ++rowIndex)
+            _userPlayer = userPlayer;
+            CreateTiles();
+            Assert.AreEqual(_tiles!.GetLength(0), tiles.GetLength(0));
+            Assert.AreEqual(_tiles!.GetLength(1), tiles.GetLength(1));
+            for (var row = 0; row < tiles.GetLength(1); ++row)
             {
-                for (var colIndex = 0; colIndex < _tiles.GetLength(dimension: 0); ++colIndex)
+                for (var col = 0; col < tiles.GetLength(0); ++col)
                 {
-                    _tiles[colIndex, rowIndex].UpdateStatus2(tiles[colIndex, rowIndex].TileStatusType);
-
-                    if (tiles[colIndex, rowIndex].GemColorType != null)
+                    var status = tiles[col, row];
+                    _tiles[col, row].SetClosed(status.TileStatusType == TileStatusType.Closed);
+                    if (status.GemColorType != null)
                     {
-                        if (!_gems!.ContainsKey(new Coordinate(colIndex, rowIndex)))
-                        {
-                            var gem = _gemFactory!.InstantiateNewGem(GemCanvas);
-                            gem.Initialize(_tiles[colIndex, rowIndex], tiles[colIndex, rowIndex].GemColorType!);
-                            gem.Bind(userPlayer);
-                            _gems!.Add(new Coordinate(colIndex, rowIndex), gem);
-                        }
+                        CreateGem(new Coordinate(col, row), status.GemColorType);
                     }
-                    // _tiles[colIndex, rowIndex].UpdateStatus(tiles[colIndex, rowIndex]);
                 }
             }
+        }
+
+        [System.Diagnostics.Conditional("UNITY_ASSERTIONS")]
+        internal void AssertMatches(TileStatus[,] tiles)
+        {
+            var gemCount = 0;
+            for (var row = 0; row < tiles.GetLength(1); ++row)
+            {
+                for (var col = 0; col < tiles.GetLength(0); ++col)
+                {
+                    var coordinate = new Coordinate(col, row);
+                    var color = tiles[col, row].GemColorType;
+                    if (color == null)
+                    {
+                        Assert.IsFalse(_gems!.ContainsKey(coordinate));
+                        continue;
+                    }
+                    ++gemCount;
+                    Assert.IsTrue(_gems!.ContainsKey(coordinate));
+                    Assert.AreEqual(coordinate, _gems![coordinate].Coordinate);
+                    Assert.AreEqual(color, _gems[coordinate].Color);
+                }
+            }
+            Assert.AreEqual(gemCount, _gems!.Count);
         }
 
         class GemFactory
         {
             GameObject Prefab { get; }
-
             int _id;
 
             internal GemFactory(GameObject prefab)
@@ -179,88 +183,37 @@ namespace Pg.Scene.Game
                 Prefab = prefab;
             }
 
-            internal Gem2 InstantiateNewGem(Transform parentTransform)
+            internal Gem InstantiateNewGem(Transform parentTransform)
             {
-                var newGameObject = Instantiate(Prefab, parentTransform);
-                newGameObject.name = $"{Prefab.name}({_id++})";
-
-                return newGameObject.GetComponentStrictly<Gem2>();
+                var instance = Instantiate(Prefab, parentTransform);
+                instance.name = $"{Prefab.name}({_id++})";
+                return instance.GetComponentStrictly<Gem>();
             }
         }
 
         internal async Task ApplyVanishings(VanishingClusters vanishingClusters)
         {
-            var vanishings = new List<Gem2>();
-
-            foreach (var coordinate in vanishingClusters.WholeCoordinates)
+            var vanishings = new List<Gem>();
+            foreach (var coordinate in vanishingClusters.WholeCoordinates.Distinct())
             {
-                Assert.IsTrue(_gems!.ContainsKey(coordinate), "_gems!.ContainsKey(coordinate)");
+                Assert.IsTrue(_gems!.ContainsKey(coordinate));
                 vanishings.Add(_gems![coordinate]);
-                _gems!.Remove(coordinate);
+                _gems.Remove(coordinate);
             }
-
-            // Debug.Log($"### Vanishings: {string.Join(", ", vanishingClusters.WholeCoordinates.Select(c => c))}");
-
-            await UniTask.WhenAll(Enumerable.Select(vanishings, gem => gem.Vanish()));
+            await UniTask.WhenAll(vanishings.Select(gem => gem.Vanish()));
         }
 
         internal void ClearSelections()
         {
-            // foreach (var tile in _tiles!)
-            // {
-            //     tile.Gem!.QuitWorking();
-            // }
-
-            foreach (var gem in _gems!.Values)
-            {
-                gem.QuitWorking();
-            }
+            foreach (var gem in _gems!.Values) gem.QuitWorking();
         }
 
-        internal Tile? InterSectWith(Vector2 screenPoint)
+        internal void Swap(GemOperation operation)
         {
-            var raycastResults = new List<RaycastResult>();
-            var pointerEventData = new PointerEventData(EventSystem.current)
-            {
-                delta = screenPoint,
-            };
-            GraphicRaycaster.Raycast(pointerEventData, raycastResults);
-
-            if (!raycastResults.Any())
-            {
-                return null;
-            }
-
-            var raycastResult = raycastResults.First();
-            Assert.IsTrue(raycastResult.isValid, "raycastResult.isValid");
-
-            foreach (var tile in _tiles!)
-            {
-                if (raycastResult.gameObject == tile.gameObject)
-                {
-                    return tile;
-                }
-            }
-
-            return null;
-        }
-
-        internal Task SetTileEvents(UserPlayer userPlayer)
-        {
-            foreach (var tile in _tiles!)
-            {
-                tile.SetEvents(userPlayer);
-            }
-
-            return Task.CompletedTask;
-        }
-
-        public void Swap(GemOperation gemOperation)
-        {
-            var (a, b) = (gemOperation.A, gemOperation.B);
-            Assert.IsTrue(_gems!.ContainsKey(a), "_gems!.ContainsKey(a)");
-            Assert.IsTrue(_gems!.ContainsKey(b), "_gems!.ContainsKey(b)");
-            (_gems![a], _gems![b]) = (_gems![b], _gems![a]);
+            var (a, b) = (operation.A, operation.B);
+            Assert.IsTrue(_gems!.ContainsKey(a));
+            Assert.IsTrue(_gems!.ContainsKey(b));
+            (_gems[a], _gems[b]) = (_gems[b], _gems[a]);
         }
     }
 }

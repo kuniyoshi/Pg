@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Pg.Data.Simulation;
 using Pg.Puzzle;
 using Pg.Puzzle.Request;
@@ -18,6 +17,12 @@ namespace Pg.Scene.Game
         Coordinates Coordinates = null!;
 
         Sequence? _sequence;
+        bool _inputEnabled;
+
+        internal void SetInputEnabled(bool enabled)
+        {
+            _inputEnabled = enabled;
+        }
 
         Subject<GemOperation[]> TransactionSubject { get; } = new Subject<GemOperation[]>();
 
@@ -30,22 +35,19 @@ namespace Pg.Scene.Game
 
         internal void CompleteTransaction()
         {
-            Assert.IsNotNull(_sequence, "_sequence != null");
+            if (!_inputEnabled || _sequence == null) return;
             Coordinates.ClearSelections();
             var operations = _sequence!.DumpOperations();
             _sequence = null;
 
+            if (operations.Length == 0) return;
+            _inputEnabled = false;
             TransactionSubject.OnNext(operations);
         }
 
-        internal bool IsSelected(Gem2 gem)
+        internal bool StartTransactionIfNotAlready(Gem gem)
         {
-            return _sequence?.IsSelected(gem.GetStableCoordinate()) ?? false;
-        }
-
-        internal bool StartTransactionIfNotAlready(Gem2 gem)
-        {
-            if (_sequence != null)
+            if (!_inputEnabled || _sequence != null || gem.IsMoving)
             {
                 return false;
             }
@@ -55,14 +57,14 @@ namespace Pg.Scene.Game
             return true;
         }
 
-        internal bool TryAddTransaction(Gem2 gem)
+        internal bool TryAddTransaction(Gem gem)
         {
-            if (_sequence is null)
+            if (!_inputEnabled || _sequence is null || gem.IsMoving)
             {
                 return false;
             }
 
-            if (_sequence.IsSelected(gem.GetStableCoordinate()))
+            if (_sequence.IsSelected(gem.Coordinate))
             {
                 return false;
             }
@@ -80,17 +82,17 @@ namespace Pg.Scene.Game
         class Sequence
         {
             Queue<GemOperation> Histories { get; }
-            Gem2 FirstSelection { get; }
+            Gem FirstSelection { get; }
 
-            internal Sequence(Gem2 gem)
+            internal Sequence(Gem gem)
             {
                 FirstSelection = gem;
                 Histories = new Queue<GemOperation>();
             }
 
-            internal bool CanSwap(Gem2 gem)
+            internal bool CanSwap(Gem gem)
             {
-                return GameRule.CanSwap(FirstSelection.GetStableCoordinate(), gem.GetStableCoordinate());
+                return GameRule.CanSwap(FirstSelection.Coordinate, gem.Coordinate);
             }
 
             internal GemOperation[] DumpOperations()
@@ -100,12 +102,12 @@ namespace Pg.Scene.Game
 
             internal bool IsSelected(Coordinate coordinate)
             {
-                return coordinate.Equals(FirstSelection.GetStableCoordinate());
+                return coordinate.Equals(FirstSelection.Coordinate);
             }
 
-            internal GemOperation Swap(Gem2 gem)
+            internal GemOperation Swap(Gem gem)
             {
-                var operation = new GemOperation(FirstSelection.GetStableCoordinate(), gem.GetStableCoordinate());
+                var operation = new GemOperation(FirstSelection.Coordinate, gem.Coordinate);
                 Histories.Enqueue(operation);
                 FirstSelection.Swap(gem);
 

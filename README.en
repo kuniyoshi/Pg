@@ -63,9 +63,9 @@ Each simulation step records its starting board, disappearing clusters, and orde
 
 The board is scanned from bottom right toward top left. Empty tiles receive gems from above or diagonal candidates according to the hexagonal layout. New gems are generated at the top, and the process repeats until no further movement is possible.
 
-### Refactoring in progress
+### Tile and gem presentation
 
-Tiles and gems are being separated in the presentation layer. `Gem2` is the new gem component; the previous `Gem` implementation and transitional code still remain.
+`Tile` represents a fixed board cell, while `Gem` owns its color, input events, and animations. Initial and newly generated gems use the same creation path. Input is paused while turn results are played back, and vanished gems are destroyed after their animations finish.
 
 ### Module diagram
 

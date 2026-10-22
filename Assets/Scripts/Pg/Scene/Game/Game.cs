@@ -3,7 +3,6 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using Pg.App;
 using Pg.Puzzle;
-using Pg.Puzzle.Util;
 using Pg.Scene.Game.Direction;
 using Pg.Scene.Game.Public;
 using Pg.SceneData;
@@ -58,8 +57,7 @@ namespace Pg.Scene.Game
             await StartDirection.Play();
             var gameController = new GameController(GameData);
             var tileStatuses = gameController.StartGame();
-            await Coordinates.SetTileEvents(UserPlayer);
-            Coordinates.ApplyTiles(tileStatuses, UserPlayer);
+            Coordinates.Initialize(tileStatuses, UserPlayer);
             Score.Initialize(Data.Response.Score.Zero);
 
             UserPlayer.OnTransaction
@@ -79,25 +77,14 @@ namespace Pg.Scene.Game
 
                             isInChain = true;
 
-                            // TODO: useless iteration 😭, should be improved it.
-                            _record!.AddVanishedGemCount(stepResponse.VanishingClusters.NewGemColorTypes.Sum(
-                                    newGemColorType
-                                        => stepResponse.VanishingClusters.GetVanishingCoordinatesOf(newGemColorType)
-                                            .Sum(cluster => cluster.Count())
-                                )
-                            );
-
-                            Debug.Log(stepResponse);
-                            Debug.Log(Dumper.Dump(gameController.DebugGetTileStatuses()));
-                            Debug.Log($"NEW SCORE: {stepResponse.AcquisitionScore}");
-                            // Coordinates.AssertTiles(stepResponse.BeginningMap, UserPlayer);
-                            Coordinates.ApplyTiles(stepResponse.BeginningMap, UserPlayer);
+                            _record!.AddVanishedGemCount(stepResponse.VanishingClusters.WholeCoordinates.Distinct().Count());
+                            Coordinates.AssertMatches(stepResponse.BeginningMap);
                             await Coordinates.ApplyVanishings(stepResponse.VanishingClusters);
                             Score.AddScore(stepResponse.AcquisitionScore);
                             await Coordinates.ApplySlides(stepResponse.SlidingGems);
-                            Coordinates.ApplyTiles(gameController.DebugGetTileStatuses(), UserPlayer);
                         }
 
+                        Coordinates.AssertMatches(gameController.DebugGetTileStatuses());
                         _record.SetScore(turnResponse.Score);
 
                         Score.SetScore(turnResponse.Score);
@@ -105,13 +92,18 @@ namespace Pg.Scene.Game
                         Debug.Log($"JUDGE: {turnResponse.JudgeResult}");
 
                         await turnResponse.JudgeResult.Switch(
-                            () => UniTask.CompletedTask,
+                            () =>
+                            {
+                                UserPlayer.SetInputEnabled(true);
+                                return UniTask.CompletedTask;
+                            },
                             PlayFailure,
                             PlaySuccess
                         );
                     }
                 )
                 .AddTo(gameObject);
+            UserPlayer.SetInputEnabled(true);
         }
 
         async UniTask PlayFailure()

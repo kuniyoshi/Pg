@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 9223187668414450728}
   - component: {fileID: 4092028338461814638}
   - component: {fileID: 8509911122489098888}
-  - component: {fileID: -2950257178635074625}
   - component: {fileID: 2715445493265803366}
   m_Layer: 5
   m_Name: Gem
@@ -77,41 +76,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &-2950257178635074625
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5760106942587371332}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfe58d94c3524dc5acdd1eb57c74d18f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Image: {fileID: 8509911122489098888}
-  Map:
-  - First:
-      Id: 1
-    Second: {fileID: 21300000, guid: 5055fe32ae9984ad4ae51723c1675b5f, type: 3}
-  - First:
-      Id: 2
-    Second: {fileID: 21300000, guid: a85a65e08615a4092bcb98f36844996f, type: 3}
-  - First:
-      Id: 3
-    Second: {fileID: 21300000, guid: 2b7793fe4d222471ba4ad3d8a9fbdda0, type: 3}
-  - First:
-      Id: 4
-    Second: {fileID: 21300000, guid: b894bfed5bb6a46e79199827af03c0bd, type: 3}
-  - First:
-      Id: 5
-    Second: {fileID: 21300000, guid: 96753366cf3e14705a6cb93683032733, type: 3}
-  - First:
-      Id: 6
-    Second: {fileID: 21300000, guid: 63293d644e4f949a49aca7f2a83473b1, type: 3}
-  - First:
-      Id: 7
-    Second: {fileID: 21300000, guid: 76f55d12f6b2846ab9a15974972797bc, type: 3}
 --- !u!114 &2715445493265803366
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,7 +111,6 @@ MonoBehaviour:
   - First:
       Id: 7
     Second: {fileID: 21300000, guid: 76f55d12f6b2846ab9a15974972797bc, type: 3}
-  DebugAlpha: 0.6
   MoveDuration: 0.1
   VanishDuration: 0.3
   PopupDuration: 0.1

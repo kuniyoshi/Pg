@@ -660,7 +660,6 @@ MonoBehaviour:
   GemPrefab: {fileID: 5760106942587371332, guid: 1095db83c668e4b9e88a34311291a4bb, type: 3}
   TileCanvas: {fileID: 68929801}
   GemCanvas: {fileID: 767387276}
-  GraphicRaycaster: {fileID: 1532064282}
 --- !u!4 &1035081215
 Transform:
   m_ObjectHideFlags: 0
