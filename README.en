@@ -1,0 +1,78 @@
+# Pg
+
+[English](README.en) | [日本語](README.ja)
+
+A Unity puzzle game on a hexagonal board. Swap gems to form connected groups of at least four gems of the same color. Matching groups disappear, gems fall into empty tiles, and new matches can trigger chains. Reach the target score within the turn limit.
+
+[Gameplay video](Documents/play.mov)
+
+## Setup
+
+Use the Unity Editor version specified in `ProjectSettings/ProjectVersion.txt`.
+
+- **DOTween**: Install separately and run Setup DOTween from Tools → Demigiant → DOTween Utility Panel. The project references the `DOTween.Modules` assembly.
+- **UniRx**: Install separately. The project references its assembly definition.
+- **UniTask**: Installed through Unity Package Manager using `Packages/manifest.json`.
+
+DOTween and UniRx distribution files are excluded from Git. The DOTween module assembly definition is included.
+
+## Terms
+
+| Term | Meaning |
+| --- | --- |
+| Tile | A hexagonal cell that can contain a gem. A tile can also be empty or closed. |
+| Gem | A colored piece occupying a tile. Colors are Green, Red, Purple, Blue, Yellow, Orange, and Rainbow. |
+| Cluster | A connected group of gems of the same color. Rainbow gems can connect to other colors. |
+| Vanish | Removal of gems in a matching cluster. |
+| Slide | Movement of gems into empty tiles below. |
+| Turn | Application of a sequence of gem swaps, including the resulting chains. |
+| Chain | An additional match formed after gems fall or appear during the same turn. |
+| Stage | The initial tile states, turn limit, and target score. |
+
+Scores depend on cluster size, chain count, and the turn coefficient. The total score accumulates across turns.
+
+## Design
+
+Puzzle simulation is separated from scene input, rendering, and animation. The simulator computes the results of a turn; the scene then plays the recorded changes in order.
+
+| Namespace | Responsibility |
+| --- | --- |
+| `Pg.App` | Scene transitions and Unity helpers. |
+| `Pg.Data` | Stage interfaces, board state types, and score-related values. |
+| `Pg.Puzzle` | Public simulation API, operations, and responses. |
+| `Pg.Puzzle.Internal` | Board updates, cluster detection, falling gems, and gem generation. |
+| `Pg.Rule` | Score calculation and game-end judgement. |
+| `Pg.Scene.Game` | Input, board presentation, and gameplay animation. |
+| `Pg.Scene.Title`, `Pg.Scene.Result` | Title and result screens. |
+| `Pg.SceneData` | Result data shared between scenes. |
+| `Pg.Etc` | Shared constants and utilities. |
+
+### Turn flow
+
+1. Initialize the board from stage data.
+2. Collect swaps as `GemOperation` values through `UserPlayer`.
+3. Pass the operations to `GameController.ProcessTurn`.
+4. `Simulator` and `Worker` apply swaps, detect clusters, remove gems, and process falling and newly generated gems until no matches remain.
+5. Return a `TurnResponse` containing each simulation step, the total score, and the game-end judgement.
+6. `Game` and `Coordinates` play the disappearance, scoring, falling, and appearance animations.
+7. Accept the next turn or move to the result screen.
+
+Each simulation step records its starting board, disappearing clusters, and ordered falling and generation events.
+
+### Falling gems
+
+The board is scanned from bottom right toward top left. Empty tiles receive gems from above or diagonal candidates according to the hexagonal layout. New gems are generated at the top, and the process repeats until no further movement is possible.
+
+### Refactoring in progress
+
+Tiles and gems are being separated in the presentation layer. `Gem2` is the new gem component; the previous `Gem` implementation and transitional code still remain.
+
+### Module diagram
+
+![Module diagram](Documents/module.png)
+
+The diagram is an existing design reference; consult the current assembly definitions and source code for the current dependencies.
+
+## Reference
+
+[Hexagonal Grids — Red Blob Games](https://www.redblobgames.com/grids/hexagons/)
