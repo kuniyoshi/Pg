@@ -237,27 +237,48 @@ namespace Pg.Scene.Game
 
         class MoveMemory
         {
-            internal bool IsInMove => _moveSequence?.IsPlaying() ?? false;
+            internal bool IsInMove => _moveSequence.IsActive() && _moveSequence.IsPlaying();
             Sequence? _moveSequence;
             Sequence? _shakeSequence;
 
             internal UniTask SetMove(Sequence moveSequence)
             {
                 _moveSequence = moveSequence;
-                return _moveSequence.ToUniTask();
+                moveSequence.onKill += () =>
+                {
+                    if (ReferenceEquals(_moveSequence, moveSequence))
+                    {
+                        _moveSequence = null;
+                    }
+                };
+                return moveSequence.ToUniTask();
             }
 
-            internal bool IsInShake => _shakeSequence?.IsPlaying() ?? false;
+            internal bool IsInShake => _shakeSequence.IsActive() && _shakeSequence.IsPlaying();
 
             public void SetShake(Sequence shakeSequence)
             {
                 _shakeSequence = shakeSequence;
+                shakeSequence.onKill += () =>
+                {
+                    if (ReferenceEquals(_shakeSequence, shakeSequence))
+                    {
+                        _shakeSequence = null;
+                    }
+                };
             }
 
             public void Finish(bool withCallbacks)
             {
-                _shakeSequence?.Complete(withCallbacks);
-                _moveSequence?.Complete(withCallbacks);
+                if (_shakeSequence.IsActive())
+                {
+                    _shakeSequence.Complete(withCallbacks);
+                }
+
+                if (_moveSequence.IsActive())
+                {
+                    _moveSequence.Complete(withCallbacks);
+                }
             }
 
             public UniTask SetVanish(Tweener scaleSequence)
