@@ -19,6 +19,7 @@ namespace Pg.Puzzle.Internal
         ScoreBoard ScoreBoard { get; }
         Turn Turn { get; }
         Worker Worker { get; }
+        GemGenerator GemGenerator { get; }
 
         internal Simulator(IGameData gameData, IReadOnlyList<GemColorType> replenishmentGems)
         {
@@ -28,14 +29,17 @@ namespace Pg.Puzzle.Internal
             Assert.AreEqual(TileSize.RowSize, tileStatuses.GetLength(dimension: 1));
 
             Map = new Map(tileStatuses);
-            Worker = new Worker(new GemGenerator(
-                replenishmentGems, GameController.CalculateRequiredGemCount(stage)));
+            GemGenerator = new GemGenerator(replenishmentGems, GameController.CalculateRequiredGemCount(stage));
+            Worker = new Worker(GemGenerator);
             Turn = new Turn();
             ScoreBoard = new ScoreBoard();
             GameEndJudgement = new GameEndJudgement(stage.MaxTurnCount, stage.TargetScore);
         }
 
         internal TileStatus[,] CurrentTileStatuses => Map.CurrentTileStatuses;
+
+        internal HintSearch CreateHintSearch() =>
+            new HintSearch(Map.Clone(), GemGenerator.Clone(), PassedTurn);
 
         internal PassedTurn PassedTurn => Turn.PassedTurn;
 

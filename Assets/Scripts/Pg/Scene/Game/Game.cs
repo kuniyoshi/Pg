@@ -38,6 +38,49 @@ namespace Pg.Scene.Game
         NextScreen NextScreen = null!;
 
         Record? _record;
+        GameController? _gameController;
+        bool _findingHint;
+        string _hintMessage = "";
+
+        void OnGUI()
+        {
+            var enabled = GUI.enabled;
+            GUI.enabled = _gameController != null && UserPlayer.CanRequestHint && !_findingHint;
+            if (GUI.Button(new Rect(16, 64, 140, 36), _findingHint ? "Searching..." : "Hint"))
+                FindHint();
+            GUI.enabled = enabled;
+            if (_hintMessage.Length > 0) GUI.Label(new Rect(16, 108, 400, 28), _hintMessage);
+        }
+
+        async void FindHint()
+        {
+            _findingHint = true;
+            _hintMessage = "";
+            UserPlayer.SetInputEnabled(false);
+            Coordinates.ClearSelections();
+            Coordinates.ClearHint();
+            try
+            {
+                var hint = await _gameController!.FindHintAsync();
+                if (this == null) return;
+                if (hint == null) _hintMessage = "No hint available.";
+                else Coordinates.ShowHint(hint);
+            }
+            catch (System.Exception exception)
+            {
+                if (this == null) return;
+                _hintMessage = "Hint search failed.";
+                Debug.LogException(exception);
+            }
+            finally
+            {
+                if (this != null)
+                {
+                    _findingHint = false;
+                    UserPlayer.SetInputEnabled(true);
+                }
+            }
+        }
 
         void Awake()
         {
@@ -61,6 +104,7 @@ namespace Pg.Scene.Game
                 .Select(_ => colors[random.Next(colors.Length)])
                 .ToArray();
             var gameController = new GameController(GameData, replenishmentGems);
+            _gameController = gameController;
             var tileStatuses = gameController.StartGame();
             Coordinates.Initialize(tileStatuses, UserPlayer);
             Score.Initialize(Data.Response.Score.Zero);

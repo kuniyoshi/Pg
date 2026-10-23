@@ -8,6 +8,7 @@ using Pg.App.Util;
 using Pg.Data.Response;
 using Pg.Data.Simulation;
 using Pg.Etc.Puzzle;
+using Pg.Puzzle;
 using Pg.Puzzle.Request;
 using Pg.Puzzle.Response;
 using UnityEngine;
@@ -18,6 +19,43 @@ namespace Pg.Scene.Game
     internal class Coordinates
         : MonoBehaviour
     {
+        HintResult? _hint;
+
+        internal void ClearHint() => _hint = null;
+        internal void ShowHint(HintResult hint) => _hint = hint;
+
+        void OnGUI()
+        {
+            if (_hint == null || _tiles == null) return;
+            var canvas = TileCanvas.GetComponentInParent<Canvas>();
+            var camera = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
+            Vector2 ScreenPoint(Coordinate c)
+            {
+                var point = RectTransformUtility.WorldToScreenPoint(camera, _tiles[c.Column, c.Row].transform.position);
+                return new Vector2(point.x, Screen.height - point.y);
+            }
+            var oldColor = GUI.color;
+            var oldMatrix = GUI.matrix;
+            GUI.color = Color.yellow;
+            foreach (var operation in _hint.Operations)
+            {
+                var a = ScreenPoint(operation.A);
+                var b = ScreenPoint(operation.B);
+                GUIUtility.RotateAroundPivot(Mathf.Atan2(b.y - a.y, b.x - a.x) * Mathf.Rad2Deg, a);
+                GUI.DrawTexture(new Rect(a.x, a.y - 2, Vector2.Distance(a, b), 4), Texture2D.whiteTexture);
+                GUI.matrix = oldMatrix;
+            }
+            GUI.color = oldColor;
+            var path = new[] { _hint.Operations[0].A }.Concat(_hint.Operations.Select(o => o.B)).ToArray();
+            foreach (var coordinate in path.Distinct())
+            {
+                var point = ScreenPoint(coordinate);
+                var steps = string.Join(",", Enumerable.Range(0, path.Length).Where(i => path[i] == coordinate));
+                GUI.Box(new Rect(point.x - 20, point.y - 12, 40, 24), steps);
+            }
+            GUI.Label(new Rect(16, 108, 400, 28), $"Hint: follow 0 → {_hint.Operations.Count} / +{_hint.Score} points");
+        }
+
         const int Size = 30;
 
         [SerializeField]

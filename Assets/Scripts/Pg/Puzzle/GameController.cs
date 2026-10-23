@@ -24,6 +24,13 @@ namespace Pg.Puzzle
             return checked(stage.TileStatuses.Length * stage.MaxTurnCount);
         }
 
+        // Capture all mutable state before starting work on another thread.
+        public System.Threading.Tasks.Task<HintResult?> FindHintAsync()
+        {
+            var search = Simulator.CreateHintSearch();
+            return System.Threading.Tasks.Task.Run(() => search.Find());
+        }
+
         public PassedTurn PassedTurn => Simulator.PassedTurn;
 
         public TileStatus[,] DebugGetTileStatuses()

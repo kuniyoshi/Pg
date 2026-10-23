@@ -76,3 +76,7 @@ The diagram is an existing design reference; consult the current assembly defini
 ## Reference
 
 [Hexagonal Grids — Red Blob Games](https://www.redblobgames.com/grids/hexagons/)
+
+## Hints
+
+Press `Hint` during your turn and follow the numbered path from 0. Selecting a gem clears the hint. The search uses a beam width of 24 and up to 8 adjacent swaps in one drag. Candidates are scored by simulating the actual replenishment sequence, falls, and cascades from a copy of the current board and supply cursor. Hints do not consume turns or replenishment gems. Candidates exceeding 128 cascade steps are discarded to avoid endless cascades. Beam search does not guarantee the optimal move.

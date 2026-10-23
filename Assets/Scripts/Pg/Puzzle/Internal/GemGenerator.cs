@@ -20,6 +20,14 @@ namespace Pg.Puzzle.Internal
             Gems = gems.ToArray();
         }
 
+        GemGenerator(GemColorType[] gems, int index)
+        {
+            Gems = gems;
+            _index = index;
+        }
+
+        internal GemGenerator Clone() => new GemGenerator(Gems, _index);
+
         internal GemColorType Next()
         {
             var gem = Gems[_index];

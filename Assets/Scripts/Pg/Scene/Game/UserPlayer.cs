@@ -19,6 +19,8 @@ namespace Pg.Scene.Game
         Sequence? _sequence;
         bool _inputEnabled;
 
+        internal bool CanRequestHint => _inputEnabled && _sequence == null;
+
         internal void SetInputEnabled(bool enabled)
         {
             _inputEnabled = enabled;
@@ -52,6 +54,7 @@ namespace Pg.Scene.Game
                 return false;
             }
 
+            Coordinates.ClearHint();
             _sequence = new Sequence(gem);
 
             return true;
