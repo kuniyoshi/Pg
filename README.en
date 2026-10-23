@@ -12,6 +12,8 @@ A puzzle game where you match and clear hexagonal gems on a board. Connect at le
 - **UniRx**: Install separately. The project references its assembly definition.
 - **UniTask**: Installed through Unity Package Manager using `Packages/manifest.json`.
 
+`UNITASK_DOTWEEN_SUPPORT` is required in Scripting Define Symbols to await DOTween animations with `.ToUniTask()`. It is already included in the current project settings. When changing the build target, make sure this symbol is also enabled for the target platform.
+
 ## Terms
 
 | Term | Meaning |

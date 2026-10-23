@@ -12,6 +12,8 @@
 - **UniRx**：別途導入します。プロジェクトはUniRxのアセンブリ定義を参照します。
 - **UniTask**：`Packages/manifest.json` の指定に従い、Unity Package Manager経由で取得します。
 
+DOTweenのアニメーションを `.ToUniTask()` で待機するため、Scripting Define Symbolsに `UNITASK_DOTWEEN_SUPPORT` が必要です。現在のプロジェクト設定には追加済みです。ビルド対象を変更する場合は、対象プラットフォームでもこの定義が有効になっていることを確認してください。
+
 ## 用語
 
 | 用語 | 意味 |
