@@ -2,19 +2,15 @@
 
 [English](README.en) | [日本語](README.ja)
 
-A Unity puzzle game on a hexagonal board. Swap gems to form connected groups of at least four gems of the same color. Matching groups disappear, gems fall into empty tiles, and new matches can trigger chains. Reach the target score within the turn limit.
+A puzzle game where you match and clear hexagonal gems on a board. Connect at least four gems of the same color to clear them. Gems fall into empty tiles, and new matches formed by falling or newly generated gems trigger chains. Reach the target score within the turn limit.
 
 [Gameplay video](Documents/play.mov)
 
-## Setup
-
-Use the Unity Editor version specified in `ProjectSettings/ProjectVersion.txt`.
+## Dependencies
 
 - **DOTween**: Install separately and run Setup DOTween from Tools → Demigiant → DOTween Utility Panel. The project references the `DOTween.Modules` assembly.
 - **UniRx**: Install separately. The project references its assembly definition.
 - **UniTask**: Installed through Unity Package Manager using `Packages/manifest.json`.
-
-DOTween and UniRx distribution files are excluded from Git. The DOTween module assembly definition is included.
 
 ## Terms
 
