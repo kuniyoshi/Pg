@@ -55,7 +55,12 @@ namespace Pg.Scene.Game
             _record = new Record(GameData.Stage.MaxTurnCount, GameData.Stage.TargetScore);
 
             await StartDirection.Play();
-            var gameController = new GameController(GameData);
+            var random = new System.Random();
+            var colors = Data.Simulation.GemColorType.Values.ToArray();
+            var replenishmentGems = Enumerable.Range(0, GameController.CalculateRequiredGemCount(GameData.Stage))
+                .Select(_ => colors[random.Next(colors.Length)])
+                .ToArray();
+            var gameController = new GameController(GameData, replenishmentGems);
             var tileStatuses = gameController.StartGame();
             Coordinates.Initialize(tileStatuses, UserPlayer);
             Score.Initialize(Data.Response.Score.Zero);

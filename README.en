@@ -57,6 +57,8 @@ Puzzle simulation is separated from scene input, rendering, and animation. The s
 
 Each simulation step records its starting board, disappearing clusters, and ordered falling and generation events.
 
+The game generates a replenishment gem sequence in advance and passes it to `GameController`. `CalculateRequiredGemCount` returns the number of board cells multiplied by the turn limit, and the simulation asserts that the sequence contains at least that many gems. It copies the sequence and consumes it in order across turns, wrapping back to the beginning when chains or other replenishments exhaust it. The same initial board, stage settings, operations, and gem sequence reproduce the same simulation results with the same implementation.
+
 ### Falling gems
 
 The board is scanned from bottom right toward top left. Empty tiles receive gems from above or diagonal candidates according to the hexagonal layout. New gems are generated at the top, and the process repeats until no further movement is possible.

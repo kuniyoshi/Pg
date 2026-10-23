@@ -15,9 +15,9 @@ namespace Pg.Puzzle.Internal
     {
         GemGenerator GemGenerator { get; }
 
-        internal Worker()
+        internal Worker(GemGenerator gemGenerator)
         {
-            GemGenerator = new GemGenerator();
+            GemGenerator = gemGenerator;
         }
 
         internal IEnumerable<SimulationStepData> ProcessTurn(Map map, IEnumerable<GemOperation> operations)

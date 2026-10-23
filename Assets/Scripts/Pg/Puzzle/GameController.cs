@@ -13,9 +13,15 @@ namespace Pg.Puzzle
     {
         Simulator Simulator { get; }
 
-        public GameController(IGameData gameData)
+        public GameController(IGameData gameData, IReadOnlyList<GemColorType> replenishmentGems)
         {
-            Simulator = new Simulator(gameData);
+            Simulator = new Simulator(gameData, replenishmentGems);
+        }
+
+        // Minimum buffer size; chains may consume more, in which case the buffer repeats.
+        public static int CalculateRequiredGemCount(IStage stage)
+        {
+            return checked(stage.TileStatuses.Length * stage.MaxTurnCount);
         }
 
         public PassedTurn PassedTurn => Simulator.PassedTurn;
