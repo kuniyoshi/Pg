@@ -1,7 +1,9 @@
 #nullable enable
+using System;
+
 namespace Pg.SceneData.ResultItem
 {
-    public readonly struct TotalTurn
+    public readonly struct TotalTurn : IEquatable<TotalTurn>
     {
         public static TotalTurn Get(int value)
         {
@@ -17,12 +19,12 @@ namespace Pg.SceneData.ResultItem
 
         public override bool Equals(object? obj)
         {
-            if (obj is TotalTurn other)
-            {
-                return other.Value == Value;
-            }
+            return obj is TotalTurn other && Equals(other);
+        }
 
-            return false;
+        public bool Equals(TotalTurn other)
+        {
+            return Value == other.Value;
         }
 
         public override int GetHashCode()

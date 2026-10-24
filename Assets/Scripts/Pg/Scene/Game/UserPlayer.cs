@@ -1,7 +1,6 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Pg.Data.Simulation;
 using Pg.Puzzle;
 using Pg.Puzzle.Request;
@@ -15,13 +14,21 @@ namespace Pg.Scene.Game
         : MonoBehaviour
     {
         [SerializeField]
-        Coordinates? Coordinates;
+        Coordinates Coordinates = null!;
 
         Sequence? _sequence;
+        bool _inputEnabled;
 
-        Subject<TileOperation[]> TransactionSubject { get; } = new Subject<TileOperation[]>();
+        internal bool CanRequestHint => _inputEnabled && _sequence == null;
 
-        internal IObservable<TileOperation[]> OnTransaction => TransactionSubject;
+        internal void SetInputEnabled(bool enabled)
+        {
+            _inputEnabled = enabled;
+        }
+
+        Subject<GemOperation[]> TransactionSubject { get; } = new Subject<GemOperation[]>();
+
+        internal IObservable<GemOperation[]> OnTransaction => TransactionSubject;
 
         void Awake()
         {
@@ -30,113 +37,84 @@ namespace Pg.Scene.Game
 
         internal void CompleteTransaction()
         {
-            Assert.IsNotNull(_sequence, "_sequence != null");
-            Coordinates!.ClearSelections();
+            if (!_inputEnabled || _sequence == null) return;
+            Coordinates.ClearSelections();
             var operations = _sequence!.DumpOperations();
             _sequence = null;
 
+            if (operations.Length == 0) return;
+            _inputEnabled = false;
             TransactionSubject.OnNext(operations);
         }
 
-        internal bool IsSelected(Tile tile)
+        internal bool StartTransactionIfNotAlready(Gem gem)
         {
-            return _sequence?.IsSelected(tile.Coordinate) ?? false;
-        }
-
-        internal bool StartTransactionIfNotAlready(Tile tile)
-        {
-            if (_sequence != null)
+            if (!_inputEnabled || _sequence != null || gem.IsMoving)
             {
                 return false;
             }
 
-            _sequence = new Sequence(tile);
+            Coordinates.ClearHint();
+            _sequence = new Sequence(gem);
 
             return true;
         }
 
-        internal bool TryAddTransaction(Tile tile)
+        internal bool TryAddTransaction(Gem gem)
         {
-            if (_sequence?.IsSelected(tile.Coordinate) ?? false)
+            if (!_inputEnabled || _sequence is null || gem.IsMoving)
             {
                 return false;
             }
 
-            if (!_sequence?.CanSwap(tile) ?? false)
+            if (_sequence.IsSelected(gem.Coordinate))
             {
                 return false;
             }
 
-            return _sequence?.Swap(tile) ?? false;
+            if (!_sequence.CanSwap(gem))
+            {
+                return false;
+            }
+
+            Coordinates.Swap(_sequence.Swap(gem));
+
+            return true;
         }
 
         class Sequence
         {
-            Queue<Operation> Histories { get; }
-            Tile? _lastSelection;
+            Queue<GemOperation> Histories { get; }
+            Gem FirstSelection { get; }
 
-            internal Sequence(Tile tile)
+            internal Sequence(Gem gem)
             {
-                _lastSelection = tile;
-                Histories = new Queue<Operation>();
+                FirstSelection = gem;
+                Histories = new Queue<GemOperation>();
             }
 
-            internal bool CanSwap(Tile tile)
+            internal bool CanSwap(Gem gem)
             {
-                if (_lastSelection == null)
-                {
-                    return false;
-                }
-
-                return GameRule.CanSwap(tile.TileData, _lastSelection!.TileData);
+                return GameRule.CanSwap(FirstSelection.Coordinate, gem.Coordinate);
             }
 
-            internal TileOperation[] DumpOperations()
+            internal GemOperation[] DumpOperations()
             {
-                return Histories.Select(operation => operation.CreateTileOperation())
-                    .ToArray();
+                return Histories.ToArray();
             }
 
             internal bool IsSelected(Coordinate coordinate)
             {
-                return _lastSelection != null
-                       && coordinate.Equals(_lastSelection.Coordinate);
+                return coordinate.Equals(FirstSelection.Coordinate);
             }
 
-            internal bool Swap(Tile tile)
+            internal GemOperation Swap(Gem gem)
             {
-                Assert.IsNotNull(_lastSelection, "_lastSelection != null");
-                var operation = new Operation(_lastSelection!, tile);
-                operation.DoSwap();
+                var operation = new GemOperation(FirstSelection.Coordinate, gem.Coordinate);
                 Histories.Enqueue(operation);
-                _lastSelection = tile;
+                FirstSelection.Swap(gem);
 
-                return true;
-            }
-
-            class Operation
-            {
-                Tile TileA { get; }
-                Tile TileB { get; }
-
-                internal Operation(Tile tileA, Tile tileB)
-                {
-                    TileA = tileA;
-                    TileB = tileB;
-                }
-
-                internal TileOperation CreateTileOperation()
-                {
-                    return new TileOperation(TileA.Coordinate, TileB.Coordinate);
-                }
-
-                internal void DoSwap()
-                {
-                    var (currentA, currentB) = (TileA.TileStatus, TileB.TileStatus);
-                    var (nextA, nextB) = (currentB, currentA);
-                    TileA.UpdateStatus(nextA);
-                    TileB.UpdateStatus(nextB);
-                }
+                return operation;
             }
         }
     }

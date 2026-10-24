@@ -55,25 +55,25 @@ namespace Pg.Scene.Game.Direction
         }
 
         [SerializeField]
-        Text[]? SuccessLetters;
+        Text[] SuccessLetters = null!;
 
         [SerializeField]
-        float[]? SuccessDurations;
+        float[] SuccessDurations = null!;
 
         [SerializeField]
-        float[]? SuccessDelays;
+        float[] SuccessDelays = null!;
 
         [SerializeField]
-        Vector3[]? SuccessInitialVectors;
+        Vector3[] SuccessInitialVectors = null!;
 
         [SerializeField]
-        Image? Background;
+        Image Background = null!;
 
         void Awake()
         {
             Assert.IsNotNull(SuccessLetters, "SuccessLetters != null");
             Assert.IsTrue(
-                SuccessLetters!.Any() && SuccessLetters!.All(text => text != null),
+                SuccessLetters.Any() && SuccessLetters.All(text => text != null),
                 "SuccessLetters!.Any() && SuccessLetters!.All(text => text != null)"
             );
 
@@ -83,29 +83,29 @@ namespace Pg.Scene.Game.Direction
 
             Assert.IsNotNull(Background, "Background != null");
 
-            foreach (var letter in SuccessLetters!)
+            foreach (var letter in SuccessLetters)
             {
                 letter.gameObject.SetActive(value: false);
             }
 
-            Background!.enabled = false;
-            Background!.DOFade(endValue: 0f, duration: 0f);
+            Background.enabled = false;
+            Background.DOFade(endValue: 0f, duration: 0f);
         }
 
         internal UniTask PlaySuccess()
         {
-            Background!.enabled = true;
-            Background!.DOFade(endValue: 0.5f, duration: 0.2f);
+            Background.enabled = true;
+            Background.DOFade(endValue: 0.5f, duration: 0.2f);
 
-            Text[] successLetters = SuccessLetters!;
+            Text[] successLetters = SuccessLetters;
             var tasks = new List<UniTask>();
 
             for (var letterIndex = 0; letterIndex < successLetters.Length; ++letterIndex)
             {
                 var letter = successLetters[letterIndex];
-                var duration = SuccessDurations![letterIndex];
-                var delay = SuccessDelays![letterIndex];
-                var initialVector = SuccessInitialVectors![letterIndex];
+                var duration = SuccessDurations[letterIndex];
+                var delay = SuccessDelays[letterIndex];
+                var initialVector = SuccessInitialVectors[letterIndex];
 
                 tasks.Add(DoHoming(letter, duration, initialVector, delay));
             }

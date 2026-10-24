@@ -4,7 +4,7 @@ using System;
 namespace Pg.Etc.Util
 {
     public class Enumeration
-        : IComparable
+        : IComparable, IEquatable<Enumeration>
     {
         public static bool operator ==(Enumeration? a, Enumeration? b)
         {
@@ -37,7 +37,12 @@ namespace Pg.Etc.Util
 
         public override bool Equals(object? obj)
         {
-            if (!(obj is Enumeration other))
+            return obj is Enumeration other && Equals(other);
+        }
+
+        public bool Equals(Enumeration? other)
+        {
+            if (other is null)
             {
                 return false;
             }

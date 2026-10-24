@@ -12,10 +12,10 @@ namespace Pg.Scene.Result.Animation
         : MonoBehaviour
     {
         [SerializeField]
-        Image? Background;
+        Image Background = null!;
 
         [SerializeField]
-        Text? Text;
+        Text Text = null!;
 
         [Header("Animation Setting")]
         [SerializeField]
@@ -58,18 +58,18 @@ namespace Pg.Scene.Result.Animation
 
         async UniTask Appear()
         {
-            Text!.enabled = true;
-            Background!.enabled = true;
+            Text.enabled = true;
+            Background.enabled = true;
 
             await UniTask.WhenAll(
-                Text!.rectTransform.DOJump(Vector3.zero, JumpPower, JumpCount, JumpDuration)
+                Text.rectTransform.DOJump(Vector3.zero, JumpPower, JumpCount, JumpDuration)
                     .SetRelative()
                     .ToUniTask(),
                 UniTask.WhenAll(
-                    Background!.rectTransform.DOMoveX(-BackgroundX, duration: 0f)
+                    Background.rectTransform.DOMoveX(-BackgroundX, duration: 0f)
                         .SetRelative()
                         .ToUniTask(),
-                    Background!.rectTransform.DOMoveX(BackgroundX, BackgroundDuration)
+                    Background.rectTransform.DOMoveX(BackgroundX, BackgroundDuration)
                         .SetRelative()
                         .ToUniTask()
                 )
@@ -78,8 +78,8 @@ namespace Pg.Scene.Result.Animation
 
         async UniTask Hide()
         {
-            Background!.enabled = false;
-            Text!.enabled = false;
+            Background.enabled = false;
+            Text.enabled = false;
             await UniTask.CompletedTask;
         }
     }

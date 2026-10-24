@@ -1,27 +1,38 @@
 #nullable enable
-using System;
+using System.Collections.Generic;
 using System.Linq;
 using Pg.Data.Simulation;
+using UnityEngine.Assertions;
 
 namespace Pg.Puzzle.Internal
 {
     internal class GemGenerator
     {
-        int Max { get; }
-        int Min { get; }
-        Random Random { get; }
+        GemColorType[] Gems { get; }
+        int _index;
 
-        internal GemGenerator()
+        internal GemGenerator(IReadOnlyList<GemColorType> gems, int requiredCount)
         {
-            Random = new Random();
-            Min = GemColorType.Values.Min(value => value.Id);
-            Max = GemColorType.Values.Max(value => value.Id);
+            Assert.IsTrue(requiredCount > 0);
+            Assert.IsNotNull(gems);
+            Assert.IsTrue(gems.Count >= requiredCount, "Insufficient replenishment gems.");
+            Assert.IsTrue(gems.All(gem => gem != null));
+            Gems = gems.ToArray();
         }
+
+        GemGenerator(GemColorType[] gems, int index)
+        {
+            Gems = gems;
+            _index = index;
+        }
+
+        internal GemGenerator Clone() => new GemGenerator(Gems, _index);
 
         internal GemColorType Next()
         {
-            const int inclusiveToExclusive = 1;
-            return GemColorType.Convert(Random.Next(Min, Max + inclusiveToExclusive));
+            var gem = Gems[_index];
+            _index = (_index + 1) % Gems.Length;
+            return gem;
         }
     }
 }

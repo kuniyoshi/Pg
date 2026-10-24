@@ -10,14 +10,14 @@ namespace Pg.Scene.Game
         : MonoBehaviour
     {
         [SerializeField]
-        TextMeshProUGUI? Text;
+        TextMeshProUGUI Text = null!;
 
         Data.Response.Score _score;
 
         void Awake()
         {
             Assert.IsNotNull(Text, "Text != null");
-            Text!.text = "0";
+            Text.text = "0";
         }
 
         internal void AddScore(AcquisitionScore acquisitionScore)
@@ -40,7 +40,7 @@ namespace Pg.Scene.Game
 
         void UpdateView()
         {
-            Text!.text = _score.GetText();
+            Text.text = _score.GetText();
         }
     }
 }

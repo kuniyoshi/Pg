@@ -1,147 +1,149 @@
 #nullable enable
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Pg.App.Util;
 using Pg.Data.Simulation;
+using UniRx;
+using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
 
 namespace Pg.Scene.Game
 {
-    internal class Gem
-        : MonoBehaviour
+    internal class Gem : MonoBehaviour
     {
         [SerializeField]
-        internal Image? Image;
+        Image Image = null!;
 
         [SerializeField]
-        List<NewGemColorTypeVsSprite>? Map;
+        List<GemColorTypeVsSprite> Map = null!;
 
-        Sequence? _sequence;
+        [SerializeField]
+        float MoveDuration;
+
+        [SerializeField]
+        float VanishDuration;
+
+        [SerializeField]
+        float PopupDuration;
+
+        Tile _tile = null!;
+        Tween? _moveTween;
+        Tween? _selectionTween;
+
+        internal Coordinate Coordinate => _tile.Coordinate;
+        internal GemColorType Color { get; private set; } = null!;
+        internal bool IsMoving => _moveTween.IsActive() && _moveTween.IsPlaying();
 
         void Awake()
         {
             Assert.IsNotNull(Image, "Image != null");
             Assert.IsNotNull(Map, "Map != null");
-            ZzDebugAssertMapValue();
+            Assert.IsTrue(GemColorType.Values.All(color =>
+                Map.Any(item => item.First.Convert() == color && item.Second != null)),
+                "Every gem color must have a sprite");
         }
 
-        internal void MakeEmpty()
+        internal void Initialize(Tile tile, GemColorType color, UserPlayer userPlayer)
         {
-            Image!.enabled = false;
+            _tile = tile;
+            Color = color;
+            transform.position = tile.transform.position;
+            Image.sprite = new GemColor(color).SelectSprite(Map);
+            Bind(userPlayer);
         }
 
-        internal void MakeWorking()
+        void Bind(UserPlayer userPlayer)
         {
-            if (_sequence != null)
-            {
-                return;
-            }
-
-            _sequence = DOTween.Sequence()
-                .Append(
-                    Image!
-                        .GetComponentStrictly<RectTransform>()
-                        .DOShakePosition(duration: 0.5f, 10f * Vector3.left, vibrato: 100, randomness: 0)
-                        .SetRelative()
-                )
-                .SetLoops(loops: -1);
-            _sequence.Play();
-        }
-
-        internal async Task NewGem()
-        {
-            Image!.enabled = true;
-            Image!.GetComponentStrictly<RectTransform>().localScale = Vector3.zero;
-            await Image!.GetComponentStrictly<RectTransform>()
-                .DOScale(Vector3.one, duration: 0.05f)
-                .AsyncWaitForCompletion();
-        }
-
-        internal async Task Popup()
-        {
-            Image!.enabled = true;
-            Image!.GetComponentStrictly<RectTransform>().localScale = Vector3.zero;
-            await Image!.GetComponentStrictly<RectTransform>()
-                .DOScale(Vector3.one, duration: 0.05f)
-                .AsyncWaitForCompletion();
+            Image.OnPointerDownAsObservable()
+                .Subscribe(_ =>
+                {
+                    if (userPlayer.StartTransactionIfNotAlready(this))
+                    {
+                        _selectionTween = Image.rectTransform
+                            .DOScale(1.1f * Vector3.one, duration: 0.5f)
+                            .SetLoops(loops: 2, LoopType.Yoyo)
+                            .SetLink(gameObject);
+                        var selectionTween = _selectionTween;
+                        selectionTween.onKill += () =>
+                        {
+                            if (ReferenceEquals(_selectionTween, selectionTween)) _selectionTween = null;
+                        };
+                    }
+                }).AddTo(gameObject);
+            Image.OnPointerEnterAsObservable()
+                .Subscribe(_ => userPlayer.TryAddTransaction(this))
+                .AddTo(gameObject);
+            Image.OnPointerUpAsObservable()
+                .Subscribe(_ => userPlayer.CompleteTransaction())
+                .AddTo(gameObject);
         }
 
         internal void QuitWorking()
         {
-            _sequence?.Kill(complete: false);
-            Image!.GetComponentStrictly<RectTransform>().localPosition = Vector3.zero;
+            if (_moveTween.IsActive()) _moveTween.Complete(withCallbacks: true);
+            if (_selectionTween.IsActive()) _selectionTween.Kill();
+            Image.rectTransform.localScale = Vector3.one;
+            transform.position = _tile.transform.position;
         }
 
-        internal void SelectFirstTime()
+        internal void Swap(Gem other)
         {
-            Image!.GetComponentStrictly<RectTransform>()
-                .DOScale(1.1f * Vector3.one, duration: 0.5f)
-                .SetLoops(loops: 2, LoopType.Yoyo);
+            QuitWorking();
+            other.QuitWorking();
+            (_tile, other._tile) = (other._tile, _tile);
+            MoveToTile().Forget();
+            other.MoveToTile().Forget();
         }
 
-        internal async Task Slide(Action<TileStatus> updateStatus)
+        UniTask MoveToTile()
         {
-            Image!.enabled = true;
-            await Image!.GetComponentStrictly<RectTransform>()
-                .DOScale(Vector3.zero, duration: 0.05f)
-                .OnComplete(() =>
-                    {
-                        updateStatus(TileStatus.Empty);
-                        Image!.GetComponentStrictly<RectTransform>().localScale = Vector3.one;
-                    }
-                )
-                .AsyncWaitForCompletion();
-        }
-
-        internal void UpdateStatus(TileStatus newTileStatus)
-        {
-            Image!.sprite = Map!.First(pair => pair.First.Convert() == newTileStatus.GemColorType)
-                .Second;
-            Image!.enabled = true;
-        }
-
-        internal async Task Vanish(Action<TileStatus> updateStatus)
-        {
-            await Image!.GetComponentStrictly<RectTransform>()
-                .DOScale(Vector3.zero, duration: 0.1f)
-                .OnComplete(() =>
-                    {
-                        updateStatus(TileStatus.Empty);
-                        Image!.GetComponentStrictly<RectTransform>().localScale = Vector3.one;
-                    }
-                )
-                .AsyncWaitForCompletion();
-        }
-
-        [Conditional("DEBUG")]
-        void ZzDebugAssertMapValue()
-        {
-            foreach (var newGemColorType in GemColorType.Values)
+            var tween = transform.DOMove(_tile.transform.position, MoveDuration)
+                .SetEase(Ease.OutBounce)
+                .SetLink(gameObject);
+            _moveTween = tween;
+            tween.onKill += () =>
             {
-                Assert.IsTrue(
-                    Map!.Any(item => item.First.Convert() == newGemColorType),
-                    "Map!.Any(item => item.First.Convert() == newGemColorType)"
-                );
-            }
+                if (ReferenceEquals(_moveTween, tween)) _moveTween = null;
+            };
+            return tween.ToUniTask();
+        }
 
-            Assert.IsTrue(
-                Map!.All(pair => pair.Second != null),
-                "Map.All(pair => pair.Second != null)"
-            );
+        internal UniTask SlideTo(Tile tile)
+        {
+            QuitWorking();
+            _tile = tile;
+            return MoveToTile();
+        }
+
+        internal async UniTask Vanish()
+        {
+            QuitWorking();
+            Image.raycastTarget = false;
+            await Image.rectTransform.DOScale(Vector3.zero, VanishDuration)
+                .SetLink(gameObject)
+                .ToUniTask();
+            Destroy(gameObject);
+        }
+
+        internal async UniTask Popup()
+        {
+            Image.rectTransform.localScale = Vector3.zero;
+            await Image.rectTransform.DOScale(Vector3.one, PopupDuration)
+                .SetEase(Ease.OutBounce)
+                .SetLink(gameObject)
+                .ToUniTask();
         }
     }
 
     [Serializable]
-    internal class NewGemColorTypeVsSprite
-        : Pair<SerializableGemColorType, Sprite>
+    internal class GemColorTypeVsSprite : Pair<SerializableGemColorType, Sprite>
     {
-        internal NewGemColorTypeVsSprite(SerializableGemColorType first, Sprite second)
+        internal GemColorTypeVsSprite(SerializableGemColorType first, Sprite second)
             : base(first, second)
         {
         }

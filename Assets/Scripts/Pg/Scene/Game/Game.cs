@@ -3,7 +3,6 @@ using System.Linq;
 using Cysharp.Threading.Tasks;
 using Pg.App;
 using Pg.Puzzle;
-using Pg.Puzzle.Util;
 using Pg.Scene.Game.Direction;
 using Pg.Scene.Game.Public;
 using Pg.SceneData;
@@ -18,27 +17,70 @@ namespace Pg.Scene.Game
         : MonoBehaviour
     {
         [SerializeField]
-        Coordinates? Coordinates;
+        Coordinates Coordinates = null!;
 
         [SerializeField]
-        GameData? GameData;
+        GameData GameData = null!;
 
         [SerializeField]
-        StartDirection? StartDirection;
+        StartDirection StartDirection = null!;
 
         [SerializeField]
-        UserPlayer? UserPlayer;
+        UserPlayer UserPlayer = null!;
 
         [SerializeField]
-        Score? Score;
+        Score Score = null!;
 
         [SerializeField]
-        GameEndDirection? GameEndDirection;
+        GameEndDirection GameEndDirection = null!;
 
         [SerializeField]
-        NextScreen? NextScreen;
+        NextScreen NextScreen = null!;
 
         Record? _record;
+        GameController? _gameController;
+        bool _findingHint;
+        string _hintMessage = "";
+
+        void OnGUI()
+        {
+            var enabled = GUI.enabled;
+            GUI.enabled = _gameController != null && UserPlayer.CanRequestHint && !_findingHint;
+            if (GUI.Button(new Rect(16, 64, 140, 36), _findingHint ? "Searching..." : "Hint"))
+                FindHint();
+            GUI.enabled = enabled;
+            if (_hintMessage.Length > 0) GUI.Label(new Rect(16, 108, 400, 28), _hintMessage);
+        }
+
+        async void FindHint()
+        {
+            _findingHint = true;
+            _hintMessage = "";
+            UserPlayer.SetInputEnabled(false);
+            Coordinates.ClearSelections();
+            Coordinates.ClearHint();
+            try
+            {
+                var hint = await _gameController!.FindHintAsync();
+                if (this == null) return;
+                if (hint == null) _hintMessage = "No hint available.";
+                else Coordinates.ShowHint(hint);
+            }
+            catch (System.Exception exception)
+            {
+                if (this == null) return;
+                _hintMessage = "Hint search failed.";
+                Debug.LogException(exception);
+            }
+            finally
+            {
+                if (this != null)
+                {
+                    _findingHint = false;
+                    UserPlayer.SetInputEnabled(true);
+                }
+            }
+        }
 
         void Awake()
         {
@@ -53,16 +95,21 @@ namespace Pg.Scene.Game
 
         async void Start()
         {
-            _record = new Record(GameData!.Stage.MaxTurnCount, GameData!.Stage.TargetScore);
+            _record = new Record(GameData.Stage.MaxTurnCount, GameData.Stage.TargetScore);
 
-            await StartDirection!.Play();
-            var gameController = new GameController(GameData!);
+            await StartDirection.Play();
+            var random = new System.Random();
+            var colors = Data.Simulation.GemColorType.Values.ToArray();
+            var replenishmentGems = Enumerable.Range(0, GameController.CalculateRequiredGemCount(GameData.Stage))
+                .Select(_ => colors[random.Next(colors.Length)])
+                .ToArray();
+            var gameController = new GameController(GameData, replenishmentGems);
+            _gameController = gameController;
             var tileStatuses = gameController.StartGame();
-            await Coordinates!.SetTileEvents(UserPlayer!);
-            Coordinates!.ApplyTiles(tileStatuses);
-            Score!.Initialize(Data.Response.Score.Zero);
+            Coordinates.Initialize(tileStatuses, UserPlayer);
+            Score.Initialize(Data.Response.Score.Zero);
 
-            UserPlayer!.OnTransaction
+            UserPlayer.OnTransaction
                 .Subscribe(async tileOperation =>
                     {
                         var turnResponse = gameController.ProcessTurn(tileOperation);
@@ -79,51 +126,46 @@ namespace Pg.Scene.Game
 
                             isInChain = true;
 
-                            // TODO: useless iteration 😭, should be improved it.
-                            _record!.AddVanishedGemCount(stepResponse.VanishingClusters.NewGemColorTypes.Sum(
-                                    newGemColorType
-                                        => stepResponse.VanishingClusters.GetVanishingCoordinatesOf(newGemColorType)
-                                            .Sum(cluster => cluster.Count())
-                                )
-                            );
-
-                            Debug.Log(stepResponse);
-                            Debug.Log(Dumper.Dump(gameController.DebugGetTileStatuses()));
-                            Debug.Log($"NEW SCORE: {stepResponse.AcquisitionScore}");
-                            Coordinates!.ApplyTiles(stepResponse.BeginningMap);
-                            await Coordinates!.ApplyVanishings(stepResponse.VanishingClusters);
-                            Score!.AddScore(stepResponse.AcquisitionScore);
-                            await Coordinates!.ApplySlides(stepResponse.SlidingGems);
-                            Coordinates!.ApplyTiles(gameController.DebugGetTileStatuses());
+                            _record!.AddVanishedGemCount(stepResponse.VanishingClusters.WholeCoordinates.Distinct().Count());
+                            Coordinates.AssertMatches(stepResponse.BeginningMap);
+                            await Coordinates.ApplyVanishings(stepResponse.VanishingClusters);
+                            Score.AddScore(stepResponse.AcquisitionScore);
+                            await Coordinates.ApplySlides(stepResponse.SlidingGems);
                         }
 
+                        Coordinates.AssertMatches(gameController.DebugGetTileStatuses());
                         _record.SetScore(turnResponse.Score);
 
-                        Score!.SetScore(turnResponse.Score);
+                        Score.SetScore(turnResponse.Score);
 
                         Debug.Log($"JUDGE: {turnResponse.JudgeResult}");
 
                         await turnResponse.JudgeResult.Switch(
-                            () => UniTask.CompletedTask,
+                            () =>
+                            {
+                                UserPlayer.SetInputEnabled(true);
+                                return UniTask.CompletedTask;
+                            },
                             PlayFailure,
                             PlaySuccess
                         );
                     }
                 )
                 .AddTo(gameObject);
+            UserPlayer.SetInputEnabled(true);
         }
 
         async UniTask PlayFailure()
         {
-            await GameEndDirection!.PlayFailure();
-            await NextScreen!.BlockUntilTap();
+            await GameEndDirection.PlayFailure();
+            await NextScreen.BlockUntilTap();
             SceneManager.MoveToResultScene(_record!.CreateFailure());
         }
 
         async UniTask PlaySuccess()
         {
-            await GameEndDirection!.PlaySuccess();
-            await NextScreen!.BlockUntilTap();
+            await GameEndDirection.PlaySuccess();
+            await NextScreen.BlockUntilTap();
             SceneManager.MoveToResultScene(_record!.CreateSuccess());
         }
 

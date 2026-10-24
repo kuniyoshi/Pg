@@ -1,0 +1,6 @@
+{
+    "name": "Pg.Puzzle.Tests",
+    "references": ["Pg.Puzzle", "Pg.Data", "Pg.Etc", "Pg.Rule"],
+    "includePlatforms": ["Editor"],
+    "optionalUnityReferences": ["TestAssemblies"]
+}

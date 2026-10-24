@@ -1,7 +1,9 @@
 #nullable enable
+using System;
+
 namespace Pg.SceneData.ResultItem
 {
-    public readonly struct TotalChain
+    public readonly struct TotalChain : IEquatable<TotalChain>
     {
         public static TotalChain Get(int value)
         {
@@ -17,12 +19,12 @@ namespace Pg.SceneData.ResultItem
 
         public override bool Equals(object? obj)
         {
-            if (obj is TotalChain other)
-            {
-                return other.Value == Value;
-            }
+            return obj is TotalChain other && Equals(other);
+        }
 
-            return false;
+        public bool Equals(TotalChain other)
+        {
+            return Value == other.Value;
         }
 
         public override int GetHashCode()

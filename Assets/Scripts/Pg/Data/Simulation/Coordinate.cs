@@ -1,16 +1,18 @@
 #nullable enable
+using System;
+
 namespace Pg.Data.Simulation
 {
-    public readonly struct Coordinate
+    public readonly struct Coordinate : IEquatable<Coordinate>
     {
         public static bool operator ==(Coordinate a, Coordinate b)
         {
-            return a.Column == b.Column && a.Row == b.Row;
+            return a.Equals(b);
         }
 
         public static bool operator !=(Coordinate a, Coordinate b)
         {
-            return a.Column != b.Column || a.Row != b.Row;
+            return !a.Equals(b);
         }
 
         public int Column { get; }

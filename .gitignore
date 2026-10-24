@@ -3,6 +3,7 @@
 # Get latest from https://github.com/github/gitignore/blob/master/Unity.gitignore
 #
 /[Ll]ibrary/
+/[Uu]ser[Ss]ettings/
 /[Tt]emp/
 /[Oo]bj/
 /[Bb]uild/
@@ -59,7 +60,12 @@ sysinfo.txt
 crashlytics-build.properties
 
 .idea/
-Assets/Plugins/Demigiant*
+Assets/Plugins/Demigiant/**
+Assets/Plugins/Demigiant.meta
+!Assets/Plugins/Demigiant/DOTween/
+!Assets/Plugins/Demigiant/DOTween/Modules/
+!Assets/Plugins/Demigiant/DOTween/Modules/DOTween.Modules.asmdef
+!Assets/Plugins/Demigiant/DOTween/Modules/DOTween.Modules.asmdef.meta
 Assets/Resources/DOTweenSettings.asset*
 Assets/Plugins/UniRx*
 Assets/Plugins/Opsive*

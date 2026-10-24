@@ -1,7 +1,9 @@
 #nullable enable
+using System;
+
 namespace Pg.SceneData.ResultItem
 {
-    public readonly struct TotalVanishedGem
+    public readonly struct TotalVanishedGem : IEquatable<TotalVanishedGem>
     {
         public static TotalVanishedGem Get(int value)
         {
@@ -17,12 +19,12 @@ namespace Pg.SceneData.ResultItem
 
         public override bool Equals(object? obj)
         {
-            if (obj is TotalVanishedGem other)
-            {
-                return other.Value == Value;
-            }
+            return obj is TotalVanishedGem other && Equals(other);
+        }
 
-            return false;
+        public bool Equals(TotalVanishedGem other)
+        {
+            return Value == other.Value;
         }
 
         public override int GetHashCode()

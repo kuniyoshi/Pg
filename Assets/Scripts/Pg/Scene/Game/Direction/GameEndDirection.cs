@@ -9,10 +9,10 @@ namespace Pg.Scene.Game.Direction
         : MonoBehaviour
     {
         [SerializeField]
-        FailureDirection? FailureDirection;
+        FailureDirection FailureDirection = null!;
 
         [SerializeField]
-        SuccessDirection? SuccessDirection;
+        SuccessDirection SuccessDirection = null!;
 
         void Awake()
         {
@@ -22,12 +22,12 @@ namespace Pg.Scene.Game.Direction
 
         internal UniTask PlayFailure()
         {
-            return FailureDirection!.PlayFailure();
+            return FailureDirection.PlayFailure();
         }
 
         internal UniTask PlaySuccess()
         {
-            return SuccessDirection!.PlaySuccess();
+            return SuccessDirection.PlaySuccess();
         }
     }
 }

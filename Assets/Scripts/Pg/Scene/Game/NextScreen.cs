@@ -10,21 +10,21 @@ namespace Pg.Scene.Game
         : MonoBehaviour
     {
         [SerializeField]
-        Image? Background;
+        Image Background = null!;
 
         [SerializeField]
-        Button? Button;
+        Button Button = null!;
 
         void Awake()
         {
             Assert.IsNotNull(Background, "Image != null");
             Assert.IsNotNull(Button, "Button != null");
-            Background!.enabled = false;
+            Background.enabled = false;
         }
 
         internal UniTask BlockUntilTap()
         {
-            Background!.enabled = true;
+            Background.enabled = true;
             return Button.OnClickAsync();
         }
     }

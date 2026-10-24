@@ -1,11 +1,12 @@
 #nullable enable
+using System;
 using System.Linq;
 using Pg.Etc.Puzzle;
 using UnityEngine.Assertions;
 
 namespace Pg.Data.Response
 {
-    public readonly struct ChainingCount
+    public readonly struct ChainingCount : IEquatable<ChainingCount>
     {
         static ChainingCount[] DomainValues { get; } = Enumerable
             .Range(start: 0, SimulationLimitation.MaxChainingCountExclusive)
@@ -51,12 +52,17 @@ namespace Pg.Data.Response
 
         public bool Equals(ChainingCount? other)
         {
-            return Value == other?.Value;
+            return other.HasValue && Equals(other.Value);
         }
 
         public override int GetHashCode()
         {
             return Value;
+        }
+
+        public bool Equals(ChainingCount other)
+        {
+            return Value == other.Value;
         }
     }
 }

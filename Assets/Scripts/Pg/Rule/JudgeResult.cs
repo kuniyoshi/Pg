@@ -4,7 +4,7 @@ using Cysharp.Threading.Tasks;
 
 namespace Pg.Rule
 {
-    public readonly struct JudgeResult
+    public readonly struct JudgeResult : IEquatable<JudgeResult>
     {
         public static JudgeResult Continuation { get; } = new JudgeResult(Impl.Continuation);
         public static JudgeResult Failure { get; } = new JudgeResult(Impl.Failure);
@@ -23,7 +23,12 @@ namespace Pg.Rule
 
         public bool Equals(JudgeResult? other)
         {
-            return Value == other?.Value;
+            return other.HasValue && Equals(other.Value);
+        }
+
+        public bool Equals(JudgeResult other)
+        {
+            return Value == other.Value;
         }
 
         public override int GetHashCode()

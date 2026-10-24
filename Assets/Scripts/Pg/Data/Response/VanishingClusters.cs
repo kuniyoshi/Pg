@@ -18,6 +18,9 @@ namespace Pg.Data.Response
 
         public IEnumerable<GemColorType> NewGemColorTypes => Data.Keys;
 
+        public IEnumerable<Coordinate> WholeCoordinates => NewGemColorTypes.SelectMany(GetVanishingCoordinatesOf)
+            .SelectMany(coordinates => coordinates);
+
         public bool Any()
         {
             return Data.Values.Any(listList => listList.Any(list => list.Any()));

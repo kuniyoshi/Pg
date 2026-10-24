@@ -1,11 +1,12 @@
 #nullable enable
+using System;
 using System.Linq;
 using Pg.Etc.Puzzle;
 using UnityEngine.Assertions;
 
 namespace Pg.Data.Response
 {
-    public readonly struct ClusterSize
+    public readonly struct ClusterSize : IEquatable<ClusterSize>
     {
         static ClusterSize[] DomainValues { get; } = Enumerable.Range(start: 0, TileSize.ColSize * TileSize.RowSize)
             .Select(index => new ClusterSize(index))
@@ -46,7 +47,12 @@ namespace Pg.Data.Response
 
         public bool Equals(ClusterSize? other)
         {
-            return Value == other?.Value;
+            return other.HasValue && Equals(other.Value);
+        }
+
+        public bool Equals(ClusterSize other)
+        {
+            return Value == other.Value;
         }
 
         public override int GetHashCode()

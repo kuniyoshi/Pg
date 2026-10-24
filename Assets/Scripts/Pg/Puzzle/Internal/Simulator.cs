@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using System.Linq;
 using Pg.Data.Request;
 using Pg.Data.Response;
 using Pg.Data.Simulation;
@@ -19,16 +20,23 @@ namespace Pg.Puzzle.Internal
         ScoreBoard ScoreBoard { get; }
         Turn Turn { get; }
         Worker Worker { get; }
+        GemGenerator GemGenerator { get; }
 
-        internal Simulator(IGameData gameData)
+        internal Simulator(IGameData gameData, IReadOnlyList<GemColorType> replenishmentGems)
         {
             var stage = gameData.Stage;
             var tileStatuses = stage.TileStatuses;
             Assert.AreEqual(TileSize.ColSize, tileStatuses.GetLength(dimension: 0));
             Assert.AreEqual(TileSize.RowSize, tileStatuses.GetLength(dimension: 1));
 
+            Assert.IsTrue(
+                tileStatuses.Cast<TileStatus>().All(tile => tile.TileStatusType != TileStatusType.Empty),
+                "Initial board must not contain empty tiles."
+            );
+
             Map = new Map(tileStatuses);
-            Worker = new Worker();
+            GemGenerator = new GemGenerator(replenishmentGems, GameController.CalculateRequiredGemCount(stage));
+            Worker = new Worker(GemGenerator);
             Turn = new Turn();
             ScoreBoard = new ScoreBoard();
             GameEndJudgement = new GameEndJudgement(stage.MaxTurnCount, stage.TargetScore);
@@ -36,9 +44,12 @@ namespace Pg.Puzzle.Internal
 
         internal TileStatus[,] CurrentTileStatuses => Map.CurrentTileStatuses;
 
+        internal HintSearch CreateHintSearch() =>
+            new HintSearch(Map.Clone(), GemGenerator.Clone(), PassedTurn);
+
         internal PassedTurn PassedTurn => Turn.PassedTurn;
 
-        internal TurnResponse ProcessTurn(IEnumerable<TileOperation> operations)
+        internal TurnResponse ProcessTurn(IEnumerable<GemOperation> operations)
         {
             var simulationStepDataItems = Worker.ProcessTurn(Map, operations);
 

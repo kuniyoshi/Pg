@@ -1,7 +1,9 @@
 #nullable enable
+using System;
+
 namespace Pg.SceneData.ResultItem
 {
-    public readonly struct TurnLimit
+    public readonly struct TurnLimit : IEquatable<TurnLimit>
     {
         public static TurnLimit Get(int value)
         {
@@ -17,12 +19,12 @@ namespace Pg.SceneData.ResultItem
 
         public override bool Equals(object? obj)
         {
-            if (obj is TurnLimit other)
-            {
-                return other.Value == Value;
-            }
+            return obj is TurnLimit other && Equals(other);
+        }
 
-            return false;
+        public bool Equals(TurnLimit other)
+        {
+            return Value == other.Value;
         }
 
         public override int GetHashCode()

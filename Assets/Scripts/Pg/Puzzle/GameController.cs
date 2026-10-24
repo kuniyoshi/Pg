@@ -13,9 +13,22 @@ namespace Pg.Puzzle
     {
         Simulator Simulator { get; }
 
-        public GameController(IGameData gameData)
+        public GameController(IGameData gameData, IReadOnlyList<GemColorType> replenishmentGems)
         {
-            Simulator = new Simulator(gameData);
+            Simulator = new Simulator(gameData, replenishmentGems);
+        }
+
+        // Minimum buffer size; chains may consume more, in which case the buffer repeats.
+        public static int CalculateRequiredGemCount(IStage stage)
+        {
+            return checked(stage.TileStatuses.Length * stage.MaxTurnCount);
+        }
+
+        // Capture all mutable state before starting work on another thread.
+        public System.Threading.Tasks.Task<HintResult?> FindHintAsync()
+        {
+            var search = Simulator.CreateHintSearch();
+            return System.Threading.Tasks.Task.Run(() => search.Find());
         }
 
         public PassedTurn PassedTurn => Simulator.PassedTurn;
@@ -25,7 +38,7 @@ namespace Pg.Puzzle
             return Simulator.CurrentTileStatuses;
         }
 
-        public TurnResponse ProcessTurn(IEnumerable<TileOperation> operations)
+        public TurnResponse ProcessTurn(IEnumerable<GemOperation> operations)
         {
             return Simulator.ProcessTurn(operations);
         }

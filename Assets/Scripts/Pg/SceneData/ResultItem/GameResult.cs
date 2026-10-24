@@ -4,11 +4,11 @@ using System;
 namespace Pg.SceneData.ResultItem
 {
     [Serializable]
-    public readonly struct GameResult
+    public readonly struct GameResult : IEquatable<GameResult>
     {
         public static bool operator ==(GameResult a, GameResult b)
         {
-            return a.Value == b.Value;
+            return a.Equals(b);
         }
 
         public static bool operator !=(GameResult a, GameResult b)
@@ -27,14 +27,14 @@ namespace Pg.SceneData.ResultItem
 
         Domain Value { get; }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            if (obj is GameResult other)
-            {
-                return other.Value == Value;
-            }
+            return obj is GameResult other && Equals(other);
+        }
 
-            return false;
+        public bool Equals(GameResult other)
+        {
+            return Value == other.Value;
         }
 
         public override int GetHashCode()
