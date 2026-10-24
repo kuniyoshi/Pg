@@ -8,8 +8,8 @@ A Unity puzzle game on a hexagonal board. Drag a gem through adjacent gems to ma
 
 ## Getting started
 
-1. Run the NuGet restore below, then open the project with Unity **6000.6.7f1**, as recorded in [ProjectSettings/ProjectVersion.txt](ProjectSettings/ProjectVersion.txt).
-2. Let Unity Package Manager resolve packages and compile scripts.
+1. Open the project with Unity **6000.6.7f1**, as recorded in [ProjectSettings/ProjectVersion.txt](ProjectSettings/ProjectVersion.txt).
+2. Wait for Unity Package Manager to resolve packages, NuGetForUnity to restore dependencies automatically, and scripts to compile. If a compile-error dialog appears on first startup, select **Ignore rather than Safe Mode**, then wait for restoration and recompilation.
 3. Open `Assets/Scenes/TitleScene.unity`, enter Play mode, and start the game. You can also start from `GameScene.unity` to inspect gameplay directly.
 4. Press a gem, drag through adjacent gems to swap, and release to submit the turn. Releasing without swapping does not consume a turn.
 5. Press `Hint` to see a suggested route and its predicted score gain. Follow the numbered cells from 0. Revisiting a cell displays multiple numbers. Selecting a gem clears the hint.
@@ -26,7 +26,9 @@ Scenes follow `TitleScene → GameScene → ResultScene → TitleScene`. All thr
 | Unity Input System / uGUI | Input and UI; included in the Package Manager dependencies. |
 | Unity Test Framework | EditMode tests; included in the Package Manager dependencies. |
 
-For a fresh checkout or CI, restore dependencies with the NuGetForUnity CLI before opening Unity.
+Normal development requires no .NET SDK, NuGetForUnity CLI installation, or manual NuGet commands. Package Manager installs NuGetForUnity, which automatically restores the dependencies recorded in `Assets/packages.config`. If restoration does not run, select **NuGet → Restore Packages** in Unity.
+
+For CI or restore troubleshooting that requires restoring before Unity starts, install the .NET SDK and run the following commands from the repository root. Skip the tool installation command if the CLI is already installed.
 
 ```sh
 dotnet tool install --global NuGetForUnity.Cli --version 4.5.0

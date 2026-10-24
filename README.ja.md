@@ -8,8 +8,8 @@
 
 ## 起動と操作
 
-1. 下記のNuGet復元を実行してから、[ProjectSettings/ProjectVersion.txt](ProjectSettings/ProjectVersion.txt) に記録されたUnity **6000.6.7f1** でプロジェクトを開きます。
-2. Package Managerによるパッケージの取得と、スクリプトのコンパイルが終わるまで待ちます。
+1. [ProjectSettings/ProjectVersion.txt](ProjectSettings/ProjectVersion.txt) に記録されたUnity **6000.6.7f1** でプロジェクトを開きます。
+2. Package Managerによるパッケージの取得と、NuGetForUnityによる依存ライブラリの自動復元、スクリプトのコンパイルが終わるまで待ちます。初回にコンパイルエラーのダイアログが出た場合は、**Safe ModeではなくIgnore**を選び、復元と再コンパイルを待ってください。
 3. `Assets/Scenes/TitleScene.unity` を開き、Playモードにしてゲームを開始します。ゲーム画面だけを確認したい場合は、`GameScene.unity` から直接開始することもできます。
 4. 宝石をつかみ、隣接する宝石をなぞって入れ替えます。ドラッグを終えるとターンが確定します。一度も入れ替えずに離した場合は、ターンを消費しません。
 5. `Hint` ボタンを押すと、おすすめの経路と予測得点が表示されます。盤面の番号を0から順になぞってください。同じマスを何度か通る場合は、そのマスに複数の番号が表示されます。宝石を選ぶとヒントの表示が消えます。
@@ -26,7 +26,9 @@
 | Unity Input System / uGUI | 入力の処理とUIの表示に使用します。Unity Package Managerで取得します。 |
 | Unity Test Framework | EditModeテストに使用します。Unity Package Managerで取得します。 |
 
-初回取得時やCIでは、Unityを開く前にNuGetForUnity CLIで依存ライブラリを復元してください。
+通常の開発では、.NET SDKやNuGetForUnity CLIのインストール、手動のNuGetコマンド実行は不要です。NuGetForUnityもPackage Managerから取得され、`Assets/packages.config` に記録された依存ライブラリを自動復元します。復元されない場合は、Unityの **NuGet → Restore Packages** を実行してください。
+
+CIや復元トラブル時にUnity起動前の復元が必要な場合は、.NET SDKを用意し、リポジトリ直下で次のコマンドを実行します。CLIが既にインストール済みなら、インストールの行は省略できます。
 
 ```sh
 dotnet tool install --global NuGetForUnity.Cli --version 4.5.0
