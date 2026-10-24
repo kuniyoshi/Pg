@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections.Generic;
+using System.Linq;
 using Pg.Data.Request;
 using Pg.Data.Response;
 using Pg.Data.Simulation;
@@ -27,6 +28,11 @@ namespace Pg.Puzzle.Internal
             var tileStatuses = stage.TileStatuses;
             Assert.AreEqual(TileSize.ColSize, tileStatuses.GetLength(dimension: 0));
             Assert.AreEqual(TileSize.RowSize, tileStatuses.GetLength(dimension: 1));
+
+            Assert.IsTrue(
+                tileStatuses.Cast<TileStatus>().All(tile => tile.TileStatusType != TileStatusType.Empty),
+                "Initial board must not contain empty tiles."
+            );
 
             Map = new Map(tileStatuses);
             GemGenerator = new GemGenerator(replenishmentGems, GameController.CalculateRequiredGemCount(stage));

@@ -223,7 +223,7 @@ Gameplay input is disabled during search and restored afterward. `HintResult` pr
 
 The 128-step chain limit only applies to hint evaluation. Live chain resolution has no equivalent overall limit; the 1000-iteration guard applies to falling scans within one step. Hint search currently has no cancellation or time-limit API.
 
-Initial empty cells require additional verification. `Worker` processes falling even in a step without disappearing clusters, but does not return that step in its response. Consequently, replaying automatic initial filling in presentation is not guaranteed.
+The initial board must not contain empty cells (`Empty`). Each cell must be occupied (`Contain`) or closed (`Closed`). `Simulator` asserts this during initialization when `UNITY_ASSERTIONS` is enabled.
 
 ## Tests and development
 

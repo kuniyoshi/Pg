@@ -24,6 +24,33 @@ namespace Pg.Puzzle.Tests
             return tiles;
         }
 
+        [TestCase(0, 0)]
+        [TestCase(TileSize.ColSize - 1, TileSize.RowSize - 1)]
+        public void InitialBoardRejectsEmptyTiles(int column, int row)
+        {
+            var tiles = Board();
+            tiles[column, row] = TileStatus.Empty;
+            var data = new Data(tiles);
+            var supply = Enumerable.Repeat(GemColorType.Red,
+                GameController.CalculateRequiredGemCount(data.Stage)).ToArray();
+
+            Assert.Throws<UnityEngine.Assertions.AssertionException>(() => new GameController(data, supply));
+        }
+
+        [Test]
+        public void InitialBoardAllowsOccupiedAndClosedTiles()
+        {
+            var tiles = Board();
+            tiles[0, 0] = new TileStatus(TileStatusType.Closed, null);
+            var data = new Data(tiles);
+            var supply = Enumerable.Repeat(GemColorType.Red,
+                GameController.CalculateRequiredGemCount(data.Stage)).ToArray();
+
+            var game = new GameController(data, supply);
+
+            CollectionAssert.AreEqual(tiles, game.StartGame());
+        }
+
         [Test]
         public void SupplyClonePreservesCursorWithoutConsumingOriginal()
         {
