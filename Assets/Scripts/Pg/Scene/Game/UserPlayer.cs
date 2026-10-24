@@ -1,10 +1,9 @@
 #nullable enable
-using System;
 using System.Collections.Generic;
 using Pg.Data.Simulation;
 using Pg.Puzzle;
 using Pg.Puzzle.Request;
-using UniRx;
+using R3;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -28,11 +27,16 @@ namespace Pg.Scene.Game
 
         Subject<GemOperation[]> TransactionSubject { get; } = new Subject<GemOperation[]>();
 
-        internal IObservable<GemOperation[]> OnTransaction => TransactionSubject;
+        internal Observable<GemOperation[]> OnTransaction => TransactionSubject;
 
         void Awake()
         {
             Assert.IsNotNull(Coordinates, "Coordinates != null");
+        }
+
+        void OnDestroy()
+        {
+            TransactionSubject.Dispose();
         }
 
         internal void CompleteTransaction()

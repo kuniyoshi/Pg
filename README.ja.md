@@ -21,10 +21,19 @@
 | ライブラリ | 用途と導入方法 |
 | --- | --- |
 | DOTween | 宝石の移動・消去・出現や画面の演出に使用します。別途導入し、Tools → Demigiant → DOTween Utility PanelからSetup DOTweenを実行します。`DOTween.Modules` アセンブリを参照します。 |
-| UniRx | 入力イベントの受け取りと、確定した交換操作の通知に使用します。別途導入し、アセンブリ定義を使用します。 |
+| R3 | 入力イベントの受け取りと、確定した交換操作の通知に使用します。R3 / R3.Unity 1.3.1を使用します。Unity連携はPackage Manager、R3本体と依存ライブラリはNuGetForUnityが `Assets/packages.config` から復元します。 |
 | UniTask | アニメーションや画面遷移の完了を待つために使用します。`Packages/manifest.json` で2.5.11を指定しています。 |
 | Unity Input System / uGUI | 入力の処理とUIの表示に使用します。Unity Package Managerで取得します。 |
 | Unity Test Framework | EditModeテストに使用します。Unity Package Managerで取得します。 |
+
+初回取得時やCIでは、Unityを開く前にNuGetForUnity CLIで依存ライブラリを復元してください。
+
+```sh
+dotnet tool install --global NuGetForUnity.Cli --version 4.5.0
+nugetforunity restore .
+```
+
+以前導入した `Assets/Plugins/UniRx` が残っている場合は、そのフォルダを削除してください。
 
 DOTweenのアニメーションを `.ToUniTask()` で待機するには、Scripting Define Symbolsに `UNITASK_DOTWEEN_SUPPORT` が必要です。現在の設定には追加済みです。ビルド対象を変更した場合も、この定義が有効か確認してください。
 
@@ -133,7 +142,7 @@ flowchart LR
 
 1. `Gem` のポインターダウンで `UserPlayer` が `Sequence` を開始します。
 2. 隣接する別の宝石にポインターが入ると、最初につかんだ宝石と交換します。つかんだ宝石は交換先のマスに移るため、そこからさらに隣のマスへ動かせます。表示と `Coordinates` の辞書を更新し、`GemOperation(A, B)` を履歴へ追加します。
-3. ポインターアップで `GemOperation[]` をUniRxの `OnTransaction` に通知します。交換していなければ何も通知しません。交換していれば操作を通知し、次の入力を受け付けないようにします。
+3. ポインターアップで `GemOperation[]` をR3の `OnTransaction` に通知します。交換していなければ何も通知しません。交換していれば操作を通知し、次の入力を受け付けないようにします。
 4. `Game` は `GameController.ProcessTurn()` を呼びます。シミュレーション盤面はドラッグ中に更新していないため、ここで交換操作の列を先頭から適用します。
 5. `Worker` が消去・落下・補充を繰り返します。`Simulator` が各ステップの得点を計算し、累計得点とターン数を更新して終了判定を行います。
 6. `Game` が計算済みの結果を順番に表示し、継続なら入力を再開します。成功・失敗が決まった場合は終了演出を再生し、タップされたら結果画面へ進みます。

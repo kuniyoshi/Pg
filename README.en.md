@@ -21,10 +21,19 @@ Scenes follow `TitleScene → GameScene → ResultScene → TitleScene`. All thr
 | Library | Purpose and setup |
 | --- | --- |
 | DOTween | Movement, disappearance, appearance, and screen effects. Install separately, then run Setup DOTween from Tools → Demigiant → DOTween Utility Panel. The project references `DOTween.Modules`. |
-| UniRx | Input events and turn submission. Install separately with its assembly definition. |
+| R3 | Input events and turn submission. Uses R3 / R3.Unity 1.3.1. Package Manager installs Unity integration; NuGetForUnity restores the core library and its dependencies from `Assets/packages.config`. |
 | UniTask | Awaiting animation and scene flow. `Packages/manifest.json` specifies version 2.5.11. |
 | Unity Input System / uGUI | Input and UI; included in the Package Manager dependencies. |
 | Unity Test Framework | EditMode tests; included in the Package Manager dependencies. |
+
+For a fresh checkout or CI, restore dependencies with the NuGetForUnity CLI before opening Unity.
+
+```sh
+dotnet tool install --global NuGetForUnity.Cli --version 4.5.0
+nugetforunity restore .
+```
+
+Remove any previously installed `Assets/Plugins/UniRx` folder.
 
 `UNITASK_DOTWEEN_SUPPORT` must be present in Scripting Define Symbols to await DOTween animations with `.ToUniTask()`. It is already enabled in the current settings. Check it again when changing the build target.
 
@@ -127,7 +136,7 @@ After the starting animation, `Game.Start()` randomly generates a replenishment 
 
 1. A pointer-down event on `Gem` starts a `UserPlayer.Sequence`.
 2. Entering another adjacent gem swaps it with the originally grabbed gem. That gem's coordinate moves, allowing the route to continue. The visible objects and `Coordinates` dictionary update, and a `GemOperation(A, B)` is appended to history.
-3. Pointer-up publishes `GemOperation[]` through UniRx's `OnTransaction`. An empty history is ignored; a nonempty submission disables input.
+3. Pointer-up publishes `GemOperation[]` through R3's `OnTransaction`. An empty history is ignored; a nonempty submission disables input.
 4. `Game` calls `GameController.ProcessTurn()`. The simulation board has not changed during the drag, so it now applies the entire swap sequence in order.
 5. `Worker` resolves removal, falling, replenishment, and chains. `Simulator` scores each step, updates the total and turn count, and judges the result.
 6. `Game` plays the calculated results in order. Continuing re-enables input; success or failure plays an ending effect, waits for a tap, and opens the result screen.

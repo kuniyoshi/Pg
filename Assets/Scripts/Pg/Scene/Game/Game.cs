@@ -7,7 +7,7 @@ using Pg.Scene.Game.Direction;
 using Pg.Scene.Game.Public;
 using Pg.SceneData;
 using Pg.SceneData.ResultItem;
-using UniRx;
+using R3;
 using UnityEngine;
 using UnityEngine.Assertions;
 

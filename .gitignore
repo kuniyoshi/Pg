@@ -69,3 +69,7 @@ Assets/Plugins/Demigiant.meta
 Assets/Resources/DOTweenSettings.asset*
 Assets/Plugins/UniRx*
 Assets/Plugins/Opsive*
+
+# NuGetForUnity restores these from Assets/packages.config
+/Assets/Packages/
+/Assets/Packages.meta
