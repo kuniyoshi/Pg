@@ -1,6 +1,6 @@
 # Pg
 
-[English](README.en) | [日本語](README.ja.md)
+[English](README.en.md) | [日本語](README.ja.md)
 
 A Unity puzzle game on a hexagonal board. Drag a gem through adjacent gems to make a sequence of swaps, then release to resolve matches, falling gems, replenishment, and chains. Connected groups of at least four matching gems disappear. Reach the target score within the turn limit.
 
