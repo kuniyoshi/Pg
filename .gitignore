@@ -60,13 +60,10 @@ sysinfo.txt
 crashlytics-build.properties
 
 .idea/
-Assets/Plugins/Demigiant/**
-Assets/Plugins/Demigiant.meta
+# Bundle the free DOTween distribution and project settings; exclude other Demigiant products.
+Assets/Plugins/Demigiant/*
 !Assets/Plugins/Demigiant/DOTween/
-!Assets/Plugins/Demigiant/DOTween/Modules/
-!Assets/Plugins/Demigiant/DOTween/Modules/DOTween.Modules.asmdef
-!Assets/Plugins/Demigiant/DOTween/Modules/DOTween.Modules.asmdef.meta
-Assets/Resources/DOTweenSettings.asset*
+!Assets/Plugins/Demigiant/DOTween.meta
 Assets/Plugins/UniRx*
 Assets/Plugins/Opsive*
 

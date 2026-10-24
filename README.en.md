@@ -8,8 +8,8 @@ A Unity puzzle game on a hexagonal board. Drag a gem through adjacent gems to ma
 
 ## Getting started
 
-1. Open the project with Unity **6000.6.7f1**, as recorded in [ProjectSettings/ProjectVersion.txt](ProjectSettings/ProjectVersion.txt).
-2. Install the dependencies below and let Unity Package Manager resolve packages and compile scripts.
+1. Run the NuGet restore below, then open the project with Unity **6000.6.7f1**, as recorded in [ProjectSettings/ProjectVersion.txt](ProjectSettings/ProjectVersion.txt).
+2. Let Unity Package Manager resolve packages and compile scripts.
 3. Open `Assets/Scenes/TitleScene.unity`, enter Play mode, and start the game. You can also start from `GameScene.unity` to inspect gameplay directly.
 4. Press a gem, drag through adjacent gems to swap, and release to submit the turn. Releasing without swapping does not consume a turn.
 5. Press `Hint` to see a suggested route and its predicted score gain. Follow the numbered cells from 0. Revisiting a cell displays multiple numbers. Selecting a gem clears the hint.
@@ -20,7 +20,7 @@ Scenes follow `TitleScene → GameScene → ResultScene → TitleScene`. All thr
 
 | Library | Purpose and setup |
 | --- | --- |
-| DOTween | Movement, disappearance, appearance, and screen effects. Install separately, then run Setup DOTween from Tools → Demigiant → DOTween Utility Panel. The project references `DOTween.Modules`. |
+| DOTween | Movement, disappearance, appearance, and screen effects. The free version 1.3.045 is bundled in `Assets/Plugins/Demigiant/DOTween`, along with project settings. No manual installation is required for a fresh checkout. The project references `DOTween.Modules`. |
 | R3 | Input events and turn submission. Uses R3 / R3.Unity 1.3.1. Package Manager installs Unity integration; NuGetForUnity restores the core library and its dependencies from `Assets/packages.config`. |
 | UniTask | Awaiting animation and scene flow. `Packages/manifest.json` specifies version 2.5.11. |
 | Unity Input System / uGUI | Input and UI; included in the Package Manager dependencies. |
@@ -32,6 +32,8 @@ For a fresh checkout or CI, restore dependencies with the NuGetForUnity CLI befo
 dotnet tool install --global NuGetForUnity.Cli --version 4.5.0
 nugetforunity restore .
 ```
+
+DOTween binaries, modules, and the original `readme.txt` are bundled unmodified from the official distribution. See the [DOTween license](Documents/DOTween-license.txt) for copyright notices, redistribution conditions, and disclaimers. When upgrading, use the official free distribution, run Setup DOTween from Tools → Demigiant → DOTween Utility Panel, and review the settings and changes.
 
 Remove any previously installed `Assets/Plugins/UniRx` folder.
 

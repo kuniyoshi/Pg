@@ -1,0 +1,2 @@
+# Preserve the bundled DOTween distribution byte-for-byte.
+Assets/Plugins/Demigiant/DOTween/** -text

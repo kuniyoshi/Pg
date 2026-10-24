@@ -8,8 +8,8 @@
 
 ## 起動と操作
 
-1. [ProjectSettings/ProjectVersion.txt](ProjectSettings/ProjectVersion.txt) に記録されたUnity **6000.6.7f1** でプロジェクトを開きます。
-2. 下記のライブラリを導入します。Unity Package Managerによるパッケージの取得と、スクリプトのコンパイルが終わるまで待ちます。
+1. 下記のNuGet復元を実行してから、[ProjectSettings/ProjectVersion.txt](ProjectSettings/ProjectVersion.txt) に記録されたUnity **6000.6.7f1** でプロジェクトを開きます。
+2. Package Managerによるパッケージの取得と、スクリプトのコンパイルが終わるまで待ちます。
 3. `Assets/Scenes/TitleScene.unity` を開き、Playモードにしてゲームを開始します。ゲーム画面だけを確認したい場合は、`GameScene.unity` から直接開始することもできます。
 4. 宝石をつかみ、隣接する宝石をなぞって入れ替えます。ドラッグを終えるとターンが確定します。一度も入れ替えずに離した場合は、ターンを消費しません。
 5. `Hint` ボタンを押すと、おすすめの経路と予測得点が表示されます。盤面の番号を0から順になぞってください。同じマスを何度か通る場合は、そのマスに複数の番号が表示されます。宝石を選ぶとヒントの表示が消えます。
@@ -20,7 +20,7 @@
 
 | ライブラリ | 用途と導入方法 |
 | --- | --- |
-| DOTween | 宝石の移動・消去・出現や画面の演出に使用します。別途導入し、Tools → Demigiant → DOTween Utility PanelからSetup DOTweenを実行します。`DOTween.Modules` アセンブリを参照します。 |
+| DOTween | 宝石の移動・消去・出現や画面の演出に使用します。無料版1.3.045を `Assets/Plugins/Demigiant/DOTween` に同梱しています。設定も同梱済みで、初回の手動導入は不要です。`DOTween.Modules` アセンブリを参照します。 |
 | R3 | 入力イベントの受け取りと、確定した交換操作の通知に使用します。R3 / R3.Unity 1.3.1を使用します。Unity連携はPackage Manager、R3本体と依存ライブラリはNuGetForUnityが `Assets/packages.config` から復元します。 |
 | UniTask | アニメーションや画面遷移の完了を待つために使用します。`Packages/manifest.json` で2.5.11を指定しています。 |
 | Unity Input System / uGUI | 入力の処理とUIの表示に使用します。Unity Package Managerで取得します。 |
@@ -32,6 +32,8 @@
 dotnet tool install --global NuGetForUnity.Cli --version 4.5.0
 nugetforunity restore .
 ```
+
+DOTweenは公式配布の本体・モジュール・元の `readme.txt` を未改変で同梱しています。著作権表記・再配布条件・免責事項は [DOTweenライセンス](Documents/DOTween-license.txt) を参照してください。更新時は無料版の公式配布物を使用し、Tools → Demigiant → DOTween Utility PanelからSetup DOTweenを実行して、設定と差分を確認してください。
 
 以前導入した `Assets/Plugins/UniRx` が残っている場合は、そのフォルダを削除してください。
 
